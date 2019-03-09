@@ -328,3 +328,13 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+# Dotnet core configuration
+**/appsettings*.json
+**/web.config
+
+§ AWS configuration
+**/aws-lambda-tools-*.json
+**/serverless.template
+
+
