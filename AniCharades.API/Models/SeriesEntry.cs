@@ -16,5 +16,7 @@ namespace AniCharades.API.Models
         public int[] MangaPositions { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public string[] Translations { get; set; }
     }
 }

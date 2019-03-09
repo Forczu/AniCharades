@@ -23,6 +23,10 @@ namespace AniCharades.API.Data
                .Entity<SeriesEntry>()
                .Property(e => e.MangaPositions)
                .HasConversion(DataConverters.IntArrayToStringConverter);
+            modelBuilder
+               .Entity<SeriesEntry>()
+               .Property(e => e.Translations)
+               .HasConversion(DataConverters.StringArrayToStringConverter);
         }
     }
 }

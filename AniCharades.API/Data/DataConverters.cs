@@ -11,5 +11,9 @@ namespace AniCharades.API.Data
         public static ValueConverter<int[], string> IntArrayToStringConverter = new ValueConverter<int[], string>(
            e => String.Join(",", e.Select(p => p.ToString())),
            e => e.Split(",", StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray());
+
+        public static ValueConverter<string[], string> StringArrayToStringConverter = new ValueConverter<string[], string>(
+            e => String.Join((char)0, e),
+            e => e.Split((char)0, StringSplitOptions.None).ToArray());
     }
 }

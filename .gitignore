@@ -337,4 +337,5 @@ ASALocalRun/
 **/aws-lambda-tools-*.json
 **/serverless.template
 
-
+# SQLite DB
+*.db
