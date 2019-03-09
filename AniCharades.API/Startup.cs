@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AniCharades.API.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,6 +15,7 @@ namespace AniCharades.API
 {
     public class Startup
     {
+        private static readonly string DbConnectionString = "DefaultConnection";
         public const string AppS3BucketKey = "AppS3Bucket";
 
         public Startup(IConfiguration configuration)
@@ -25,7 +28,7 @@ namespace AniCharades.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            
+            services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString)));
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
         
