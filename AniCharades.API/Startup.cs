@@ -29,6 +29,7 @@ namespace AniCharades.API
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString)));
+            services.AddScoped<ISeriesRepository, SeriesRepository>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
         
