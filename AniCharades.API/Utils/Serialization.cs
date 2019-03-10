@@ -13,10 +13,10 @@ namespace AniCharades.API.Utils
         /// Helper function for converting data from JSON format to ORM entites.
         /// </summary>
         /// <typeparam name="T">Target entity type.</typeparam>
-        /// <param name="filePath"></param>
-        public static IEnumerable<T> JsonToEntityCollection<T>(string filePath)
+        /// <param name="jsonFile"></param>
+        public static IEnumerable<T> JsonToEntityCollection<T>(string jsonFile)
         {
-            var series = JsonConvert.DeserializeObject<IEnumerable<T>>(filePath);
+            var series = JsonConvert.DeserializeObject<IEnumerable<T>>(jsonFile);
             return series;
         }
     }

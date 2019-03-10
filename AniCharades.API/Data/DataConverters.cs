@@ -13,7 +13,7 @@ namespace AniCharades.API.Data
            e => e.Split(",", StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray());
 
         public static ValueConverter<string[], string> StringArrayToStringConverter = new ValueConverter<string[], string>(
-            e => String.Join((char)0, e),
-            e => e.Split((char)0, StringSplitOptions.None).ToArray());
+            e => String.Join('\n', e),
+            e => e.Split('\n', StringSplitOptions.None).ToArray());
     }
 }
