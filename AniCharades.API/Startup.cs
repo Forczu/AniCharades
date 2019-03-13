@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AniCharades.API.Logic;
 using AniCharades.API.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,7 @@ namespace AniCharades.API
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString)));
             services.AddScoped<ISeriesRepository, SeriesRepository>();
+            services.AddScoped<ICharadesCompositionService, CharadesCompositionService>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
         
