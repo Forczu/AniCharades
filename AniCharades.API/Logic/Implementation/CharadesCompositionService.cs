@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AniCharades.API.Logic.Interfaces;
 using AniCharades.API.Models;
 
-namespace AniCharades.API.Logic
+namespace AniCharades.API.Logic.Implementation
 {
     public class CharadesCompositionService : ICharadesCompositionService
     {
