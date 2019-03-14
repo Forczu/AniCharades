@@ -8,7 +8,7 @@ namespace AniCharades.API.Logic.Interfaces
 {
     public interface IMyAnimeListService
     {
-        UserAnimeList GetAnimeList(string username);
+        Task<IList<AnimeListEntry>> GetAnimeList(string username);
 
         UserMangaList GetMangaList(string username);
     }
