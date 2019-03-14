@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using JikanDotNet;
 
 namespace AniCharades.API
 {
@@ -34,6 +35,7 @@ namespace AniCharades.API
             services.AddScoped<ISeriesRepository, SeriesRepository>();
             services.AddScoped<ICharadesCompositionService, CharadesCompositionService>();
             services.AddScoped<IMyAnimeListService, MyAnimeListService>();
+            services.AddScoped<IJikan>(j => new Jikan(true));
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
         

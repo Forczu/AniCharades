@@ -1,4 +1,4 @@
-﻿using AniCharades.API.Models.MyAnimeList;
+﻿using JikanDotNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
