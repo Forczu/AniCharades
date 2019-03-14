@@ -9,5 +9,7 @@ namespace AniCharades.API.Logic
     public interface IMyAnimeListService
     {
         UserAnimeList GetAnimeList(string username);
+
+        UserMangaList GetMangaList(string username);
     }
 }

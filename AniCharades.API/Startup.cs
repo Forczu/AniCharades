@@ -32,6 +32,7 @@ namespace AniCharades.API
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString)));
             services.AddScoped<ISeriesRepository, SeriesRepository>();
             services.AddScoped<ICharadesCompositionService, CharadesCompositionService>();
+            services.AddScoped<IMyAnimeListService, MyAnimeListService>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
         

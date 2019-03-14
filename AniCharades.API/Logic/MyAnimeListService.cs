@@ -12,5 +12,10 @@ namespace AniCharades.API.Logic
         {
             return null;
         }
+
+        public UserMangaList GetMangaList(string username)
+        {
+            return null;
+        }
     }
 }
