@@ -22,9 +22,10 @@ namespace AniCharades.API.Logic.Implementation
             return userAnimeList;
         }
 
-        public UserMangaList GetMangaList(string username)
+        public async Task<IList<MangaListEntry>> GetMangaList(string username)
         {
-            return null;
+            var userMangaList = await GetUserMangaListFull(username, UserMangaListExtension.All);
+            return userMangaList;
         }
 
         private async Task<IList<AnimeListEntry>> GetUserAnimeListFull(string username, UserAnimeListExtension filters)
@@ -42,14 +43,40 @@ namespace AniCharades.API.Logic.Implementation
             return animeEntries;
         }
 
+        private async Task<IList<MangaListEntry>> GetUserMangaListFull(string username, UserMangaListExtension filters)
+        {
+            var mangaEntries = new List<MangaListEntry>();
+            var pageIndex = 1;
+            while (true)
+            {
+                var nextMangaListPage = await GetUserMangaListPage(username, filters, pageIndex);
+                if (!MangaListPageExists(nextMangaListPage))
+                    break;
+                mangaEntries.AddRange(nextMangaListPage.Manga);
+                pageIndex++;
+            }
+            return mangaEntries;
+        }
+
         private bool AnimeListPageExists(UserAnimeList page)
         {
             return page != null && page.Anime.Count > 0;
         }
 
+        private bool MangaListPageExists(UserMangaList page)
+        {
+            return page != null && page.Manga.Count > 0;
+        }
+
         private async Task<UserAnimeList> GetUserAnimeListPage(string username, UserAnimeListExtension filters, int page)
         {
             var result = await jikan.GetUserAnimeList(username, filters, page);
+            return result;
+        }
+
+        private async Task<UserMangaList> GetUserMangaListPage(string username, UserMangaListExtension filters, int page)
+        {
+            var result = await jikan.GetUserMangaList(username, filters, page);
             return result;
         }
     }

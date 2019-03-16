@@ -32,13 +32,20 @@ namespace AniCharades.API.Tests.MyAnimeList
 
         private Mock<IJikan> PrepareJikanMock()
         {
+            Mock<IJikan> jikanMock = new Mock<IJikan>();
+            PrepareAnimeList(jikanMock);
+            PrepareMangaList(jikanMock);
+            return jikanMock;
+        }
+
+        private void PrepareAnimeList(Mock<IJikan> jikanMock)
+        {
             var ervieKey = "Jikan:User:Ervelan:Animelist";
             var filePath = config[ervieKey + ":Path"];
             var pageNubmer = Convert.ToInt32(config[ervieKey + ":PageNumber"]);
             var animeListPageTemplate = config[ervieKey + ":PageNameTemplate"];
             var filters = UserAnimeListExtension.All;
-
-            Mock<IJikan> jikanMock = new Mock<IJikan>();
+            
             for (int index = 1; index <= pageNubmer; index++)
             {
                 var pageFilePath = string.Format("{0}\\{1}{2}.json", filePath, animeListPageTemplate, index);
@@ -47,7 +54,24 @@ namespace AniCharades.API.Tests.MyAnimeList
                     JsonConvert.DeserializeObject<UserAnimeList>(pageJson)
                 );
             }
-            return jikanMock;
+        }
+
+        private void PrepareMangaList(Mock<IJikan> jikanMock)
+        {
+            var ervieKey = "Jikan:User:Ervelan:Mangalist";
+            var filePath = config[ervieKey + ":Path"];
+            var pageNubmer = Convert.ToInt32(config[ervieKey + ":PageNumber"]);
+            var animeListPageTemplate = config[ervieKey + ":PageNameTemplate"];
+            var filters = UserMangaListExtension.All;
+
+            for (int index = 1; index <= pageNubmer; index++)
+            {
+                var pageFilePath = string.Format("{0}\\{1}{2}.json", filePath, animeListPageTemplate, index);
+                var pageJson = File.ReadAllText(pageFilePath);
+                jikanMock.Setup(j => j.GetUserMangaList("Ervelan", filters, index)).ReturnsAsync(
+                    JsonConvert.DeserializeObject<UserMangaList>(pageJson)
+                );
+            }
         }
 
         [Fact]
@@ -59,6 +83,17 @@ namespace AniCharades.API.Tests.MyAnimeList
             var animeList = myAnimeListService.GetAnimeList(username).Result;
             // then
             Assert.Contains(animeList, a => a.Title == "Yuuki Yuuna wa Yuusha de Aru");
+        }
+
+        [Fact]
+        public void ItShouldGetEntrieMangaList()
+        {
+            // given
+            var username = "Ervelan";
+            // when
+            var mangaList = myAnimeListService.GetMangaList(username).Result;
+            // then
+            Assert.Contains(mangaList, m => m.Title == "Yokohama Kaidashi Kikou");
         }
     }
 }

@@ -10,6 +10,6 @@ namespace AniCharades.API.Logic.Interfaces
     {
         Task<IList<AnimeListEntry>> GetAnimeList(string username);
 
-        UserMangaList GetMangaList(string username);
+        Task<IList<MangaListEntry>> GetMangaList(string username);
     }
 }
