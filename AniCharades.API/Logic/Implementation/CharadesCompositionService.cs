@@ -33,6 +33,7 @@ namespace AniCharades.API.Logic.Implementation
         private async Task CreateCharadesForSingleUser(ConcurrentBag<CharadesEntry> currentCharades, string username)
         {
             var userAnimeList = await myAnimeListService.GetAnimeList(username);
+            userAnimeList = userAnimeList.Where(a => a.WatchingStatus != JikanDotNet.UserAnimeListExtension.PlanToWatch).ToList();
             var tasks = userAnimeList.Select(a => CreateCharadesFromAnimeListEntry(currentCharades, a.MalId, username));
             await Task.WhenAll(tasks);
         }
