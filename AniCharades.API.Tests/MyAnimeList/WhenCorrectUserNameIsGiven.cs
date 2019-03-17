@@ -1,4 +1,6 @@
-﻿using AniCharades.API.Logic.Implementation;
+﻿using AniCharades.API.Algorithms.MyAnimeList.AnimeList;
+using AniCharades.API.Algorithms.MyAnimeList.MangaList;
+using AniCharades.API.Logic.Implementation;
 using AniCharades.API.Logic.Interfaces;
 using JikanDotNet;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +29,9 @@ namespace AniCharades.API.Tests.MyAnimeList
                     .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
                     .Build();
             var jikanMock = PrepareJikanMock();
-            myAnimeListService = new MyAnimeListService(jikanMock.Object);
+            var animeListExtractorMock = new AnimeListExtractor(jikanMock.Object);
+            var mangaListExtractorMock = new MangaListExtractor(jikanMock.Object);
+            myAnimeListService = new MyAnimeListService(animeListExtractorMock, mangaListExtractorMock);
         }
 
         private Mock<IJikan> PrepareJikanMock()

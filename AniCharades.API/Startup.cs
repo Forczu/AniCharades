@@ -13,6 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using JikanDotNet;
+using AniCharades.API.Algorithms.MyAnimeList.AnimeList;
+using AniCharades.API.Algorithms.MyAnimeList.MangaList;
 
 namespace AniCharades.API
 {
@@ -36,6 +38,8 @@ namespace AniCharades.API
             services.AddScoped<ICharadesCompositionService, CharadesCompositionService>();
             services.AddScoped<IMyAnimeListService, MyAnimeListService>();
             services.AddScoped<IJikan>(j => new Jikan(true));
+            services.AddScoped<IAnimeListExtractor, AnimeListExtractor>();
+            services.AddScoped<IMangaListExtractor, MangaListExtractor>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
         
