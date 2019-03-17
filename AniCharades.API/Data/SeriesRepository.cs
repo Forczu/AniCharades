@@ -24,22 +24,34 @@ namespace AniCharades.API.Data
 
         public async Task<IEnumerable<SeriesEntry>> Get()
         {
-            return await context.Series.ToListAsync();
+            return await context.Series
+                .Include(s => s.AnimePositions)
+                .Include(s => s.MangaPositions)
+                .ToListAsync();
         }
 
         public async Task<SeriesEntry> Get(int id)
         {
-            return await context.Series.FirstOrDefaultAsync(s => s.Id == id);
+            return await context.Series
+                .Include(s => s.AnimePositions)
+                .Include(s => s.MangaPositions)
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<SeriesEntry> GetByAnimeId(long id)
         {
-            return await context.Series.FirstOrDefaultAsync(s => s.AnimePositions.Any(a => a.MalId == id));
+            return await context.Series
+                .Include(s => s.AnimePositions)
+                .Include(s => s.MangaPositions)
+                .FirstOrDefaultAsync(s => s.AnimePositions.Any(a => a.MalId == id));
         }
 
         public async Task<SeriesEntry> GetByMangaId(long id)
         {
-            return await context.Series.FirstOrDefaultAsync(s => s.MangaPositions.Any(m => m.MalId == id));
+            return await context.Series
+                .Include(s => s.AnimePositions)
+                .Include(s => s.MangaPositions)
+                .FirstOrDefaultAsync(s => s.MangaPositions.Any(m => m.MalId == id));
         }
 
         public async Task<bool> SeriesExists(int id)
@@ -49,12 +61,12 @@ namespace AniCharades.API.Data
 
         public async Task<bool> SeriesExistsByAnimeId(long id)
         {
-            return await context.Series.AnyAsync(s => s.AnimePositions.Any(a => a.MalId == id));
+            return await context.Animes.AnyAsync(a => a.MalId == id);
         }
 
         public async Task<bool> SeriesExistsByMangaId(long id)
         {
-            return await context.Series.AnyAsync(s => s.MangaPositions.Any(m => m.MalId == id));
+            return await context.Mangas.AnyAsync(m => m.MalId == id);
         }
 
         public async Task Update(SeriesEntry series)
