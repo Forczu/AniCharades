@@ -12,11 +12,15 @@ namespace AniCharades.API.Data
 
         Task<SeriesEntry> Get(int id);
 
+        Task<SeriesEntry> GetByAnimeId(long id);
+
+        Task<SeriesEntry> GetByMangaId(long id);
+
         Task<bool> SeriesExists(int id);
 
-        Task<bool> SeriesExistsByAnimeId(int id);
+        Task<bool> SeriesExistsByAnimeId(long id);
 
-        Task<bool> SeriesExistsByMangaId(int id);
+        Task<bool> SeriesExistsByMangaId(long id);
 
         Task Add(SeriesEntry series);
 

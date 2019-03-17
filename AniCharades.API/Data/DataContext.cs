@@ -12,17 +12,11 @@ namespace AniCharades.API.Data
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
         public DbSet<SeriesEntry> Series { get; set; }
+        public DbSet<AnimeEntry> Animes { get; set; }
+        public DbSet<MangaEntry> Mangas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder
-               .Entity<SeriesEntry>()
-               .Property(e => e.AnimePositions)
-               .HasConversion(DataConverters.IntArrayToStringConverter);
-            modelBuilder
-               .Entity<SeriesEntry>()
-               .Property(e => e.MangaPositions)
-               .HasConversion(DataConverters.IntArrayToStringConverter);
             modelBuilder
                .Entity<SeriesEntry>()
                .Property(e => e.Translations)

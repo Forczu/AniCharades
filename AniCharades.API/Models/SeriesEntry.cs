@@ -11,9 +11,9 @@ namespace AniCharades.API.Models
 
         public string Title { get; set; }
 
-        public int[] AnimePositions { get; set; }
+        public ICollection<AnimeEntry> AnimePositions { get; set; }
 
-        public int[] MangaPositions { get; set; }
+        public ICollection<MangaEntry> MangaPositions { get; set; }
 
         public string ImageUrl { get; set; }
 

@@ -32,19 +32,29 @@ namespace AniCharades.API.Data
             return await context.Series.FirstOrDefaultAsync(s => s.Id == id);
         }
 
+        public async Task<SeriesEntry> GetByAnimeId(long id)
+        {
+            return await context.Series.FirstOrDefaultAsync(s => s.AnimePositions.Any(a => a.MalId == id));
+        }
+
+        public async Task<SeriesEntry> GetByMangaId(long id)
+        {
+            return await context.Series.FirstOrDefaultAsync(s => s.MangaPositions.Any(m => m.MalId == id));
+        }
+
         public async Task<bool> SeriesExists(int id)
         {
-            return await context.Series.FirstOrDefaultAsync(s => s.Id == id) != null;
+            return await context.Series.AnyAsync(s => s.Id == id);
         }
 
-        public async Task<bool> SeriesExistsByAnimeId(int id)
+        public async Task<bool> SeriesExistsByAnimeId(long id)
         {
-            return await context.Series.FirstOrDefaultAsync(s => s.AnimePositions.Contains(id)) != null;
+            return await context.Series.AnyAsync(s => s.AnimePositions.Any(a => a.MalId == id));
         }
 
-        public async Task<bool> SeriesExistsByMangaId(int id)
+        public async Task<bool> SeriesExistsByMangaId(long id)
         {
-            return await context.Series.FirstOrDefaultAsync(s => s.MangaPositions.Contains(id)) != null;
+            return await context.Series.AnyAsync(s => s.MangaPositions.Any(m => m.MalId == id));
         }
 
         public async Task Update(SeriesEntry series)
