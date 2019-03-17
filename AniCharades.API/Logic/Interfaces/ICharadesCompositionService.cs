@@ -8,6 +8,6 @@ namespace AniCharades.API.Logic.Interfaces
 {
     public interface ICharadesCompositionService
     {
-        ICollection<CharadesEntry> GetCompositedCharades(IEnumerable<string> usernames);
+        Task<ICollection<CharadesEntry>> GetCompositedCharades(IEnumerable<string> usernames);
     }
 }

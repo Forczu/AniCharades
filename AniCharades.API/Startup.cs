@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using JikanDotNet;
 using AniCharades.API.Algorithms.MyAnimeList.AnimeList;
 using AniCharades.API.Algorithms.MyAnimeList.MangaList;
+using Newtonsoft.Json;
 
 namespace AniCharades.API
 {
@@ -32,7 +33,11 @@ namespace AniCharades.API
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(options => {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                });
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString)));
             services.AddScoped<ISeriesRepository, SeriesRepository>();
             services.AddScoped<ICharadesCompositionService, CharadesCompositionService>();
