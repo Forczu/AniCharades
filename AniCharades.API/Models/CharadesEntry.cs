@@ -9,6 +9,6 @@ namespace AniCharades.API.Models
     {
         public SeriesEntry Series { get; set; }
 
-        public int[] KnownBy { get; set; }
+        public ICollection<string> KnownBy { get; set; }
     }
 }

@@ -17,11 +17,11 @@ namespace AniCharades.API.Logic.Implementation
                 {
                     Id = 1,
                     Title = "Bleach",
-                    AnimePositions = new int[] { 1, 2, 3 },
-                    MangaPositions = new int[] { 3, 4, 5 },
+                    AnimePositions = new List<AnimeEntry> { new AnimeEntry() { MalId = 123 } },
+                    MangaPositions = new List<MangaEntry> { new MangaEntry() { MalId = 234 } },
                     ImageUrl = "bleachImage.png"
                 },
-                KnownBy = new int[] { 111, 222 }
+                KnownBy = new string[] { "111", "222" }
             },
             new CharadesEntry()
             {
@@ -29,15 +29,15 @@ namespace AniCharades.API.Logic.Implementation
                 {
                     Id = 1,
                     Title = "Date A Live",
-                    AnimePositions = new int[] { 5, 6, 7 },
-                    MangaPositions = new int[] { 8, 9, 10 },
+                    AnimePositions = new List<AnimeEntry> { new AnimeEntry() { MalId = 456 } },
+                    MangaPositions = new List<MangaEntry> { new MangaEntry() { MalId = 897 } },
                     ImageUrl = "dalImage.png"
                 },
-                KnownBy = new int[] { 222, 333 }
+                KnownBy = new string[] { "222", "333" }
             }
         };
 
-        public IEnumerable<CharadesEntry> GetCompositedCharades(IEnumerable<int> usersMalIds)
+        public ICollection<CharadesEntry> GetCompositedCharades(IEnumerable<string> usernames)
         {
             return SampleData;
         }

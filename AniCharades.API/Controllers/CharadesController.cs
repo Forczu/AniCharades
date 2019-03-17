@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AniCharades.API.Logic.Interfaces;
+using AniCharades.API.Models;
 using AniCharades.API.RequestParameters;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,7 @@ namespace AniCharades.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            var charades = charadesCompositionService.GetCompositedCharades(parameters.UserIds);
+            var charades = charadesCompositionService.GetCompositedCharades(parameters.Usernames);
             return Ok(charades);
         }
     }
