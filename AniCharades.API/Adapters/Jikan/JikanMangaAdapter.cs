@@ -18,5 +18,20 @@ namespace AniCharades.API.Adapters.Jikan
         public ICollection<string> Synonyms => TitleSynonyms;
 
         public string ImageUrl => ImageURL;
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            var otherManga = obj as Manga;
+            if (otherManga == null)
+                return false;
+            return Id == otherManga.MalId;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }
