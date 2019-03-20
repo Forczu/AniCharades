@@ -10,6 +10,7 @@ namespace AniCharades.API.Adapters.Jikan
     public class JikanMangaAdapter : IEntryInstance
     {
         private readonly Manga manga;
+        private JikanRelatedMangaAdapter relatedMangaAdapter;
 
         public long Id => manga.MalId;
 
@@ -21,9 +22,12 @@ namespace AniCharades.API.Adapters.Jikan
 
         public string ImageUrl => manga.ImageURL;
 
+        public IRelatedInstance Related => relatedMangaAdapter;
+
         public JikanMangaAdapter(Manga manga)
         {
             this.manga = manga;
+            this.relatedMangaAdapter = new JikanRelatedMangaAdapter(manga.Related);
         }
 
         public override bool Equals(object obj)

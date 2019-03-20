@@ -16,5 +16,7 @@ namespace AniCharades.API.Adapters.Interfaces
         ICollection<string> Synonyms { get; }
 
         string ImageUrl { get; }
+
+        IRelatedInstance Related { get; }
     }
 }
