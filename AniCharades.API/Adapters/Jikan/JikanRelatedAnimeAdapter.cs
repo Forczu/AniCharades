@@ -10,7 +10,6 @@ namespace AniCharades.API.Adapters.Jikan
     public class JikanRelatedAnimeAdapter : IRelatedInstance
     {
         private readonly RelatedAnime relatedAnime;
-        private List<MALSubItem> allRelatedAnimes;
 
         public ICollection<MALSubItem> AlternativeVersions => relatedAnime.AlternativeVersions;
 
@@ -30,7 +29,7 @@ namespace AniCharades.API.Adapters.Jikan
 
         public ICollection<MALSubItem> Summaries => relatedAnime.Summaries;
 
-        public ICollection<MALSubItem> AllRelatedPositions => allRelatedAnimes;
+        public ICollection<MALSubItem> AllRelatedPositions { get; private set; }
 
         public JikanRelatedAnimeAdapter(RelatedAnime relatedAnime)
         {
@@ -40,16 +39,12 @@ namespace AniCharades.API.Adapters.Jikan
 
         private void CreateAllRelatedPositionsCollection()
         {
-            allRelatedAnimes = new List<MALSubItem>();
             var allRelatedCollections = new ICollection<MALSubItem>[]
             {
                 AlternativeVersions, Characters, Prequels, Others,
                 Sequels, SideStories, SpinOffs, Summaries
             };
-            foreach (var relatedTitles in allRelatedCollections.Where(c => c != null))
-            {
-                allRelatedAnimes.AddRange(relatedTitles);
-            }
+            AllRelatedPositions = Common.Utils.CollectionUtils.MergeCollectionsWithoutNullValues(allRelatedCollections);
         }
     }
 }
