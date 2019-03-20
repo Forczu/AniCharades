@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AniCharades.API.Algorithms.SeriesAssembler
 {
-    public abstract class AbstractSeriesAssembler<T> where T : class
+    public abstract class AbstractSeriesAssembler<T> where T : IEntryInstance
     {
         private IList<T> series = new List<T>();
         private IList<T> rejected = new List<T>();
@@ -35,7 +35,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             entriesToCheckTheRelations.Push(entry);
         }
 
-        protected abstract T GetEntry(long malId);
+        protected abstract T GetEntry(long entryId);
 
         private bool IsStackEmpty()
         {
@@ -54,9 +54,23 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             StackRelatedEntriesIfTheyAreNew(currentEntry, relatedEntries);
         }
 
-        protected abstract ICollection<T> GetRelatedEntries(T entry);
+        protected ICollection<T> GetRelatedEntries(T entry)
+        {
+            var allRelatedToEntry = entry.Related.AllRelatedPositions;
+            if (IsCollectionEmpty(allRelatedToEntry))
+                return null;
+            var newEntries = new List<T>();
+            var filteredEntries = allRelatedToEntry.Where(r => CanEntryBeAddedToSeries(r.MalId));
+            foreach (var subItem in filteredEntries)
+            {
+                var relatedEntry = GetEntry(subItem.MalId);
+                if (relatedEntry != null)
+                    newEntries.Add(relatedEntry);
+            }
+            return newEntries;
+        }
 
-        private bool IsCollectionEmpty(ICollection<T> relatedEntries)
+        protected bool IsCollectionEmpty<K>(ICollection<K> relatedEntries)
         {
             return relatedEntries != null && relatedEntries.Count == 0;
         }
@@ -73,11 +87,20 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             }
         }
 
-        private bool CanEntryBeAddedToSeries(T entry)
+        protected bool CanEntryBeAddedToSeries(T entry)
         {
             if (series.Contains(entry))
                 return false;
             if (rejected.Contains(entry))
+                return false;
+            return true;
+        }
+
+        protected bool CanEntryBeAddedToSeries(long entryId)
+        {
+            if (series.Any(e => e.Id == entryId))
+                return false;
+            if (rejected.Any(e => e.Id == entryId))
                 return false;
             return true;
         }
