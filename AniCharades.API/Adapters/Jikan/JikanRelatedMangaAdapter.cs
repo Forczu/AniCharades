@@ -33,7 +33,7 @@ namespace AniCharades.API.Adapters.Jikan
 
         public JikanRelatedMangaAdapter(RelatedManga relatedManga)
         {
-            this.relatedManga = relatedManga;
+            this.relatedManga = relatedManga ?? new RelatedManga();
             CreateAllRelatedPositionsCollection();
         }
 

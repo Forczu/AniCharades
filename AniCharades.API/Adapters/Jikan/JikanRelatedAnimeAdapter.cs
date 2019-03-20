@@ -33,7 +33,7 @@ namespace AniCharades.API.Adapters.Jikan
 
         public JikanRelatedAnimeAdapter(RelatedAnime relatedAnime)
         {
-            this.relatedAnime = relatedAnime;
+            this.relatedAnime = relatedAnime ?? new RelatedAnime();
             CreateAllRelatedPositionsCollection();
         }
 
