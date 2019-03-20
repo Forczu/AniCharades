@@ -7,26 +7,33 @@ using System.Threading.Tasks;
 
 namespace AniCharades.API.Adapters.Jikan
 {
-    public class JikanAnimeAdapter : Anime, IEntryInstance
+    public class JikanAnimeAdapter : IEntryInstance
     {
-        public long Id => MalId;
+        private readonly Anime anime;
 
-        public new string Title => base.Title;
+        public long Id => anime.MalId;
 
-        public string Translation => TitleEnglish;
+        public string Title => anime.Title;
 
-        public ICollection<string> Synonyms => TitleSynonyms;
+        public string Translation => anime.TitleEnglish;
 
-        public string ImageUrl => ImageURL;
+        public ICollection<string> Synonyms => anime.TitleSynonyms;
+
+        public string ImageUrl => anime.ImageURL;
+
+        public JikanAnimeAdapter(Anime anime)
+        {
+            this.anime = anime;
+        }
 
         public override bool Equals(object obj)
         {
             if (obj == null)
                 return false;
-            var otherAnime = obj as Anime;
+            var otherAnime = obj as JikanAnimeAdapter;
             if (otherAnime == null)
                 return false;
-            return Id == otherAnime.MalId;
+            return Id == otherAnime.Id;
         }
 
         public override int GetHashCode()
