@@ -27,6 +27,6 @@ namespace AniCharades.Adapters.Interfaces
 
         ICollection<MALSubItem> Summaries { get; }
 
-        ICollection<MALSubItem> AllRelatedPositions { get; set; }
+        ICollection<RelatedItem> AllRelatedPositions { get; set; }
     }
 }

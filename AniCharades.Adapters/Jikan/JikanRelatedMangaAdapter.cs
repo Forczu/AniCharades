@@ -31,7 +31,7 @@ namespace AniCharades.Adapters.Jikan
 
         public ICollection<MALSubItem> Summaries => relatedManga.Summaries;
 
-        public ICollection<MALSubItem> AllRelatedPositions { get; set; }
+        public ICollection<RelatedItem> AllRelatedPositions { get; set; }
 
         public JikanRelatedMangaAdapter(RelatedManga relatedManga)
         {
