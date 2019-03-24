@@ -1,10 +1,11 @@
-﻿using JikanDotNet;
+﻿using AniCharades.Data.Models;
+using JikanDotNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AniCharades.API.Adapters.Interfaces
+namespace AniCharades.Adapters.Interfaces
 {
     public interface IRelatedInstance
     {

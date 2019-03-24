@@ -1,4 +1,4 @@
-﻿using AniCharades.API.Adapters.Interfaces;
+﻿using AniCharades.Adapters.Interfaces;
 using JikanDotNet;
 using System;
 using System.Collections.Generic;

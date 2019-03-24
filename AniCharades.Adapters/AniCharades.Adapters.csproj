@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="JikanDotNet" Version="1.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AniCharades.Common\AniCharades.Common.csproj" />
     <ProjectReference Include="..\AniCharades.Data\AniCharades.Data.csproj" />
   </ItemGroup>
 
