@@ -40,7 +40,9 @@ namespace AniCharades.API
                 .AddJsonOptions(options => {
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
-            services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString)));
+            services.AddDbContext<DataContext>(
+                x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString), 
+                b => b.MigrationsAssembly(typeof(DataContext).Assembly.FullName)));
             services.AddScoped<ISeriesRepository, SeriesRepository>();
             services.AddScoped<ICharadesCompositionService, CharadesCompositionService>();
             services.AddScoped<IMyAnimeListService, MyAnimeListService>();

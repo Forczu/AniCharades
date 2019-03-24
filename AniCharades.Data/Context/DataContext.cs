@@ -15,6 +15,7 @@ namespace AniCharades.Data.Context
         public DbSet<SeriesEntry> Series { get; set; }
         public DbSet<AnimeEntry> Animes { get; set; }
         public DbSet<MangaEntry> Mangas { get; set; }
+        public DbSet<RelationStrategyCriteria> RelationStrategyCriterias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,14 @@ namespace AniCharades.Data.Context
                .Entity<SeriesEntry>()
                .Property(e => e.Translations)
                .HasConversion(DataConverters.StringArrayToStringConverter);
+            modelBuilder
+               .Entity<RelationStrategyCriteria>()
+               .Property(e => e.Keywords)
+               .HasConversion(DataConverters.StringArrayToStringConverter);
+            modelBuilder
+               .Entity<RelationStrategyCriteria>()
+               .Property(e => e.Relations)
+               .HasConversion(DataConverters.RelationTypeArrayToStringConverter);
         }
     }
 }
