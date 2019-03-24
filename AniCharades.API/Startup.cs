@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AniCharades.API.Data;
 using AniCharades.API.Logic.Interfaces;
 using AniCharades.API.Logic.Implementation;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +16,8 @@ using AniCharades.API.Algorithms.MyAnimeList.AnimeList;
 using AniCharades.API.Algorithms.MyAnimeList.MangaList;
 using Newtonsoft.Json;
 using AniCharades.Data.Context;
+using AniCharades.Repositories.Interfaces;
+using AniCharades.Repositories.Implementation;
 
 namespace AniCharades.API
 {

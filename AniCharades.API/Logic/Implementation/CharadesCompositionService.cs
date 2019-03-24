@@ -3,9 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AniCharades.API.Data;
 using AniCharades.API.Logic.Interfaces;
 using AniCharades.Data.Models;
+using AniCharades.Repositories.Interfaces;
 
 namespace AniCharades.API.Logic.Implementation
 {

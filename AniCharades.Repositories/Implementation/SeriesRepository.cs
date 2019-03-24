@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AniCharades.Data.Context;
 using AniCharades.Data.Models;
+using AniCharades.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace AniCharades.API.Data
+namespace AniCharades.Repositories.Implementation
 {
     public class SeriesRepository : ISeriesRepository
     {

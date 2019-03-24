@@ -1,5 +1,4 @@
-﻿using AniCharades.API.Data;
-using AniCharades.API.Utils;
+﻿using AniCharades.API.Utils;
 using AniCharades.Data.Models;
 using Microsoft.Extensions.Configuration;
 using System;
