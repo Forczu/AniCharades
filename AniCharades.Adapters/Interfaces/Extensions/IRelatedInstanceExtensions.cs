@@ -24,14 +24,14 @@ namespace AniCharades.Adapters.Interfaces.Extensions
             relatedInstance.AllRelatedPositions = CreateAllRelatedPositions(allRelatedCollections);
         }
 
-        private static ICollection<RelatedItem> CreateAllRelatedPositions(dynamic[] relatedCollections)
+        private static ICollection<RelatedSubItem> CreateAllRelatedPositions(dynamic[] relatedCollections)
         {
-            var allRelatedEntries = new List<RelatedItem>();
+            var allRelatedEntries = new List<RelatedSubItem>();
             foreach (var relatedCollection in relatedCollections.Where(rc => rc.RelatedCollection != null))
             {
                 foreach (var relatedItem in relatedCollection.RelatedCollection)
                 {
-                    allRelatedEntries.Add(new RelatedItem(relatedItem.MalId, relatedCollection.RelationType));
+                    allRelatedEntries.Add(new RelatedSubItem(relatedItem.MalId, relatedCollection.RelationType));
                 }
             }
             return allRelatedEntries;

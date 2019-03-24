@@ -1,4 +1,6 @@
 ﻿using AniCharades.Adapters.Interfaces;
+using AniCharades.API.Algorithms.SeriesAssembler.DataStructures;
+using AniCharades.Data.Enumerations;
 using JikanDotNet;
 using System;
 using System.Collections.Generic;
@@ -54,18 +56,21 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             StackRelatedEntriesIfTheyAreNew(currentEntry, relatedEntries);
         }
 
-        protected ICollection<T> GetRelatedEntries(T entry)
+        protected ICollection<EntryInstanceRelated<T>> GetRelatedEntries(T entry)
         {
             var allRelatedToEntry = entry.Related.AllRelatedPositions;
             if (IsCollectionEmpty(allRelatedToEntry))
                 return null;
-            var newEntries = new List<T>();
+            var newEntries = new List<EntryInstanceRelated<T>>();
             var filteredEntries = allRelatedToEntry.Where(r => CanEntryBeAddedToSeries(r.MalId));
             foreach (var subItem in filteredEntries)
             {
                 var relatedEntry = GetEntry(subItem.MalId);
                 if (relatedEntry != null)
-                    newEntries.Add(relatedEntry);
+                {
+                    var fullEntry = new EntryInstanceRelated<T>(relatedEntry, subItem.RelationType);
+                    newEntries.Add(fullEntry);
+                }
             }
             return newEntries;
         }
@@ -75,15 +80,15 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             return relatedEntries != null && relatedEntries.Count == 0;
         }
 
-        private void StackRelatedEntriesIfTheyAreNew(T entry, ICollection<T> relatedEntries)
+        private void StackRelatedEntriesIfTheyAreNew(T entry, ICollection<EntryInstanceRelated<T>> relatedEntries)
         {
-            foreach (var relatedEntry in relatedEntries.Where(e => CanEntryBeAddedToSeries(e)))
+            foreach (var relatedEntry in relatedEntries.Where(e => CanEntryBeAddedToSeries(e.Entry)))
             {
-                var isRelationValid = CheckIfRelationIsValidForSeries(entry, relatedEntry);
+                var isRelationValid = CheckIfRelationIsValidForSeries(entry, relatedEntry.Entry, relatedEntry.RelationType);
                 if (isRelationValid)
-                    AddEntryToCheckTheRelations(relatedEntry);
+                    AddEntryToCheckTheRelations(relatedEntry.Entry);
                 else
-                    RejectEntry(relatedEntry);
+                    RejectEntry(relatedEntry.Entry);
             }
         }
 
@@ -105,7 +110,12 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             return true;
         }
 
-        protected abstract bool CheckIfRelationIsValidForSeries(T sourceEntry, T relatedEntry);
+        private bool CheckIfRelationIsValidForSeries(T sourceEntry, T relatedEntry, RelationType relationType)
+        {
+            var relationStrategy = RelationFactory.Create(sourceEntry.Title, relationType);
+            var areEqual = relationStrategy.AreEqual(sourceEntry, relatedEntry);
+            return areEqual;
+        }
 
         private void RejectEntry(T entry)
         {

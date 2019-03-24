@@ -1,4 +1,5 @@
 ﻿using AniCharades.Adapters.Jikan;
+using AniCharades.Data.Enumerations;
 using JikanDotNet;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,6 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
         public AnimeSeriesAssembler(IJikan jikan)
         {
             this.jikan = jikan;
-        }
-
-        protected override bool CheckIfRelationIsValidForSeries(JikanAnimeAdapter sourceEntry, JikanAnimeAdapter relatedEntry)
-        {
-            throw new NotImplementedException();
         }
 
         protected override JikanAnimeAdapter GetEntry(long entryId)

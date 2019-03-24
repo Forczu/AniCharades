@@ -2,13 +2,13 @@
 
 namespace AniCharades.Data.Models
 {
-    public class RelatedItem
+    public class RelatedSubItem
     {
         public long MalId { get; }
 
         public RelationType RelationType { get; }
 
-        public RelatedItem(long malId, RelationType relationType)
+        public RelatedSubItem(long malId, RelationType relationType)
         {
             MalId = malId;
             RelationType = relationType;

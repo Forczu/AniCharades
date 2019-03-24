@@ -19,11 +19,6 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             this.jikan = jikan;
         }
 
-        protected override bool CheckIfRelationIsValidForSeries(JikanMangaAdapter sourceEntry, JikanMangaAdapter relatedEntry)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override JikanMangaAdapter GetEntry(long entryId)
         {
             int retries = 0;

@@ -1,4 +1,5 @@
-﻿using AniCharades.Data.Models;
+﻿using AniCharades.Adapters.Interfaces.Extensions;
+using AniCharades.Data.Models;
 using JikanDotNet;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,6 @@ namespace AniCharades.Adapters.Interfaces
 
         ICollection<MALSubItem> Summaries { get; }
 
-        ICollection<RelatedItem> AllRelatedPositions { get; set; }
+        ICollection<RelatedSubItem> AllRelatedPositions { get; set; }
     }
 }
