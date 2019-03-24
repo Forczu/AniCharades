@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AniCharades.API.Models
+namespace AniCharades.Data.Models
 {
-    public class AnimeEntry
+    public class MangaEntry
     {
         [Key]
         public long MalId { get; set; }

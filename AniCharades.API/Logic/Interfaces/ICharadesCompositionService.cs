@@ -1,4 +1,4 @@
-﻿using AniCharades.API.Models;
+﻿using AniCharades.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

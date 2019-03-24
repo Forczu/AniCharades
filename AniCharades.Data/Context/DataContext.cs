@@ -1,11 +1,12 @@
-﻿using AniCharades.API.Models;
+﻿using AniCharades.Data.Converters;
+using AniCharades.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AniCharades.API.Data
+namespace AniCharades.Data.Context
 {
     public class DataContext : DbContext
     {

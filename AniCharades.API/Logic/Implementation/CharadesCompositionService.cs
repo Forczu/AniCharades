@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AniCharades.API.Data;
 using AniCharades.API.Logic.Interfaces;
-using AniCharades.API.Models;
+using AniCharades.Data.Models;
 
 namespace AniCharades.API.Logic.Implementation
 {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AniCharades.API.Data
+namespace AniCharades.Data.Converters
 {
     public static class DataConverters
     {

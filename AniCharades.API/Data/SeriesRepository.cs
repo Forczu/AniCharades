@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AniCharades.API.Models;
+using AniCharades.Data.Context;
+using AniCharades.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AniCharades.API.Data

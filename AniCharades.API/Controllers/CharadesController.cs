@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AniCharades.API.Logic.Interfaces;
-using AniCharades.API.Models;
 using AniCharades.API.RequestParameters;
 using Microsoft.AspNetCore.Mvc;
 

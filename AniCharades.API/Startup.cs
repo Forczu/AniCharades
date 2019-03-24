@@ -16,6 +16,7 @@ using JikanDotNet;
 using AniCharades.API.Algorithms.MyAnimeList.AnimeList;
 using AniCharades.API.Algorithms.MyAnimeList.MangaList;
 using Newtonsoft.Json;
+using AniCharades.Data.Context;
 
 namespace AniCharades.API
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AniCharades.API.Models
+namespace AniCharades.Data.Models
 {
     public class SeriesEntry
     {

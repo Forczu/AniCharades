@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AniCharades.API\AniCharades.API.csproj" />
+    <ProjectReference Include="..\AniCharades.Data\AniCharades.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

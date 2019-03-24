@@ -1,6 +1,6 @@
 ﻿using AniCharades.API.Data;
-using AniCharades.API.Models;
 using AniCharades.API.Utils;
+using AniCharades.Data.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
