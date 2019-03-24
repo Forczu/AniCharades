@@ -44,6 +44,7 @@ namespace AniCharades.API
                 x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString), 
                 b => b.MigrationsAssembly(typeof(DataContext).Assembly.FullName)));
             services.AddScoped<ISeriesRepository, SeriesRepository>();
+            services.AddScoped<IRelationCriteriaRepository, RelationCriteriaRepository>();
             services.AddScoped<ICharadesCompositionService, CharadesCompositionService>();
             services.AddScoped<IMyAnimeListService, MyAnimeListService>();
             services.AddScoped<IJikan>(j => new Jikan(true));
