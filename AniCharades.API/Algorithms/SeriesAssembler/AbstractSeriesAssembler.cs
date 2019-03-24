@@ -1,6 +1,7 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.API.Algorithms.SeriesAssembler.DataStructures;
 using AniCharades.Data.Enumerations;
+using AniCharades.Repositories.Interfaces;
 using JikanDotNet;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,13 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
         private IList<T> series = new List<T>();
         private IList<T> rejected = new List<T>();
         private Stack<T> entriesToCheckTheRelations = new Stack<T>();
+
+        private readonly IRelationCriteriaRepository relationCriteriaRepository;
+
+        public AbstractSeriesAssembler(IRelationCriteriaRepository relationCriteriaRepository)
+        {
+            this.relationCriteriaRepository = relationCriteriaRepository;
+        }
 
         public void Assembly(long entryId)
         {
@@ -112,7 +120,8 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
 
         private bool CheckIfRelationIsValidForSeries(RelationBetweenEntries<T> relation)
         {
-            var relationStrategy = RelationFactory.Create(relation.SourceEntry.Title, relation.Type);
+            var relationCriteria = relationCriteriaRepository.Get(relation.SourceEntry.Title, relation.Type).Result;
+            var relationStrategy = RelationFactory.Instance.Create(relationCriteria.Strategy);
             var areEqual = relationStrategy.AreEqual(relation.SourceEntry, relation.TargetEntry);
             return areEqual;
         }

@@ -1,4 +1,5 @@
 ﻿using AniCharades.Adapters.Jikan;
+using AniCharades.Repositories.Interfaces;
 using JikanDotNet;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
 
         private readonly IJikan jikan;
 
-        public MangaSeriesAssembler(IJikan jikan)
+        public MangaSeriesAssembler(IJikan jikan, IRelationCriteriaRepository criteriaRepo) : base(criteriaRepo)
         {
             this.jikan = jikan;
         }
