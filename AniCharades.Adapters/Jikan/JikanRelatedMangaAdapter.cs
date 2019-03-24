@@ -1,4 +1,5 @@
 ﻿using AniCharades.Adapters.Interfaces;
+using AniCharades.Adapters.Interfaces.Extensions;
 using AniCharades.Data.Models;
 using JikanDotNet;
 using System;
@@ -30,22 +31,12 @@ namespace AniCharades.Adapters.Jikan
 
         public ICollection<MALSubItem> Summaries => relatedManga.Summaries;
 
-        public ICollection<MALSubItem> AllRelatedPositions { get; private set; }
+        public ICollection<MALSubItem> AllRelatedPositions { get; set; }
 
         public JikanRelatedMangaAdapter(RelatedManga relatedManga)
         {
             this.relatedManga = relatedManga ?? new RelatedManga();
-            CreateAllRelatedPositionsCollection();
-        }
-
-        private void CreateAllRelatedPositionsCollection()
-        {
-            var allRelatedCollections = new ICollection<MALSubItem>[]
-            {
-                AlternativeVersions, Characters, Prequels, Others,
-                Sequels, SideStories, SpinOffs, Summaries
-            };
-            AllRelatedPositions = Common.Utils.CollectionUtils.MergeCollectionsWithoutNullValues(allRelatedCollections);
+            this.CreateAllRelatedPositionsCollection();
         }
     }
 }
