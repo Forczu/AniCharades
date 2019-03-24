@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AniCharades.Data.Models
 {
-    public class RelationStrategyCriteria
+    public class RelationCriteria
     {
         [Key]
         public long Id { get; set; }
