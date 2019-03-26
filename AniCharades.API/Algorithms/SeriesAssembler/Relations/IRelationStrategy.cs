@@ -4,6 +4,6 @@ namespace AniCharades.API.Algorithms.SeriesAssembler.Relations
 {
     public interface IRelationStrategy
     {
-        bool AreEqual(IEntryInstance firstEntry, IEntryInstance secondEntry);
+        bool AreRelated(IEntryInstance firstEntry, IEntryInstance secondEntry);
     }
 }

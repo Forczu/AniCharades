@@ -23,7 +23,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             this.relationCriteriaRepository = relationCriteriaRepository;
         }
 
-        public void Assembly(long entryId)
+        public ICollection<T> Assembly(long entryId)
         {
             ResetCollections();
             AddEntryToCheckTheRelations(GetEntry(entryId));
@@ -31,6 +31,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             {
                 ResolveTopEntry();
             }
+            return series;
         }
 
         protected void ResetCollections()
@@ -85,7 +86,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
 
         protected bool IsCollectionEmpty<K>(ICollection<K> collection)
         {
-            return collection != null && collection.Count == 0;
+            return collection == null || collection.Count == 0;
         }
 
         private void StackRelatedEntriesIfTheyAreNew(ICollection<RelationBetweenEntries<T>> relations)
@@ -106,6 +107,8 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
                 return false;
             if (rejected.Contains(entry))
                 return false;
+            if (entriesToCheckTheRelations.Contains(entry))
+                return false;
             return true;
         }
 
@@ -122,7 +125,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
         {
             var relationCriteria = relationCriteriaRepository.Get(relation.SourceEntry.Title, relation.Type).Result;
             var relationStrategy = RelationFactory.Instance.Create(relationCriteria.Strategy);
-            var areEqual = relationStrategy.AreEqual(relation.SourceEntry, relation.TargetEntry);
+            var areEqual = relationStrategy.AreRelated(relation.SourceEntry, relation.TargetEntry);
             return areEqual;
         }
 
