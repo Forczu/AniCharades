@@ -20,15 +20,27 @@ namespace AniCharades.Repositories.Implementation
             this.dataContext = dataContext;
         }
 
-        public async Task<RelationCriteria> Get(string title, RelationType relationType)
+        public async Task<RelationCriteria> Get(string title)
         {
-            var relationStrategy = await dataContext.RelationCriterias.FirstOrDefaultAsync(s => s.Relations.Contains(relationType));
-            if (relationStrategy != null)
-                return relationStrategy;
-            relationStrategy = await dataContext.RelationCriterias.FirstOrDefaultAsync(s => s.KeywordsMatch == KeywordMatch.Every && s.Keywords.All(k => title.Contains(k)));
+            var relationStrategy = await dataContext.RelationCriterias.FirstOrDefaultAsync(s => s.KeywordsMatch == KeywordMatch.Every && s.Keywords.All(k => title.Contains(k)));
             if (relationStrategy != null)
                 return relationStrategy;
             relationStrategy = await dataContext.RelationCriterias.FirstOrDefaultAsync(s => s.KeywordsMatch == KeywordMatch.Any && s.Keywords.Any(k => title.Contains(k)));
+            return relationStrategy;
+        }
+
+        public async Task<RelationCriteria> Get(RelationType relationType)
+        {
+            var relationStrategy = await dataContext.RelationCriterias.FirstOrDefaultAsync(s => s.Relations.Contains(relationType));
+            return relationStrategy;
+        }
+
+        public async Task<RelationCriteria> Get(string title, RelationType relationType)
+        {
+            var relationStrategy = await Get(relationType);
+            if (relationStrategy != null)
+                return relationStrategy;
+            relationStrategy = await Get(title);
             if (relationStrategy != null)
                 return relationStrategy;
             return await dataContext.RelationCriterias.FirstOrDefaultAsync(s => s.Relations.Contains(RelationType.None));

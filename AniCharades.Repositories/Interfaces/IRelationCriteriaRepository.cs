@@ -9,6 +9,10 @@ namespace AniCharades.Repositories.Interfaces
 {
     public interface IRelationCriteriaRepository
     {
+        Task<RelationCriteria> Get(string title);
+
+        Task<RelationCriteria> Get(RelationType relationType);
+
         Task<RelationCriteria> Get(string title, RelationType relationType);
     }
 }
