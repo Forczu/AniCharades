@@ -33,7 +33,7 @@ namespace AniCharades.API.Tests.Relations
             long nyarukoId = 11785;
             // when
             var nyarukoSeries = animeSeriesAssembler.Assembly(nyarukoId);
-            // 
+            // then
             Assert.Equal(8, nyarukoSeries.Count);
         }
     }

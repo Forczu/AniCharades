@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using AniCharades.Data.Context;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Repositories.Implementation;
+using AniCharades.API.Algorithms.SeriesAssembler;
 
 namespace AniCharades.API
 {
@@ -50,6 +51,8 @@ namespace AniCharades.API
             services.AddScoped<IJikan>(j => new Jikan(true));
             services.AddScoped<IAnimeListExtractor, AnimeListExtractor>();
             services.AddScoped<IMangaListExtractor, MangaListExtractor>();
+            services.AddScoped<AnimeSeriesAssembler, AnimeSeriesAssembler>();
+            services.AddScoped<MangaSeriesAssembler, MangaSeriesAssembler>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
         
