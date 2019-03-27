@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JikanDotNet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,5 +19,9 @@ namespace AniCharades.Adapters.Interfaces
         string ImageUrl { get; }
 
         IRelatedInstance Related { get; }
+
+        TimePeriod TimePeriod { get; }
+
+        string Type { get; }
     }
 }

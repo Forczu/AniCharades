@@ -24,6 +24,10 @@ namespace AniCharades.Adapters.Jikan
 
         public IRelatedInstance Related => relatedAnimeAdapter;
 
+        public TimePeriod TimePeriod => anime.Aired;
+
+        public string Type => anime.Type;
+
         public JikanAnimeAdapter(Anime anime)
         {
             this.anime = anime;

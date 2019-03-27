@@ -24,6 +24,10 @@ namespace AniCharades.Adapters.Jikan
 
         public IRelatedInstance Related => relatedMangaAdapter;
 
+        public TimePeriod TimePeriod => manga.Published;
+
+        public string Type => manga.Type;
+
         public JikanMangaAdapter(Manga manga)
         {
             this.manga = manga;
