@@ -14,5 +14,15 @@ namespace AniCharades.Common.Utils
             }
             return mergedCollection;
         }
+
+        public static bool IsCollectionNullOrEmpty<T>(ICollection<T> collection)
+        {
+            return collection == null || collection.Count == 0;
+        }
+
+        public static bool HasOnlySingleElement<T>(ICollection<T> collection)
+        {
+            return collection != null && collection.Count == 1;
+        }
     }
 }
