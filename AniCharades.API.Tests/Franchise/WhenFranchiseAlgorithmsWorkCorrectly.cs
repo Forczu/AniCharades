@@ -17,10 +17,7 @@ namespace AniCharades.API.Tests.Franchise
         private readonly Mock<IJikan> jikanMock;
         private readonly IConfigurationRoot config;
         private readonly FranchiseCreator franchiseCreator;
-
-        private readonly long[] nyarukoEntries;
-        private readonly long[] loveLiveeEntires;
-        private readonly long[] kamiNomiEntires;
+        private readonly Dictionary<string, long[]> franchises = new Dictionary<string, long[]>();
 
         public WhenFranchiseAlgorithmsWorkCorrectly()
         {
@@ -29,22 +26,23 @@ namespace AniCharades.API.Tests.Franchise
                     .AddJsonFile("appsettings.json")
                     .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
                     .Build();
+            var jikanMockBuilder = new JikanMockBuilder();
+            var franchisesOfInterest = config.GetSection("Jikan:Anime:Franchises").GetChildren().Select(c => c.Key).ToArray();
+            foreach (var franchiseName in franchisesOfInterest)
+            {
+                var entries = config.GetSection($"Jikan:Anime:Franchises:{franchiseName}").Get<long[]>();
+                franchises[franchiseName] = entries;
+                jikanMockBuilder.HasAnimes(entries);
+            }
+            jikanMock = jikanMockBuilder.Build();
             franchiseCreator = new FranchiseCreator();
-            nyarukoEntries = config.GetSection("Jikan:Anime:Franchises:Nyaruko").Get<long[]>();
-            loveLiveeEntires = config.GetSection("Jikan:Anime:Franchises:LoveLive").Get<long[]>();
-            kamiNomiEntires = config.GetSection("Jikan:Anime:Franchises:KamiNomi").Get<long[]>();
-            jikanMock = new JikanMockBuilder()
-                .HasAnimes(nyarukoEntries)
-                .HasAnimes(loveLiveeEntires)
-                .HasAnimes(kamiNomiEntires)
-                .Build();
         }
 
         [Fact]
         public void NyarukoSeriesShouldHaveFirstTvSeriesSelectedAsMain()
         {
             // given
-            var nyarukoAdapters = nyarukoEntries.Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
+            var nyarukoAdapters = franchises["Nyaruko"].Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
             // when
             var nyarukoSeries = franchiseCreator.Create(nyarukoAdapters);
             // then
@@ -56,7 +54,7 @@ namespace AniCharades.API.Tests.Franchise
         public void LoveLiveSeriesShouldHaveFirstTvSeriesSelectedAsMain()
         {
             // given
-            var loveLiveAdapters = loveLiveeEntires.Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
+            var loveLiveAdapters = franchises["LoveLive"].Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
             // when
             var loveLiveSeries = franchiseCreator.Create(loveLiveAdapters);
             // then
@@ -68,7 +66,7 @@ namespace AniCharades.API.Tests.Franchise
         public void KamiNomiSeriesShouldHaveFirstTvSeriesSelectedAsMain()
         {
             // given
-            var kamiNomiEntries = kamiNomiEntires.Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
+            var kamiNomiEntries = franchises["KamiNomi"].Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
             // when
             var kamiNomiSeries = franchiseCreator.Create(kamiNomiEntries);
             // then
