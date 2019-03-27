@@ -19,16 +19,10 @@ namespace AniCharades.API.Tests.MyAnimeList
 {
     public class WhenCorrectUserNameIsGiven
     {
-        private readonly IConfigurationRoot config;
         private readonly IMyAnimeListService myAnimeListService;
 
         public WhenCorrectUserNameIsGiven()
         {
-            var envVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            config = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json")
-                    .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
-                    .Build();
             var jikanMock = PrepareJikanMock();
             var animeListExtractorMock = new AnimeListExtractor(jikanMock.Object);
             var mangaListExtractorMock = new MangaListExtractor(jikanMock.Object);
