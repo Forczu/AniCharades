@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AniCharades.Adapters.Jikan;
+using AniCharades.API.Algorithms.SeriesAssembler;
 using AniCharades.API.Logic.Interfaces;
 using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
@@ -13,13 +15,15 @@ namespace AniCharades.API.Logic.Implementation
     {
         private readonly IMyAnimeListService myAnimeListService;
         private readonly ISeriesRepository seriesRepository;
+        private readonly AnimeSeriesAssembler animeAssembler;
 
         private static readonly object obj = new object();
 
-        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository)
+        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, AnimeSeriesAssembler animeAssembler)
         {
             this.myAnimeListService = myAnimeListService;
             this.seriesRepository = seriesRepository;
+            this.animeAssembler = animeAssembler;
         }
 
         public async Task<ICollection<CharadesEntry>> GetCompositedCharades(IEnumerable<string> usernames)
@@ -57,7 +61,20 @@ namespace AniCharades.API.Logic.Implementation
                 }
                 else
                 {
-                    // TODO: Scrapping
+                    var series = animeAssembler.Assembly(malId);
+                    existingCharades = currentCharades
+                        .FirstOrDefault(c => c.Series.AnimePositions
+                            .Any(a => series
+                                .Any(s => s.Id == a.MalId && a.MalId != malId)));
+                    if (existingCharades == null)
+                    {
+                        var franchise = CreateNewFranchise(series);
+                        currentCharades.Add(new CharadesEntry() { Series = franchise, KnownBy = { username } });
+                    }
+                    else
+                    {
+                        existingCharades.Series.AnimePositions.Add(new AnimeEntry() { MalId = malId, Series = existingCharades.Series });
+                    }
                 }
             }
         }
@@ -70,6 +87,11 @@ namespace AniCharades.API.Logic.Implementation
                 KnownBy = new List<string>() { username }
             };
             return myCharadesEntry;
+        }
+
+        private SeriesEntry CreateNewFranchise(ICollection<JikanAnimeAdapter> series)
+        {
+            throw new NotImplementedException();
         }
     }
 }
