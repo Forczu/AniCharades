@@ -1,4 +1,5 @@
-﻿using JikanDotNet;
+﻿using AniCharades.Common.Extensions;
+using JikanDotNet;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Newtonsoft.Json;
@@ -28,8 +29,14 @@ namespace AniCharades.API.Tests.LargeMocks
         public JikanMockBuilder HasAnime(long malId)
         {
             var animePath = config[$"Jikan:Anime:Path"];
-            var animeFilePath = string.Format("{0}.json", malId.ToString("D5"));
+            var animeFilePath = string.Format("{0}{1}.json", animePath, malId.ToString("D5"));
             SetAnime(malId, animeFilePath);
+            return this;
+        }
+
+        public JikanMockBuilder HasAnimes(IEnumerable<long> malIds)
+        {
+            malIds.ForEach(id => HasAnime(id));
             return this;
         }
 
