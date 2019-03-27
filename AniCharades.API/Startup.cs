@@ -19,6 +19,7 @@ using AniCharades.Data.Context;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Repositories.Implementation;
 using AniCharades.API.Algorithms.SeriesAssembler;
+using AniCharades.API.Algorithms.Franchise;
 
 namespace AniCharades.API
 {
@@ -53,6 +54,7 @@ namespace AniCharades.API
             services.AddScoped<IMangaListExtractor, MangaListExtractor>();
             services.AddScoped<AnimeSeriesAssembler, AnimeSeriesAssembler>();
             services.AddScoped<MangaSeriesAssembler, MangaSeriesAssembler>();
+            services.AddScoped<IFranchiseCreator, FranchiseCreator>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
         

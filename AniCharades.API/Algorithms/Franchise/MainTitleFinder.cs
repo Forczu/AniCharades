@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AniCharades.API.Algorithms.Franchise
 {
-    public static class MainTitleFinder
+    internal static class MainTitleFinder
     {
         private static readonly string[] RedundantEnglishArticles = { "The", "the", "From" };
         private static readonly string[] RedundantWords = { "Animation", "Movie", "TV", "(TV)", "OVA", "OAV" };

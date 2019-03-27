@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AniCharades.API.Algorithms.Franchise
 {
-    public static class MainEntryFinder
+    internal static class MainEntryFinder
     {
         private static readonly string[] SecondaryTitleKeywords = { "TV", "OVA", "OAV", "Prologue", "Season" };
         private static readonly string[] SecondaryTypeKeywords = { "Special", "Music" };
