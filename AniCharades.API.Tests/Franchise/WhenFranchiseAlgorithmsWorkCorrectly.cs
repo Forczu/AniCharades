@@ -20,6 +20,7 @@ namespace AniCharades.API.Tests.Franchise
 
         private readonly long[] nyarukoEntries;
         private readonly long[] loveLiveeEntires;
+        private readonly long[] kamiNomiEntires;
 
         public WhenFranchiseAlgorithmsWorkCorrectly()
         {
@@ -31,9 +32,11 @@ namespace AniCharades.API.Tests.Franchise
             franchiseCreator = new FranchiseCreator();
             nyarukoEntries = config.GetSection("Jikan:Anime:Franchises:Nyaruko").Get<long[]>();
             loveLiveeEntires = config.GetSection("Jikan:Anime:Franchises:LoveLive").Get<long[]>();
+            kamiNomiEntires = config.GetSection("Jikan:Anime:Franchises:KamiNomi").Get<long[]>();
             jikanMock = new JikanMockBuilder()
                 .HasAnimes(nyarukoEntries)
                 .HasAnimes(loveLiveeEntires)
+                .HasAnimes(kamiNomiEntires)
                 .Build();
         }
 
@@ -59,6 +62,18 @@ namespace AniCharades.API.Tests.Franchise
             // then
             Assert.Equal("Love Live! School Idol Project", loveLiveSeries.Title);
             Assert.Equal("https://cdn.myanimelist.net/images/anime/11/56849.jpg", loveLiveSeries.ImageUrl);
+        }
+
+        [Fact]
+        public void KamiNomiSeriesShouldHaveFirstTvSeriesSelectedAsMain()
+        {
+            // given
+            var kamiNomiEntries = kamiNomiEntires.Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
+            // when
+            var kamiNomiSeries = franchiseCreator.Create(kamiNomiEntries);
+            // then
+            Assert.Equal("Kami nomi zo Shiru Sekai", kamiNomiSeries.Title);
+            Assert.Equal("https://cdn.myanimelist.net/images/anime/2/43361.jpg", kamiNomiSeries.ImageUrl);
         }
     }
 }
