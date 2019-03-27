@@ -38,40 +38,20 @@ namespace AniCharades.API.Tests.Franchise
             franchiseCreator = new FranchiseCreator();
         }
 
-        [Fact]
-        public void NyarukoSeriesShouldHaveFirstTvSeriesSelectedAsMain()
+        [Theory]
+        [InlineData("Nyaruko", "Haiyore! Nyaruko-san", "https://cdn.myanimelist.net/images/anime/6/49081.jpg")]
+        [InlineData("LoveLive", "Love Live! School Idol Project", "https://cdn.myanimelist.net/images/anime/11/56849.jpg")]
+        [InlineData("KamiNomi", "Kami nomi zo Shiru Sekai", "https://cdn.myanimelist.net/images/anime/2/43361.jpg")]
+        [InlineData("CodeGeass", "Code Geass: Hangyaku no Lelouch", "https://cdn.myanimelist.net/images/anime/5/50331.jpg")]
+        public void SeriesShouldHaveFirstTvSeriesSelectedAsMain(string franchiseName, string expectedTitle, string expectedImageUrl)
         {
             // given
-            var nyarukoAdapters = franchises["Nyaruko"].Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
+            var animeAdapters = franchises[franchiseName].Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
             // when
-            var nyarukoSeries = franchiseCreator.Create(nyarukoAdapters);
+            var series = franchiseCreator.Create(animeAdapters);
             // then
-            Assert.Equal("Haiyore! Nyaruko-san", nyarukoSeries.Title);
-            Assert.Equal("https://cdn.myanimelist.net/images/anime/6/49081.jpg", nyarukoSeries.ImageUrl);
-        }
-
-        [Fact]
-        public void LoveLiveSeriesShouldHaveFirstTvSeriesSelectedAsMain()
-        {
-            // given
-            var loveLiveAdapters = franchises["LoveLive"].Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
-            // when
-            var loveLiveSeries = franchiseCreator.Create(loveLiveAdapters);
-            // then
-            Assert.Equal("Love Live! School Idol Project", loveLiveSeries.Title);
-            Assert.Equal("https://cdn.myanimelist.net/images/anime/11/56849.jpg", loveLiveSeries.ImageUrl);
-        }
-
-        [Fact]
-        public void KamiNomiSeriesShouldHaveFirstTvSeriesSelectedAsMain()
-        {
-            // given
-            var kamiNomiEntries = franchises["KamiNomi"].Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
-            // when
-            var kamiNomiSeries = franchiseCreator.Create(kamiNomiEntries);
-            // then
-            Assert.Equal("Kami nomi zo Shiru Sekai", kamiNomiSeries.Title);
-            Assert.Equal("https://cdn.myanimelist.net/images/anime/2/43361.jpg", kamiNomiSeries.ImageUrl);
+            Assert.Equal(expectedTitle, series.Title);
+            Assert.Equal(expectedImageUrl, series.ImageUrl);
         }
     }
 }
