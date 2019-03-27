@@ -3,7 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AniCharades.Adapters.Interfaces;
 using AniCharades.Adapters.Jikan;
+using AniCharades.API.Algorithms.Franchise;
 using AniCharades.API.Algorithms.SeriesAssembler;
 using AniCharades.API.Logic.Interfaces;
 using AniCharades.Data.Models;
@@ -16,14 +18,16 @@ namespace AniCharades.API.Logic.Implementation
         private readonly IMyAnimeListService myAnimeListService;
         private readonly ISeriesRepository seriesRepository;
         private readonly AnimeSeriesAssembler animeAssembler;
-
+        private readonly IFranchiseCreator franchiseCreator;
         private static readonly object obj = new object();
 
-        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, AnimeSeriesAssembler animeAssembler)
+        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, AnimeSeriesAssembler animeAssembler,
+            IFranchiseCreator franchiseCreator)
         {
             this.myAnimeListService = myAnimeListService;
             this.seriesRepository = seriesRepository;
             this.animeAssembler = animeAssembler;
+            this.franchiseCreator = franchiseCreator;
         }
 
         public async Task<ICollection<CharadesEntry>> GetCompositedCharades(IEnumerable<string> usernames)
@@ -68,7 +72,7 @@ namespace AniCharades.API.Logic.Implementation
                                 .Any(s => s.Id == a.MalId && a.MalId != malId)));
                     if (existingCharades == null)
                     {
-                        var franchise = CreateNewFranchise(series);
+                        var franchise = franchiseCreator.Create(series);
                         currentCharades.Add(new CharadesEntry() { Series = franchise, KnownBy = { username } });
                     }
                     else
@@ -87,11 +91,6 @@ namespace AniCharades.API.Logic.Implementation
                 KnownBy = new List<string>() { username }
             };
             return myCharadesEntry;
-        }
-
-        private SeriesEntry CreateNewFranchise(ICollection<JikanAnimeAdapter> series)
-        {
-            throw new NotImplementedException();
         }
     }
 }
