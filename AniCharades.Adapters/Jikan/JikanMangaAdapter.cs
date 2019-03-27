@@ -28,6 +28,8 @@ namespace AniCharades.Adapters.Jikan
 
         public string Type => manga.Type;
 
+        public string Duration => null;
+
         public JikanMangaAdapter(Manga manga)
         {
             this.manga = manga;

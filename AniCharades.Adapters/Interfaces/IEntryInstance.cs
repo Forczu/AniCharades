@@ -23,5 +23,7 @@ namespace AniCharades.Adapters.Interfaces
         TimePeriod TimePeriod { get; }
 
         string Type { get; }
+
+        string Duration { get; }
     }
 }

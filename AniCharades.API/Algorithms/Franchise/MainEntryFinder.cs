@@ -3,6 +3,7 @@ using AniCharades.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AniCharades.API.Algorithms.Franchise
@@ -23,15 +24,23 @@ namespace AniCharades.API.Algorithms.Franchise
 
         private static IEntryInstance FindMainEntry(ICollection<IEntryInstance> series)
         {
-            var sortedSeries = series.Where(s => s.TimePeriod.From != null).OrderBy(a => a.Id).ToList();
-            IEntryInstance mainEntry = series.First(), otherEntry = null;
-            if (IsSecondaryTitle(mainEntry))
+            var sortedEntries = series.Where(s => s.TimePeriod.From != null).OrderBy(a => a.Id).ToList();
+            IEntryInstance mainEntry = sortedEntries.First(), otherEntry = null;
+            var rejectedEntries = new List<IEntryInstance>();
+            for (int i = 0; i < series.Count; ++i)
             {
-                otherEntry = series.Where(a => !IsSecondaryTitle(a) && a != mainEntry).FirstOrDefault();
-                if (otherEntry != null)
+                if (IsSecondaryTitle(mainEntry))
                 {
-                    mainEntry = otherEntry;
+                    otherEntry = series.Where(a => !IsSecondaryTitle(a) && !rejectedEntries.Contains(a)).FirstOrDefault();
+                    mainEntry = ReplaceMainEntryIfOtherNotNull(mainEntry, otherEntry, rejectedEntries);
                 }
+                if (IsTooShortForMainSeries(mainEntry))
+                {
+                    otherEntry = series.Where(a => !IsTooShortForMainSeries(a) && !rejectedEntries.Contains(a)).FirstOrDefault();
+                    mainEntry = ReplaceMainEntryIfOtherNotNull(mainEntry, otherEntry, rejectedEntries);
+                    continue;
+                }
+                break;
             }
             return mainEntry;
         }
@@ -46,6 +55,20 @@ namespace AniCharades.API.Algorithms.Franchise
         private static bool IsMovieExplicitly(IEntryInstance entry)
         {
             return entry.Title.Contains("Movie") && entry.Type.Contains("Movie");
+        }
+
+        private static bool IsTooShortForMainSeries(IEntryInstance entry)
+        {
+            return Regex.IsMatch(entry.Duration, "^[0-4] min");
+        }
+
+        private static IEntryInstance ReplaceMainEntryIfOtherNotNull(IEntryInstance mainEntry, IEntryInstance otherEntry,
+            List<IEntryInstance> rejectedEntries)
+        {
+            if (otherEntry == null)
+                return mainEntry;
+            rejectedEntries.Add(mainEntry);
+            return otherEntry;
         }
     }
 }
