@@ -1,4 +1,5 @@
 ﻿using AniCharades.Adapters.Interfaces;
+using AniCharades.Adapters.Jikan;
 using AniCharades.Common.Utils;
 using AniCharades.Data.Models;
 using System;
@@ -14,6 +15,25 @@ namespace AniCharades.API.Algorithms.Franchise
         {
             if (CollectionUtils.IsCollectionNullOrEmpty(animes) && CollectionUtils.IsCollectionNullOrEmpty(mangas))
                 return null;
+            return CreateFranchise(animes, mangas);
+        }
+
+        public SeriesEntry Create(ICollection<JikanAnimeAdapter> animes)
+        {
+            if (CollectionUtils.IsCollectionNullOrEmpty(animes))
+                return null;
+            return CreateFranchise(animes.Cast<IEntryInstance>().ToArray(), null);
+        }
+
+        public SeriesEntry Create(ICollection<JikanMangaAdapter> mangas)
+        {
+            if (CollectionUtils.IsCollectionNullOrEmpty(mangas))
+                return null;
+            return CreateFranchise(null, mangas.Cast<IEntryInstance>().ToArray());
+        }
+
+        private SeriesEntry CreateFranchise(ICollection<IEntryInstance> animes, ICollection<IEntryInstance> mangas)
+        {
             var mainEntries = animes;
             if (CollectionUtils.IsCollectionNullOrEmpty(animes))
                 mainEntries = mangas;
