@@ -1,4 +1,5 @@
 ﻿using AniCharades.API.Algorithms.SeriesAssembler;
+using AniCharades.API.Logic.Implementation;
 using AniCharades.API.Tests.LargeMocks;
 using AniCharades.Data.Context;
 using AniCharades.Data.Enumerations;
@@ -23,7 +24,7 @@ namespace AniCharades.API.Tests.Relations
             var repoMock = new Mock<IRelationCriteriaRepository>();
             repoMock.SetReturnsDefault(Task.FromResult(new RelationCriteria { Strategy = "nyaruko" }));
             var jikanMock = new JikanMockBuilder().HasAllAnimes().Build();
-            animeSeriesAssembler = new AnimeSeriesAssembler(jikanMock.Object, repoMock.Object);
+            animeSeriesAssembler = new AnimeSeriesAssembler(jikanMock.Object, new RelationService(jikanMock.Object, repoMock.Object));
         }
 
         [Fact]

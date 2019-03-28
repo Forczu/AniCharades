@@ -1,4 +1,5 @@
 ﻿using AniCharades.Adapters.Jikan;
+using AniCharades.API.Logic.Interfaces;
 using AniCharades.Common.Extensions;
 using AniCharades.Data.Enumerations;
 using AniCharades.Repositories.Interfaces;
@@ -17,7 +18,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
 
         private readonly IJikan jikan;
 
-        public AnimeSeriesAssembler(IJikan jikan, IRelationCriteriaRepository criteriaRepo) : base(criteriaRepo)
+        public AnimeSeriesAssembler(IJikan jikan, IRelationService relationService) : base(relationService)
         {
             this.jikan = jikan;
         }

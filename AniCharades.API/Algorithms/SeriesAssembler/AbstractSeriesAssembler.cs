@@ -1,5 +1,6 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.API.Algorithms.SeriesAssembler.DataStructures;
+using AniCharades.API.Logic.Interfaces;
 using AniCharades.Data.Enumerations;
 using AniCharades.Repositories.Interfaces;
 using JikanDotNet;
@@ -16,11 +17,11 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
         private IList<T> rejected = new List<T>();
         private Stack<T> entriesToCheckTheRelations = new Stack<T>();
 
-        private readonly IRelationCriteriaRepository relationCriteriaRepository;
+        private readonly IRelationService relationService;
 
-        public AbstractSeriesAssembler(IRelationCriteriaRepository relationCriteriaRepository)
+        public AbstractSeriesAssembler(IRelationService relationService)
         {
-            this.relationCriteriaRepository = relationCriteriaRepository;
+            this.relationService = relationService;
         }
 
         public ICollection<T> Assembly(long entryId)
@@ -93,7 +94,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
         {
             foreach (var relation in relations.Where(e => CanEntryBeAddedToSeries(e.TargetEntry)))
             {
-                var isRelationValid = CheckIfRelationIsValidForSeries(relation);
+                var isRelationValid = relationService.IsRelationValid(relation);
                 if (isRelationValid)
                     AddEntryToCheckTheRelations(relation.TargetEntry);
                 else
@@ -119,14 +120,6 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             if (rejected.Any(e => e.Id == entryId))
                 return false;
             return true;
-        }
-
-        private bool CheckIfRelationIsValidForSeries(RelationBetweenEntries<T> relation)
-        {
-            var relationCriteria = relationCriteriaRepository.Get(relation.SourceEntry.Title, relation.Type).Result;
-            var relationStrategy = RelationFactory.Instance.Create(relationCriteria.Strategy);
-            var areEqual = relationStrategy.AreRelated(relation.SourceEntry, relation.TargetEntry);
-            return areEqual;
         }
 
         private void RejectEntry(T entry)

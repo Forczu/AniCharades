@@ -55,6 +55,7 @@ namespace AniCharades.API
             services.AddScoped<AnimeSeriesAssembler, AnimeSeriesAssembler>();
             services.AddScoped<MangaSeriesAssembler, MangaSeriesAssembler>();
             services.AddScoped<IFranchiseCreator, FranchiseCreator>();
+            services.AddScoped<IRelationService, RelationService>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
         
