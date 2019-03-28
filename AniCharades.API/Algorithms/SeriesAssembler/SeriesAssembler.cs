@@ -1,5 +1,6 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.API.Algorithms.SeriesAssembler.DataStructures;
+using AniCharades.API.Algorithms.SeriesAssembler.Providers;
 using AniCharades.API.Logic.Interfaces;
 using AniCharades.Data.Enumerations;
 using AniCharades.Repositories.Interfaces;
@@ -11,62 +12,61 @@ using System.Threading.Tasks;
 
 namespace AniCharades.API.Algorithms.SeriesAssembler
 {
-    public abstract class AbstractSeriesAssembler
+    public class SeriesAssembler
     {
         private IList<IEntryInstance> series = new List<IEntryInstance>();
         private IList<IEntryInstance> rejected = new List<IEntryInstance>();
         private Stack<IEntryInstance> entriesToCheckTheRelations = new Stack<IEntryInstance>();
-
+        
         private readonly IRelationService relationService;
 
-        public AbstractSeriesAssembler(IRelationService relationService)
+        public SeriesAssembler(IRelationService relationService)
         {
             this.relationService = relationService;
         }
 
-        public ICollection<IEntryInstance> Assembly(long entryId)
+        public ICollection<IEntryInstance> Assembly(long entryId, IEntryProvider entryProvider)
         {
             ResetCollections();
-            AddEntryToCheckTheRelations(GetEntry(entryId));
+            var entry = entryProvider.Get(entryId);
+            AddEntryToCheckTheRelations(entry);
             while (!IsStackEmpty())
             {
-                ResolveTopEntry();
+                ResolveTopEntry(entryProvider);
             }
             return series;
         }
 
-        protected void ResetCollections()
+        private void ResetCollections()
         {
             series.Clear();
             rejected.Clear();
             entriesToCheckTheRelations.Clear();
         }
 
-        protected void AddEntryToCheckTheRelations(IEntryInstance entry)
+        private void AddEntryToCheckTheRelations(IEntryInstance entry)
         {
             entriesToCheckTheRelations.Push(entry);
         }
-
-        protected abstract IEntryInstance GetEntry(long entryId);
 
         private bool IsStackEmpty()
         {
             return entriesToCheckTheRelations.Count == 0;
         }
 
-        private void ResolveTopEntry()
+        private void ResolveTopEntry(IEntryProvider entryProvider)
         {
             var currentEntry = entriesToCheckTheRelations.Pop();
             if (currentEntry == null)
                 return;
             series.Add(currentEntry);
-            var relations = GetRelations(currentEntry);
+            var relations = GetRelations(currentEntry, entryProvider);
             if (IsCollectionEmpty(relations))
                 return;
             StackRelatedEntriesIfTheyAreNew(relations);
         }
 
-        protected ICollection<RelationBetweenEntries> GetRelations(IEntryInstance entry)
+        private ICollection<RelationBetweenEntries> GetRelations(IEntryInstance entry, IEntryProvider entryProvider)
         {
             var allRelatedToEntry = entry.Related.AllRelatedPositions;
             if (IsCollectionEmpty(allRelatedToEntry))
@@ -75,7 +75,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             var filteredEntries = allRelatedToEntry.Where(r => CanEntryBeAddedToSeries(r.MalId));
             foreach (var subItem in filteredEntries)
             {
-                var relatedEntry = GetEntry(subItem.MalId);
+                var relatedEntry = entryProvider.Get(subItem.MalId);
                 if (relatedEntry != null)
                 {
                     var relation = new RelationBetweenEntries(entry, relatedEntry, subItem.RelationType);
@@ -85,7 +85,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             return relations;
         }
 
-        protected bool IsCollectionEmpty<K>(ICollection<K> collection)
+        private bool IsCollectionEmpty<K>(ICollection<K> collection)
         {
             return collection == null || collection.Count == 0;
         }
@@ -102,7 +102,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             }
         }
 
-        protected bool CanEntryBeAddedToSeries(IEntryInstance entry)
+        private bool CanEntryBeAddedToSeries(IEntryInstance entry)
         {
             if (series.Contains(entry))
                 return false;
@@ -113,7 +113,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             return true;
         }
 
-        protected bool CanEntryBeAddedToSeries(long entryId)
+        private bool CanEntryBeAddedToSeries(long entryId)
         {
             if (series.Any(e => e.Id == entryId))
                 return false;

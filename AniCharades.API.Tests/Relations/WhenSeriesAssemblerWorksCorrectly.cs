@@ -1,4 +1,5 @@
 ﻿using AniCharades.API.Algorithms.SeriesAssembler;
+using AniCharades.API.Algorithms.SeriesAssembler.Providers;
 using AniCharades.API.Logic.Implementation;
 using AniCharades.API.Tests.LargeMocks;
 using AniCharades.Data.Context;
@@ -17,14 +18,16 @@ namespace AniCharades.API.Tests.Relations
 {
     public class WhenSeriesAssemblerWorksCorrectly
     {
-        private readonly AnimeSeriesAssembler animeSeriesAssembler;
+        private readonly SeriesAssembler seriesAssembler;
+        private readonly IEntryProvider entryProvider;
 
         public WhenSeriesAssemblerWorksCorrectly()
         {
             var repoMock = new Mock<IRelationCriteriaRepository>();
             repoMock.SetReturnsDefault(Task.FromResult(new RelationCriteria { Strategy = "nyaruko" }));
             var jikanMock = new JikanMockBuilder().HasAllAnimes().Build();
-            animeSeriesAssembler = new AnimeSeriesAssembler(jikanMock.Object, new RelationService(jikanMock.Object, repoMock.Object));
+            seriesAssembler = new SeriesAssembler(new RelationService(jikanMock.Object, repoMock.Object));
+            entryProvider = new JikanAnimeProvider(jikanMock.Object);
         }
 
         [Fact]
@@ -33,7 +36,7 @@ namespace AniCharades.API.Tests.Relations
             // given
             long nyarukoId = 11785;
             // when
-            var nyarukoSeries = animeSeriesAssembler.Assembly(nyarukoId);
+            var nyarukoSeries = seriesAssembler.Assembly(nyarukoId, entryProvider);
             // then
             Assert.Equal(8, nyarukoSeries.Count);
         }

@@ -20,6 +20,7 @@ using AniCharades.Repositories.Interfaces;
 using AniCharades.Repositories.Implementation;
 using AniCharades.API.Algorithms.SeriesAssembler;
 using AniCharades.API.Algorithms.Franchise;
+using AniCharades.API.Algorithms.SeriesAssembler.Providers;
 
 namespace AniCharades.API
 {
@@ -52,8 +53,9 @@ namespace AniCharades.API
             services.AddScoped<IJikan>(j => new Jikan(true));
             services.AddScoped<IAnimeListExtractor, AnimeListExtractor>();
             services.AddScoped<IMangaListExtractor, MangaListExtractor>();
-            services.AddScoped<AnimeSeriesAssembler, AnimeSeriesAssembler>();
-            services.AddScoped<MangaSeriesAssembler, MangaSeriesAssembler>();
+            services.AddScoped<SeriesAssembler, SeriesAssembler>();
+            services.AddScoped<JikanAnimeProvider, JikanAnimeProvider>();
+            services.AddScoped<JikanMangaProvider, JikanMangaProvider>();
             services.AddScoped<IFranchiseCreator, FranchiseCreator>();
             services.AddScoped<IRelationService, RelationService>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();

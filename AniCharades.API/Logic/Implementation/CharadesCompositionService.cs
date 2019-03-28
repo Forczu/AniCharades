@@ -7,27 +7,32 @@ using AniCharades.Adapters.Interfaces;
 using AniCharades.Adapters.Jikan;
 using AniCharades.API.Algorithms.Franchise;
 using AniCharades.API.Algorithms.SeriesAssembler;
+using AniCharades.API.Algorithms.SeriesAssembler.Providers;
 using AniCharades.API.Logic.Interfaces;
 using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AniCharades.API.Logic.Implementation
 {
     public class CharadesCompositionService : ICharadesCompositionService
     {
-        private readonly IMyAnimeListService myAnimeListService;
-        private readonly ISeriesRepository seriesRepository;
-        private readonly AnimeSeriesAssembler animeAssembler;
-        private readonly IFranchiseCreator franchiseCreator;
         private static readonly object obj = new object();
 
-        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, AnimeSeriesAssembler animeAssembler,
-            IFranchiseCreator franchiseCreator)
+        private readonly IMyAnimeListService myAnimeListService;
+        private readonly ISeriesRepository seriesRepository;
+        private readonly SeriesAssembler seriesAssembler;
+        private readonly IFranchiseCreator franchiseCreator;
+        private readonly IServiceProvider serviceProvider;
+
+        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, SeriesAssembler seriesAssembler,
+            IFranchiseCreator franchiseCreator, IServiceProvider serviceProvider)
         {
             this.myAnimeListService = myAnimeListService;
             this.seriesRepository = seriesRepository;
-            this.animeAssembler = animeAssembler;
+            this.seriesAssembler = seriesAssembler;
             this.franchiseCreator = franchiseCreator;
+            this.serviceProvider = serviceProvider;
         }
 
         public async Task<ICollection<CharadesEntry>> GetCompositedCharades(IEnumerable<string> usernames)
@@ -65,7 +70,7 @@ namespace AniCharades.API.Logic.Implementation
                 }
                 else
                 {
-                    var series = animeAssembler.Assembly(malId);
+                    var series = seriesAssembler.Assembly(malId, serviceProvider.GetRequiredService<JikanAnimeProvider>());
                     var indirectExistingRelation = GetIndirectExistingRelation(currentCharades, malId, series);
                     if (indirectExistingRelation != null)
                     {
