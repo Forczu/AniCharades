@@ -85,7 +85,7 @@ namespace AniCharades.Services.Franchise
 
         private bool CanEntryBeAddedToSeries(long entryId)
         {
-            return !series.Any(s => s.TargetEntry.Id == entryId);
+            return series.All(s => s.SourceEntry.Id != entryId && s.TargetEntry.Id != entryId);
         }
     }
 }
