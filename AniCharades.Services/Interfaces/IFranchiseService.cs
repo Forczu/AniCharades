@@ -15,5 +15,7 @@ namespace AniCharades.Services.Interfaces
         SeriesEntry Create(ICollection<JikanAnimeAdapter> animes);
 
         SeriesEntry Create(ICollection<JikanMangaAdapter> mangas);
+
+        SeriesEntry CreateFromAnime(long id);
     }
 }

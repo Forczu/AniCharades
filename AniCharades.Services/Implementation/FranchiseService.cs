@@ -5,7 +5,9 @@ using AniCharades.Common.Utils;
 using AniCharades.Data.Models;
 using AniCharades.Services.Franchise;
 using AniCharades.Services.Interfaces;
+using AniCharades.Services.Providers;
 using JikanDotNet;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,16 @@ namespace AniCharades.Services.Implementation
 {
     public class FranchiseService : IFranchiseService
     {
+        private readonly FranchiseAssembler assembler = new FranchiseAssembler();
+        private readonly IServiceProvider serviceProvider;
+        private readonly IRelationService relationService;
+
+        public FranchiseService(IServiceProvider serviceProvider, IRelationService relationService)
+        {
+            this.serviceProvider = serviceProvider;
+            this.relationService = relationService;
+        }
+
         public SeriesEntry Create(ICollection<IEntryInstance> animes, ICollection<IEntryInstance> mangas)
         {
             if (CollectionUtils.IsCollectionNullOrEmpty(animes) && CollectionUtils.IsCollectionNullOrEmpty(mangas))
@@ -36,6 +48,15 @@ namespace AniCharades.Services.Implementation
             return CreateFranchise(null, mangas.Cast<IEntryInstance>().ToArray());
         }
 
+        public SeriesEntry CreateFromAnime(long id)
+        {
+            var provider = serviceProvider.GetRequiredService<JikanAnimeProvider>();
+            var relations = assembler.Assembly(id, provider);
+            var validEntries = GetValidEntries(relations);
+            var franchise = CreateFranchise(validEntries, null);
+            return franchise;
+        }
+
         private SeriesEntry CreateFranchise(ICollection<IEntryInstance> animes, ICollection<IEntryInstance> mangas)
         {
             var mainEntries = animes;
@@ -50,6 +71,16 @@ namespace AniCharades.Services.Implementation
             series.Title = mainTitle;
             series.Translations = new[] { mainEntry.Translation };
             return series;
+        }
+
+        private ICollection<IEntryInstance> GetValidEntries(ICollection<RelationBetweenEntries> relations)
+        {
+            var validEntries = relations
+                .Where(r => relationService.IsRelationValid(r))
+                .Select(r => r.TargetEntry)
+                .ToList();
+            validEntries.Add(relations.First().SourceEntry);
+            return validEntries;
         }
     }
 }

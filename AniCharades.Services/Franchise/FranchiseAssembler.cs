@@ -1,5 +1,6 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.Adapters.Jikan;
+using AniCharades.Common.Extensions;
 using AniCharades.Services.Interfaces;
 using AniCharades.Services.Providers;
 using System;
@@ -10,18 +11,10 @@ namespace AniCharades.Services.Franchise
 {
     public class FranchiseAssembler
     {
-        private IList<IEntryInstance> series = new List<IEntryInstance>();
-        private IList<IEntryInstance> rejected = new List<IEntryInstance>();
+        private List<RelationBetweenEntries> series = new List<RelationBetweenEntries>();
         private Stack<IEntryInstance> entriesToCheckTheRelations = new Stack<IEntryInstance>();
-        
-        private readonly IRelationService relationService;
 
-        public FranchiseAssembler(IRelationService relationService)
-        {
-            this.relationService = relationService;
-        }
-
-        public ICollection<IEntryInstance> Assembly(long entryId, IEntryProvider entryProvider)
+        public ICollection<RelationBetweenEntries> Assembly(long entryId, IEntryProvider entryProvider)
         {
             ResetCollections();
             var entry = entryProvider.Get(entryId);
@@ -36,7 +29,6 @@ namespace AniCharades.Services.Franchise
         private void ResetCollections()
         {
             series.Clear();
-            rejected.Clear();
             entriesToCheckTheRelations.Clear();
         }
 
@@ -55,11 +47,11 @@ namespace AniCharades.Services.Franchise
             var currentEntry = entriesToCheckTheRelations.Pop();
             if (currentEntry == null)
                 return;
-            series.Add(currentEntry);
             var relations = GetRelations(currentEntry, entryProvider);
             if (IsCollectionEmpty(relations))
                 return;
-            StackRelatedEntriesIfTheyAreNew(relations);
+            series.AddRange(relations);
+            StackNextRelatedEntries(relations);
         }
 
         private ICollection<RelationBetweenEntries> GetRelations(IEntryInstance entry, IEntryProvider entryProvider)
@@ -86,42 +78,14 @@ namespace AniCharades.Services.Franchise
             return collection == null || collection.Count == 0;
         }
 
-        private void StackRelatedEntriesIfTheyAreNew(ICollection<RelationBetweenEntries> relations)
+        private void StackNextRelatedEntries(ICollection<RelationBetweenEntries> relations)
         {
-            foreach (var relation in relations.Where(e => CanEntryBeAddedToSeries(e.TargetEntry)))
-            {
-                var isRelationValid = relationService.IsRelationValid(relation);
-                if (isRelationValid)
-                    AddEntryToCheckTheRelations(relation.TargetEntry);
-                else
-                    RejectEntry(relation.TargetEntry);
-            }
-        }
-
-        private bool CanEntryBeAddedToSeries(IEntryInstance entry)
-        {
-            if (series.Contains(entry))
-                return false;
-            if (rejected.Contains(entry))
-                return false;
-            if (entriesToCheckTheRelations.Contains(entry))
-                return false;
-            return true;
+            relations.ForEach(r => AddEntryToCheckTheRelations(r.TargetEntry));
         }
 
         private bool CanEntryBeAddedToSeries(long entryId)
         {
-            if (series.Any(e => e.Id == entryId))
-                return false;
-            if (rejected.Any(e => e.Id == entryId))
-                return false;
-            return true;
-        }
-
-        private void RejectEntry(IEntryInstance entry)
-        {
-            if (!rejected.Contains(entry))
-                rejected.Add(entry);
+            return !series.Any(s => s.TargetEntry.Id == entryId);
         }
     }
 }

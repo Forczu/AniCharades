@@ -19,18 +19,14 @@ namespace AniCharades.Services.Implementation
 
         private readonly IMyAnimeListService myAnimeListService;
         private readonly ISeriesRepository seriesRepository;
-        private readonly FranchiseAssembler seriesAssembler;
         private readonly IFranchiseService franchiseService;
-        private readonly IServiceProvider serviceProvider;
 
         public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, FranchiseAssembler seriesAssembler,
             IFranchiseService franchiseService, IServiceProvider serviceProvider)
         {
             this.myAnimeListService = myAnimeListService;
             this.seriesRepository = seriesRepository;
-            this.seriesAssembler = seriesAssembler;
             this.franchiseService = franchiseService;
-            this.serviceProvider = serviceProvider;
         }
 
         public async Task<ICollection<CharadesEntry>> GetCompositedCharades(IEnumerable<string> usernames)
@@ -68,16 +64,14 @@ namespace AniCharades.Services.Implementation
                 }
                 else
                 {
-                    var series = seriesAssembler.Assembly(malId, serviceProvider.GetRequiredService<JikanAnimeProvider>());
-                    var indirectExistingRelation = GetIndirectExistingRelation(currentCharades, malId, series);
+                    var franchise = franchiseService.CreateFromAnime(malId);
+                    var indirectExistingRelation = GetIndirectExistingRelation(currentCharades, malId, franchise);
                     if (indirectExistingRelation != null)
                     {
                         AddAnimeToCharadesEntry(indirectExistingRelation, malId);
-                        return;
                     }
                     else
                     {
-                        var franchise = franchiseService.Create(series, null);
                         currentCharades.Add(new CharadesEntry() { Series = franchise, KnownBy = { username } });
                     }
                 }
@@ -99,12 +93,12 @@ namespace AniCharades.Services.Implementation
             charadesEntry.Series.AnimePositions.Add(new AnimeEntry() { MalId = malId, Series = charadesEntry.Series });
         }
 
-        private CharadesEntry GetIndirectExistingRelation(ConcurrentBag<CharadesEntry> charades, long malId, ICollection<IEntryInstance> series)
+        private CharadesEntry GetIndirectExistingRelation(ConcurrentBag<CharadesEntry> charades, long malId, SeriesEntry franchise)
         {
             var indirectExistingRelation = charades
                 .FirstOrDefault(c => c.Series.AnimePositions
-                    .Any(a => series
-                        .Any(s => s.Id == a.MalId && a.MalId != malId)));
+                    .Any(a => franchise.AnimePositions
+                        .Any(f => f.MalId == a.MalId && a.MalId != malId)));
             return indirectExistingRelation;
         }
     }

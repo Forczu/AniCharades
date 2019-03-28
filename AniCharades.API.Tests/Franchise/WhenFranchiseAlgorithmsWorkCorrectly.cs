@@ -1,14 +1,19 @@
 ﻿using AniCharades.Adapters.Jikan;
 using AniCharades.API.Tests.LargeMocks;
+using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Implementation;
+using AniCharades.Services.Interfaces;
+using AniCharades.Services.Providers;
 using JikanDotNet;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace AniCharades.API.Tests.Franchise
@@ -36,7 +41,8 @@ namespace AniCharades.API.Tests.Franchise
                 jikanMockBuilder.HasAnimes(entries);
             }
             jikanMock = jikanMockBuilder.Build();
-            franchiseService = new FranchiseService();
+
+            franchiseService = new FranchiseService(null, null);
         }
 
         [Theory]

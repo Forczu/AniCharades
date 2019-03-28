@@ -4,6 +4,7 @@ using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Franchise;
 using AniCharades.Services.Implementation;
 using AniCharades.Services.Providers;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,9 @@ namespace AniCharades.API.Tests.Relations
 
         public WhenSeriesAssemblerWorksCorrectly()
         {
-            var repoMock = new Mock<IRelationCriteriaRepository>();
-            repoMock.SetReturnsDefault(Task.FromResult(new RelationCriteria { Strategy = "nyaruko" }));
             var jikanMock = new JikanMockBuilder().HasAllAnimes().Build();
-            seriesAssembler = new FranchiseAssembler(new RelationService(jikanMock.Object, repoMock.Object));
             entryProvider = new JikanAnimeProvider(jikanMock.Object);
+            seriesAssembler = new FranchiseAssembler();
         }
 
         [Fact]
