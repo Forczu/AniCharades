@@ -1,4 +1,5 @@
-﻿using AniCharades.Services.Franchise.Relations.Custom;
+﻿using AniCharades.Services.Franchise.Relations.Common;
+using AniCharades.Services.Franchise.Relations.Custom;
 
 namespace AniCharades.Services.Franchise.Relations
 {
@@ -16,6 +17,10 @@ namespace AniCharades.Services.Franchise.Relations
             {
                 case "nyaruko":
                     return new NyarukoRelationStrategy();
+                case "kamiNomi":
+                    return new KamiNomiRelationStrategy();
+                case "noword":
+                    return new NoWordMatchesStrategy();
                 default:
                     return new AnyWordMatchesStrategy();
             }
