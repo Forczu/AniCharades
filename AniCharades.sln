@@ -11,9 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AniCharades.Common", "AniCh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AniCharades.Data", "AniCharades.Data\AniCharades.Data.csproj", "{255D23DB-6B3B-4C56-BD21-F3E24E852207}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AniCharades.Adapters", "AniCharades.Adapters\AniCharades.Adapters.csproj", "{9A636528-E9C3-4B04-8853-6A45E8CA8D33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AniCharades.Adapters", "AniCharades.Adapters\AniCharades.Adapters.csproj", "{9A636528-E9C3-4B04-8853-6A45E8CA8D33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AniCharades.Repositories", "AniCharades.Repositories\AniCharades.Repositories.csproj", "{428C8216-64C5-4C41-8658-15CBE968DE24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AniCharades.Repositories", "AniCharades.Repositories\AniCharades.Repositories.csproj", "{428C8216-64C5-4C41-8658-15CBE968DE24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AniCharades.Services", "AniCharades.Services\AniCharades.Services.csproj", "{8901125D-7446-4B00-AF98-995324819CF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AniCharades.Algorithms", "AniCharades.Algorithms\AniCharades.Algorithms.csproj", "{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +75,22 @@ Global
 		{428C8216-64C5-4C41-8658-15CBE968DE24}.Release|Any CPU.Build.0 = Release|Any CPU
 		{428C8216-64C5-4C41-8658-15CBE968DE24}.Release|x86.ActiveCfg = Release|Any CPU
 		{428C8216-64C5-4C41-8658-15CBE968DE24}.Release|x86.Build.0 = Release|Any CPU
+		{8901125D-7446-4B00-AF98-995324819CF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8901125D-7446-4B00-AF98-995324819CF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8901125D-7446-4B00-AF98-995324819CF3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8901125D-7446-4B00-AF98-995324819CF3}.Debug|x86.Build.0 = Debug|Any CPU
+		{8901125D-7446-4B00-AF98-995324819CF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8901125D-7446-4B00-AF98-995324819CF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8901125D-7446-4B00-AF98-995324819CF3}.Release|x86.ActiveCfg = Release|Any CPU
+		{8901125D-7446-4B00-AF98-995324819CF3}.Release|x86.Build.0 = Release|Any CPU
+		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Debug|x86.Build.0 = Debug|Any CPU
+		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Release|x86.ActiveCfg = Release|Any CPU
+		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

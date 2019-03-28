@@ -1,6 +1,7 @@
 ﻿using AniCharades.Adapters.Jikan;
-using AniCharades.API.Algorithms.Franchise;
 using AniCharades.API.Tests.LargeMocks;
+using AniCharades.Repositories.Interfaces;
+using AniCharades.Services.Implementation;
 using JikanDotNet;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -16,7 +17,7 @@ namespace AniCharades.API.Tests.Franchise
     {
         private readonly Mock<IJikan> jikanMock;
         private readonly IConfigurationRoot config;
-        private readonly FranchiseCreator franchiseCreator;
+        private readonly FranchiseService franchiseService;
         private readonly Dictionary<string, long[]> franchises = new Dictionary<string, long[]>();
 
         public WhenFranchiseAlgorithmsWorkCorrectly()
@@ -35,7 +36,7 @@ namespace AniCharades.API.Tests.Franchise
                 jikanMockBuilder.HasAnimes(entries);
             }
             jikanMock = jikanMockBuilder.Build();
-            franchiseCreator = new FranchiseCreator();
+            franchiseService = new FranchiseService();
         }
 
         [Theory]
@@ -48,7 +49,7 @@ namespace AniCharades.API.Tests.Franchise
             // given
             var animeAdapters = franchises[franchiseName].Select(n => new JikanAnimeAdapter(jikanMock.Object.GetAnime(n).Result)).ToArray();
             // when
-            var series = franchiseCreator.Create(animeAdapters);
+            var series = franchiseService.Create(animeAdapters);
             // then
             Assert.Equal(expectedTitle, series.Title);
             Assert.Equal(expectedImageUrl, series.ImageUrl);

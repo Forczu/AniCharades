@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AniCharades.API.Logic.Interfaces;
 using AniCharades.API.RequestParameters;
+using AniCharades.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AniCharades.API.Controllers

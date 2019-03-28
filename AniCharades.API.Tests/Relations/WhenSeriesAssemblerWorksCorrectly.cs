@@ -1,12 +1,9 @@
-﻿using AniCharades.API.Algorithms.SeriesAssembler;
-using AniCharades.API.Algorithms.SeriesAssembler.Providers;
-using AniCharades.API.Logic.Implementation;
-using AniCharades.API.Tests.LargeMocks;
-using AniCharades.Data.Context;
-using AniCharades.Data.Enumerations;
+﻿using AniCharades.API.Tests.LargeMocks;
 using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using AniCharades.Services.Franchise;
+using AniCharades.Services.Implementation;
+using AniCharades.Services.Providers;
 using Moq;
 using System;
 using System.Collections.Generic;

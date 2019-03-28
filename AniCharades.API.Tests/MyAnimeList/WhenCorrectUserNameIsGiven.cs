@@ -1,8 +1,8 @@
-﻿using AniCharades.API.Algorithms.MyAnimeList.AnimeList;
-using AniCharades.API.Algorithms.MyAnimeList.MangaList;
-using AniCharades.API.Logic.Implementation;
-using AniCharades.API.Logic.Interfaces;
+﻿using AniCharades.Algorithms.MyAnimeList.AnimeList;
+using AniCharades.Algorithms.MyAnimeList.MangaList;
 using AniCharades.API.Tests.LargeMocks;
+using AniCharades.Services.Implementation;
+using AniCharades.Services.Interfaces;
 using JikanDotNet;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Binder;

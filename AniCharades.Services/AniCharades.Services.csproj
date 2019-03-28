@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="FranchiseAssembler\**" />
+    <EmbeddedResource Remove="FranchiseAssembler\**" />
+    <None Remove="FranchiseAssembler\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JikanDotNet" Version="1.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AniCharades.Adapters\AniCharades.Adapters.csproj" />
+    <ProjectReference Include="..\AniCharades.Algorithms\AniCharades.Algorithms.csproj" />
+    <ProjectReference Include="..\AniCharades.Data\AniCharades.Data.csproj" />
+    <ProjectReference Include="..\AniCharades.Repositories\AniCharades.Repositories.csproj" />
+  </ItemGroup>
+
+</Project>

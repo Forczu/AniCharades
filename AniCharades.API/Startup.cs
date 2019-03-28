@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AniCharades.API.Logic.Interfaces;
-using AniCharades.API.Logic.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -12,15 +6,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using JikanDotNet;
-using AniCharades.API.Algorithms.MyAnimeList.AnimeList;
-using AniCharades.API.Algorithms.MyAnimeList.MangaList;
 using Newtonsoft.Json;
 using AniCharades.Data.Context;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Repositories.Implementation;
-using AniCharades.API.Algorithms.SeriesAssembler;
-using AniCharades.API.Algorithms.Franchise;
-using AniCharades.API.Algorithms.SeriesAssembler.Providers;
+using AniCharades.Algorithms.MyAnimeList.AnimeList;
+using AniCharades.Algorithms.MyAnimeList.MangaList;
+using AniCharades.Services.Implementation;
+using AniCharades.Services.Interfaces;
+using AniCharades.Services.Franchise;
+using AniCharades.Services.Providers;
 
 namespace AniCharades.API
 {
@@ -56,7 +51,7 @@ namespace AniCharades.API
             services.AddScoped<SeriesAssembler, SeriesAssembler>();
             services.AddScoped<JikanAnimeProvider, JikanAnimeProvider>();
             services.AddScoped<JikanMangaProvider, JikanMangaProvider>();
-            services.AddScoped<IFranchiseCreator, FranchiseCreator>();
+            services.AddScoped<IFranchiseService, FranchiseService>();
             services.AddScoped<IRelationService, RelationService>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();
         }
