@@ -8,8 +8,6 @@ namespace AniCharades.Services.Interfaces
 {
     public interface IRelationService
     {
-        ICollection<long> GetAnimeRelations(long malId);
-
         bool IsRelationValid(RelationBetweenEntries relation);
     }
 }

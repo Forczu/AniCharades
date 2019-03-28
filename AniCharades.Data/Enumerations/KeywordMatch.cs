@@ -6,7 +6,8 @@ namespace AniCharades.Data.Enumerations
 {
     public enum KeywordMatch
     {
-        Any = 0,
-        Every = 1
+        None,
+        Any,
+        Every
     }
 }

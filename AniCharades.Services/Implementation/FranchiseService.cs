@@ -50,7 +50,7 @@ namespace AniCharades.Services.Implementation
 
         public SeriesEntry CreateFromAnime(long id)
         {
-            var provider = serviceProvider.GetRequiredService<JikanAnimeProvider>();
+            var provider = serviceProvider.GetService(typeof(JikanAnimeProvider)) as JikanAnimeProvider;
             var relations = assembler.Assembly(id, provider);
             var validEntries = GetValidEntries(relations);
             var franchise = CreateFranchise(validEntries, null);
