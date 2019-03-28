@@ -15,7 +15,7 @@ namespace AniCharades.API.Tests.Relations
 {
     public class WhenSeriesAssemblerWorksCorrectly
     {
-        private readonly SeriesAssembler seriesAssembler;
+        private readonly FranchiseAssembler seriesAssembler;
         private readonly IEntryProvider entryProvider;
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -23,7 +23,7 @@ namespace AniCharades.API.Tests.Relations
             var repoMock = new Mock<IRelationCriteriaRepository>();
             repoMock.SetReturnsDefault(Task.FromResult(new RelationCriteria { Strategy = "nyaruko" }));
             var jikanMock = new JikanMockBuilder().HasAllAnimes().Build();
-            seriesAssembler = new SeriesAssembler(new RelationService(jikanMock.Object, repoMock.Object));
+            seriesAssembler = new FranchiseAssembler(new RelationService(jikanMock.Object, repoMock.Object));
             entryProvider = new JikanAnimeProvider(jikanMock.Object);
         }
 

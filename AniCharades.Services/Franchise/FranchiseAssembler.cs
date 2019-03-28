@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace AniCharades.Services.Franchise
 {
-    public class SeriesAssembler
+    public class FranchiseAssembler
     {
         private IList<IEntryInstance> series = new List<IEntryInstance>();
         private IList<IEntryInstance> rejected = new List<IEntryInstance>();
@@ -16,7 +16,7 @@ namespace AniCharades.Services.Franchise
         
         private readonly IRelationService relationService;
 
-        public SeriesAssembler(IRelationService relationService)
+        public FranchiseAssembler(IRelationService relationService)
         {
             this.relationService = relationService;
         }

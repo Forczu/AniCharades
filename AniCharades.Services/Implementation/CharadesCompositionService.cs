@@ -19,11 +19,11 @@ namespace AniCharades.Services.Implementation
 
         private readonly IMyAnimeListService myAnimeListService;
         private readonly ISeriesRepository seriesRepository;
-        private readonly SeriesAssembler seriesAssembler;
+        private readonly FranchiseAssembler seriesAssembler;
         private readonly IFranchiseService franchiseService;
         private readonly IServiceProvider serviceProvider;
 
-        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, SeriesAssembler seriesAssembler,
+        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, FranchiseAssembler seriesAssembler,
             IFranchiseService franchiseService, IServiceProvider serviceProvider)
         {
             this.myAnimeListService = myAnimeListService;

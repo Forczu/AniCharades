@@ -48,7 +48,7 @@ namespace AniCharades.API
             services.AddScoped<IJikan>(j => new Jikan(true));
             services.AddScoped<IAnimeListExtractor, AnimeListExtractor>();
             services.AddScoped<IMangaListExtractor, MangaListExtractor>();
-            services.AddScoped<SeriesAssembler, SeriesAssembler>();
+            services.AddScoped<FranchiseAssembler, FranchiseAssembler>();
             services.AddScoped<JikanAnimeProvider, JikanAnimeProvider>();
             services.AddScoped<JikanMangaProvider, JikanMangaProvider>();
             services.AddScoped<IFranchiseService, FranchiseService>();
