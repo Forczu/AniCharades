@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AniCharades.API.Tests.Relations
 {
-    public class WhenJsonFileIsPassed
+    public class WhenJsonFileIsPassed : BaseTest
     {
         [Theory]
         [InlineData("Haiyore! Nyaruko-san", typeof(NyarukoRelationStrategy))]

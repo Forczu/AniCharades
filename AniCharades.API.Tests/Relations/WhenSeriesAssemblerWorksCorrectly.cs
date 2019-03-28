@@ -17,21 +17,15 @@ using Xunit;
 
 namespace AniCharades.API.Tests.Relations
 {
-    public class WhenSeriesAssemblerWorksCorrectly
+    public class WhenSeriesAssemblerWorksCorrectly : BaseTest
     {
         private readonly IFranchiseService franchiseService;
-        private IConfigurationRoot config;
 
         public WhenSeriesAssemblerWorksCorrectly()
         {
-            var envVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            config = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json")
-                    .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
-                    .Build();
             var jikanMock = new JikanMockBuilder()
-                .HasAnimes(config.GetSection("Jikan:Anime:Franchises:Nyaruko").Get<long[]>())
-                .HasAnimes(config.GetSection("Jikan:Anime:Franchises:KamiNomi").Get<long[]>())
+                .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:Nyaruko").Get<long[]>())
+                .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:KamiNomi").Get<long[]>())
                 .Build();
             var serviceProvider = new Mock<IServiceProvider>();
             serviceProvider.Setup(s => s.GetService(typeof(JikanAnimeProvider))).Returns(new JikanAnimeProvider(jikanMock.Object));

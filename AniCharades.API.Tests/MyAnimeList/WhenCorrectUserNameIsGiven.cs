@@ -17,7 +17,7 @@ using Xunit;
 
 namespace AniCharades.API.Tests.MyAnimeList
 {
-    public class WhenCorrectUserNameIsGiven
+    public class WhenCorrectUserNameIsGiven : BaseTest
     {
         private readonly IMyAnimeListService myAnimeListService;
 

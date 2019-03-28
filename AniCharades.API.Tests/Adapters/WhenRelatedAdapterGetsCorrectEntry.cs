@@ -13,20 +13,14 @@ using Xunit;
 
 namespace AniCharades.API.Tests.Adapters
 {
-    public class WhenRelatedAdapterGetsCorrectEntry
+    public class WhenRelatedAdapterGetsCorrectEntry : BaseTest
     {
         private static readonly int FateAnimeId = 356;
 
         private Mock<IJikan> jikanMock;
-        private readonly IConfigurationRoot config;
 
         public WhenRelatedAdapterGetsCorrectEntry()
         {
-            var envVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            config = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json")
-                    .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
-                    .Build();
             PrepareJikanMock();
         }
 
@@ -34,7 +28,7 @@ namespace AniCharades.API.Tests.Adapters
         {
             jikanMock = new Mock<IJikan>();
             var fateKey = "Jikan:Anime:FateStayNight";
-            var filePath = config[fateKey + ":Path"];
+            var filePath = Config[fateKey + ":Path"];
             var fateJson = File.ReadAllText(filePath);
             jikanMock.Setup(j => j.GetAnime(FateAnimeId)).ReturnsAsync(
                                 JsonConvert.DeserializeObject<Anime>(fateJson)

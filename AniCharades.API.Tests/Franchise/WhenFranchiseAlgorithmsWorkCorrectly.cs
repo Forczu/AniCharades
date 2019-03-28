@@ -18,25 +18,19 @@ using Xunit;
 
 namespace AniCharades.API.Tests.Franchise
 {
-    public class WhenFranchiseAlgorithmsWorkCorrectly
+    public class WhenFranchiseAlgorithmsWorkCorrectly : BaseTest
     {
         private readonly Mock<IJikan> jikanMock;
-        private readonly IConfigurationRoot config;
         private readonly FranchiseService franchiseService;
         private readonly Dictionary<string, long[]> franchises = new Dictionary<string, long[]>();
 
         public WhenFranchiseAlgorithmsWorkCorrectly()
         {
-            var envVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            config = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json")
-                    .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
-                    .Build();
             var jikanMockBuilder = new JikanMockBuilder();
-            var franchisesOfInterest = config.GetSection("Jikan:Anime:Franchises").GetChildren().Select(c => c.Key).ToArray();
+            var franchisesOfInterest = Config.GetSection("Jikan:Anime:Franchises").GetChildren().Select(c => c.Key).ToArray();
             foreach (var franchiseName in franchisesOfInterest)
             {
-                var entries = config.GetSection($"Jikan:Anime:Franchises:{franchiseName}").Get<long[]>();
+                var entries = Config.GetSection($"Jikan:Anime:Franchises:{franchiseName}").Get<long[]>();
                 franchises[franchiseName] = entries;
                 jikanMockBuilder.HasAnimes(entries);
             }
