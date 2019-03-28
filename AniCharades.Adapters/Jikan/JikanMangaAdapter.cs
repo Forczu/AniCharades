@@ -50,5 +50,10 @@ namespace AniCharades.Adapters.Jikan
         {
             return Id.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return $"Id: {Id}, Title: {Title}, Type: {Type}";
+        }
     }
 }
