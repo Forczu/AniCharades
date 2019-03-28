@@ -1,4 +1,5 @@
 ﻿using AniCharades.Adapters.Jikan;
+using AniCharades.Common.Extensions;
 using AniCharades.Repositories.Interfaces;
 using JikanDotNet;
 using System;
@@ -22,17 +23,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
 
         protected override JikanMangaAdapter GetEntry(long entryId)
         {
-            int retries = 0;
-            Manga manga = null;
-            do
-            {
-                manga = jikan.GetManga(entryId).Result;
-                if (manga == null)
-                {
-                    Task.Delay(RetryWaitingTime);
-                    retries++;
-                }
-            } while (manga == null && retries < RetryMaxNumber);
+            var manga = jikan.GetMangaWithRetries(entryId, RetryMaxNumber, RetryWaitingTime);
             return new JikanMangaAdapter(manga);
         }
     }
