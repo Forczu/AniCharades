@@ -3,15 +3,15 @@ using AniCharades.Data.Enumerations;
 
 namespace AniCharades.API.Algorithms.SeriesAssembler.DataStructures
 {
-    public class RelationBetweenEntries<T> where T : IEntryInstance
+    public class RelationBetweenEntries
     {
-        public T SourceEntry { get; set; }
+        public IEntryInstance SourceEntry { get; set; }
 
-        public T TargetEntry { get; set; }
+        public IEntryInstance TargetEntry { get; set; }
 
         public RelationType Type { get; set; }
 
-        public RelationBetweenEntries(T source, T related, RelationType relationType)
+        public RelationBetweenEntries(IEntryInstance source, IEntryInstance related, RelationType relationType)
         {
             SourceEntry = source;
             TargetEntry = related;

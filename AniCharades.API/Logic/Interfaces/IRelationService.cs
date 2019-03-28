@@ -12,6 +12,6 @@ namespace AniCharades.API.Logic.Interfaces
     {
         ICollection<long> GetAnimeRelations(long malId);
 
-        bool IsRelationValid<T>(RelationBetweenEntries<T> relation) where T : IEntryInstance;
+        bool IsRelationValid(RelationBetweenEntries relation);
     }
 }

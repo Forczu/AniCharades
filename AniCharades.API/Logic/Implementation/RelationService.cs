@@ -32,7 +32,7 @@ namespace AniCharades.API.Logic.Implementation
             return filteredRelations;
         }
 
-        public bool IsRelationValid<T>(RelationBetweenEntries<T> relation) where T : IEntryInstance
+        public bool IsRelationValid(RelationBetweenEntries relation)
         {
             var relationCriteria = relationCriteriaRepository.Get(relation.SourceEntry.Title, relation.Type).Result;
             var relationStrategy = RelationFactory.Instance.Create(relationCriteria.Strategy);
@@ -43,8 +43,7 @@ namespace AniCharades.API.Logic.Implementation
         private ICollection<long> FilterRelations(JikanAnimeAdapter source)
         {
             var relations = source.Related.AllRelatedPositions;
-            var fullRelations = relations.Select(r =>
-                new RelationBetweenEntries<JikanAnimeAdapter>(
+            var fullRelations = relations.Select(r =>new RelationBetweenEntries(
                     source, new JikanAnimeAdapter(jikan.GetAnime(r.MalId).Result), r.RelationType));
             var filteredRelations = fullRelations.Where(r => IsRelationValid(r)).Select(r => r.TargetEntry.Id).ToArray();
             return filteredRelations;

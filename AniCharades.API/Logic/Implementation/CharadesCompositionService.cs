@@ -66,18 +66,16 @@ namespace AniCharades.API.Logic.Implementation
                 else
                 {
                     var series = animeAssembler.Assembly(malId);
-                    existingCharades = currentCharades
-                        .FirstOrDefault(c => c.Series.AnimePositions
-                            .Any(a => series
-                                .Any(s => s.Id == a.MalId && a.MalId != malId)));
-                    if (existingCharades == null)
+                    var indirectExistingRelation = GetIndirectExistingRelation(currentCharades, malId, series);
+                    if (indirectExistingRelation != null)
                     {
-                        var franchise = franchiseCreator.Create(series);
-                        currentCharades.Add(new CharadesEntry() { Series = franchise, KnownBy = { username } });
+                        AddAnimeToCharadesEntry(indirectExistingRelation, malId);
+                        return;
                     }
                     else
                     {
-                        existingCharades.Series.AnimePositions.Add(new AnimeEntry() { MalId = malId, Series = existingCharades.Series });
+                        var franchise = franchiseCreator.Create(series, null);
+                        currentCharades.Add(new CharadesEntry() { Series = franchise, KnownBy = { username } });
                     }
                 }
             }
@@ -91,6 +89,20 @@ namespace AniCharades.API.Logic.Implementation
                 KnownBy = new List<string>() { username }
             };
             return myCharadesEntry;
+        }
+
+        private void AddAnimeToCharadesEntry(CharadesEntry charadesEntry, long malId)
+        {
+            charadesEntry.Series.AnimePositions.Add(new AnimeEntry() { MalId = malId, Series = charadesEntry.Series });
+        }
+
+        private CharadesEntry GetIndirectExistingRelation(ConcurrentBag<CharadesEntry> charades, long malId, ICollection<IEntryInstance> series)
+        {
+            var indirectExistingRelation = charades
+                .FirstOrDefault(c => c.Series.AnimePositions
+                    .Any(a => series
+                        .Any(s => s.Id == a.MalId && a.MalId != malId)));
+            return indirectExistingRelation;
         }
     }
 }

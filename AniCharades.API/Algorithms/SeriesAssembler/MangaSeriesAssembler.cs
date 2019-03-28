@@ -1,4 +1,5 @@
-﻿using AniCharades.Adapters.Jikan;
+﻿using AniCharades.Adapters.Interfaces;
+using AniCharades.Adapters.Jikan;
 using AniCharades.API.Logic.Interfaces;
 using AniCharades.Common.Extensions;
 using AniCharades.Repositories.Interfaces;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AniCharades.API.Algorithms.SeriesAssembler
 {
-    public class MangaSeriesAssembler : AbstractSeriesAssembler<JikanMangaAdapter>
+    public class MangaSeriesAssembler : AbstractSeriesAssembler
     {
         private static readonly int RetryMaxNumber = 3;
         private static readonly int RetryWaitingTime = 60 * 1000;
@@ -22,7 +23,7 @@ namespace AniCharades.API.Algorithms.SeriesAssembler
             this.jikan = jikan;
         }
 
-        protected override JikanMangaAdapter GetEntry(long entryId)
+        protected override IEntryInstance GetEntry(long entryId)
         {
             var manga = jikan.GetMangaWithRetries(entryId, RetryMaxNumber, RetryWaitingTime);
             return new JikanMangaAdapter(manga);
