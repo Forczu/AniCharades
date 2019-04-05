@@ -5,9 +5,17 @@ namespace AniCharades.Services.Franchise.Relations
 {
     public class RelationFactory
     {
-        private static readonly RelationFactory instance = null;
+        private static RelationFactory instance = null;
 
-        public static RelationFactory Instance => instance ?? new RelationFactory();
+        public static RelationFactory Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new RelationFactory();
+                return instance;
+            }
+        }
 
         private RelationFactory() { }
 
