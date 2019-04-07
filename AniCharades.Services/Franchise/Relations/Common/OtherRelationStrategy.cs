@@ -13,25 +13,34 @@ namespace AniCharades.Services.Franchise.Relations.Common
         {
             if (!secondEntry.Related.AllRelatedPositions.Any(r => r.MalId == firstEntry.Id))
                 return false;
-            string firstTitle = firstEntry.Title, secondTitle = secondEntry.Title;
-            if (BothEntriesAreSubtitles(firstEntry, secondEntry))
-            {
-                firstTitle = GetMainTitlePart(firstTitle);
-                secondTitle = GetMainTitlePart(secondTitle);
-            }
+            ChangeTitlesIfBothEntriesAreSubtitles(firstEntry, secondEntry, out string firstTitle, out string secondTitle);
             if (!firstTitle.ContainsEverySharedWord(secondTitle))
                 return false;
             return true;
         }
 
-        private bool BothEntriesAreSubtitles(IEntryInstance firstEntry, IEntryInstance secondEntry)
+        private void ChangeTitlesIfBothEntriesAreSubtitles(IEntryInstance firstEntry, IEntryInstance secondEntry, out string firstTitle, out string secondTitle)
         {
-            return firstEntry.Title.Contains(':') && secondEntry.Title.Contains(':');
+            firstTitle = firstEntry.Title;
+            secondTitle = secondEntry.Title;
+            foreach (var separator in new char[] { ':', '!', '?' })
+            {
+                if (BothEntriesAreSubtitles(firstEntry, secondEntry, separator))
+                {
+                    firstTitle = GetMainTitlePart(firstTitle, separator);
+                    secondTitle = GetMainTitlePart(secondTitle, separator);
+                }
+            }
         }
 
-        private string GetMainTitlePart(string title)
+        private bool BothEntriesAreSubtitles(IEntryInstance firstEntry, IEntryInstance secondEntry, char separator)
         {
-            return title.Substring(0, title.IndexOf(':'));
+            return firstEntry.Title.Contains(separator) && secondEntry.Title.Contains(separator);
+        }
+
+        private string GetMainTitlePart(string title, char separator)
+        {
+            return title.Substring(0, title.IndexOf(separator));
         }
     }
 }
