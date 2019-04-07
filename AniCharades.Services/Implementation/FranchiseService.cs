@@ -17,14 +17,13 @@ namespace AniCharades.Services.Implementation
 {
     public class FranchiseService : IFranchiseService
     {
-        private readonly FranchiseAssembler assembler = new FranchiseAssembler();
+        private readonly FranchiseAssembler assembler;
         private readonly IServiceProvider serviceProvider;
-        private readonly IRelationService relationService;
 
-        public FranchiseService(IServiceProvider serviceProvider, IRelationService relationService)
+        public FranchiseService(IServiceProvider serviceProvider, FranchiseAssembler assembler)
         {
             this.serviceProvider = serviceProvider;
-            this.relationService = relationService;
+            this.assembler = assembler;
         }
 
         public SeriesEntry Create(ICollection<IEntryInstance> animes, ICollection<IEntryInstance> mangas)
@@ -52,7 +51,7 @@ namespace AniCharades.Services.Implementation
         {
             var provider = serviceProvider.GetService(typeof(JikanAnimeProvider)) as JikanAnimeProvider;
             var relations = assembler.Assembly(id, provider);
-            var validEntries = GetValidEntries(relations);
+            var validEntries = GetEntries(relations);
             var franchise = CreateFranchise(validEntries, null);
             return franchise;
         }
@@ -73,10 +72,9 @@ namespace AniCharades.Services.Implementation
             return series;
         }
 
-        private ICollection<IEntryInstance> GetValidEntries(ICollection<RelationBetweenEntries> relations)
+        private ICollection<IEntryInstance> GetEntries(ICollection<RelationBetweenEntries> relations)
         {
             var validEntries = relations
-                .Where(r => relationService.IsRelationValid(r))
                 .Select(r => r.TargetEntry)
                 .ToList();
             validEntries.Add(relations.First().SourceEntry);

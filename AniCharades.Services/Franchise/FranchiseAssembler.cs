@@ -15,6 +15,13 @@ namespace AniCharades.Services.Franchise
         private List<RelationBetweenEntries> series = new List<RelationBetweenEntries>();
         private Stack<IEntryInstance> entriesToCheckTheRelations = new Stack<IEntryInstance>();
 
+        private readonly IRelationService relationService;
+
+        public FranchiseAssembler(IRelationService relationService)
+        {
+            this.relationService = relationService;
+        }
+
         public ICollection<RelationBetweenEntries> Assembly(long entryId, IEntryProvider entryProvider)
         {
             ResetCollections();
@@ -51,8 +58,9 @@ namespace AniCharades.Services.Franchise
             var relations = GetRelations(currentEntry, entryProvider);
             if (IsCollectionEmpty(relations))
                 return;
-            series.AddRange(relations);
-            StackNextRelatedEntries(relations);
+            var validRelations = relations.Where(r => relationService.IsRelationValid(r)).ToList();
+            series.AddRange(validRelations);
+            StackNextRelatedEntries(validRelations);
         }
 
         private ICollection<RelationBetweenEntries> GetRelations(IEntryInstance entry, IEntryProvider entryProvider)

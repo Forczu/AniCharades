@@ -19,8 +19,6 @@ namespace AniCharades.API.Tests.Relations
 {
     public class WhenSeriesAssemblerWorksCorrectly : BaseTest
     {
-        private static readonly string[] Franchises = { "Kaiji", "KamiNomi", "Nyaruko", "Saki" };
-
         private readonly IFranchiseService franchiseService;
 
         private static readonly Dictionary<string, long> malDictionary = new Dictionary<string, long>()
@@ -29,12 +27,17 @@ namespace AniCharades.API.Tests.Relations
             { "NyarukoFirstTv", 11785 },
             { "KaijiFirstTv", 3002 },
             { "SakiFirstTv", 5671 },
+            { "EfMemoriesTv", 2924 }, { "EfMelodiesTv", 4789 },
+            { "ClannadTv", 2167 },
+            { "SataniaDropoutSpecials", 34855 },
+            { "GintamaThirdTv", 15417 },
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
         {
             var jikanMockBuilder = new JikanMockBuilder();
-            foreach (var franchise in Franchises)
+            var franchises = Config.GetSection("Jikan:Anime:Franchises").GetChildren().Select(c => c.Key).ToArray();
+            foreach (var franchise in franchises)
             {
                 jikanMockBuilder.HasAnimes(Config.GetSection($"Jikan:Anime:Franchises:{franchise}").Get<long[]>());
             }
@@ -42,7 +45,7 @@ namespace AniCharades.API.Tests.Relations
             var serviceProvider = new Mock<IServiceProvider>();
             serviceProvider.Setup(s => s.GetService(typeof(JikanAnimeProvider))).Returns(new JikanAnimeProvider(jikanMock.Object));
             serviceProvider.Setup(s => s.GetService(typeof(JikanMangaProvider))).Returns(new JikanMangaProvider(jikanMock.Object));
-            franchiseService = new FranchiseService(serviceProvider.Object, new RelationService());
+            franchiseService = new FranchiseService(serviceProvider.Object, new FranchiseAssembler(new RelationService()));
         }
 
         [Theory]
@@ -50,6 +53,11 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("KamiNomiFirstTv",  9)]
         [InlineData("KaijiFirstTv",  2)]
         [InlineData("SakiFirstTv",  7)]
+        [InlineData("EfMemoriesTv",  5)]
+        [InlineData("EfMelodiesTv",  5)]
+        //[InlineData("ClannadTv",  5)]
+        [InlineData("SataniaDropoutSpecials",  2)]
+        [InlineData("GintamaThirdTv",  19)]
         public void FranchiseShouldHaveExpectedCount(string firstEntryName, int expectedCount)
         {
             // given
@@ -76,6 +84,7 @@ namespace AniCharades.API.Tests.Relations
 
         [Theory]
         [InlineData("KaijiFirstTv", 37338)] // Tonegawa
+        [InlineData("GintamaThirdTv", 9863)] // SketDance
         public void FranchiseShouldNotContainCertainEntry(string firstEntryName, int expectedNonContainedEntryId)
         {
             // given
