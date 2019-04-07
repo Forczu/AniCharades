@@ -26,5 +26,8 @@ namespace AniCharades.Data.Models
 
         [JsonProperty("strategy")]
         public string Strategy { get; set; }
+
+        [JsonProperty("types")]
+        public string[] Types { get; set; }
     }
 }

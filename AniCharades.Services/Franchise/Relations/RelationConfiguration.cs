@@ -55,15 +55,24 @@ namespace AniCharades.Services.Franchise.Relations
             return relationStrategy;
         }
 
-        public RelationCriteria Get(string title, RelationType relationType)
+        public RelationCriteria Get(string type, string title, RelationType relationType)
         {
-            var relationStrategy = Get(relationType);
+            var relationStrategy = GetFromType(type);
+            if (relationStrategy != null)
+                return relationStrategy;
+            relationStrategy = Get(relationType);
             if (relationStrategy != null)
                 return relationStrategy;
             relationStrategy = Get(title);
             if (relationStrategy != null)
                 return relationStrategy;
             return relationCriterias.FirstOrDefault(s => s.Relations.Contains(RelationType.None));
+        }
+
+        private RelationCriteria GetFromType(string type)
+        {
+            var relationStrategy = relationCriterias.FirstOrDefault(s => s.Types != null && s.Types.Contains(type));
+            return relationStrategy;
         }
     }
 }

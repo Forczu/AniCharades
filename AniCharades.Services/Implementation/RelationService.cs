@@ -16,8 +16,8 @@ namespace AniCharades.Services.Implementation
         {
             var isTargetParentStory = relation.TargetForSourceType == Data.Enumerations.RelationType.ParentStory;
             var relationCriteria = !isTargetParentStory
-                ? RelationConfiguration.Instance.Get(relation.SourceEntry.Title, relation.TargetForSourceType)
-                : RelationConfiguration.Instance.Get(relation.SourceEntry.Title, relation.SourceForTargetType);
+                ? RelationConfiguration.Instance.Get(relation.TargetEntry.Type, relation.SourceEntry.Title, relation.TargetForSourceType)
+                : RelationConfiguration.Instance.Get(relation.TargetEntry.Type, relation.SourceEntry.Title, relation.SourceForTargetType);
             var relationStrategy = RelationFactory.Instance.Create(relationCriteria.Strategy);
             var areEqual = !isTargetParentStory
                 ? relationStrategy.AreRelated(relation.SourceEntry, relation.TargetEntry)
