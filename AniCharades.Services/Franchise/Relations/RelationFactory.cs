@@ -31,6 +31,8 @@ namespace AniCharades.Services.Franchise.Relations
                     return new EveryWordMatchesStrategy();
                 case "spinoff":
                     return new SpinOffRelationStrategy();
+                case "other":
+                    return new OtherRelationStrategy();
             }
         }
     }
