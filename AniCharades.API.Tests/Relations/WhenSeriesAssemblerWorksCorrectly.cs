@@ -35,7 +35,12 @@ namespace AniCharades.API.Tests.Relations
             { "LoveLiveSecondTv", 19111 },
             { "ZombieDesuKaFirstTv", 8841 },{ "ZombieDesuKaSecondTv", 10790 },
             { "ChuunibyouRenLite", 21797 },
-            { "DragonBallGT", 225 }, { "DrSlumpTv", 2222 }
+            { "DragonBallGT", 225 }, { "DrSlumpTv", 2222 },
+            { "KimiGaNozomuEienTv", 147 },
+            { "MobileSuitGundamFirstTv", 80 },
+            { "FateFirstTv", 356 }, { "FateUbwMovie", 6922 },
+            { "FateZeroFirstTv", 11741 }, { "FateApocrypha", 34662 }, { "FateExtraTv", 33047 }, { "FateGrandOrderFirstOva", 34321 },
+            { "PrismaIllyaFirstTv", 14829 }, { "PrismaIllyaMovieSpecial", 36833 }, { "EmiyaGohan", 37033 }
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -62,6 +67,8 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("ClannadTv",  5)]
         [InlineData("SataniaDropoutSpecials",  2)]
         [InlineData("MahoukaTv", 4)]
+        [InlineData("FateFirstTv", 11)]
+        [InlineData("PrismaIllyaFirstTv", 13)]
         [InlineData("GintamaThirdTv", 19)]
         [InlineData("ChuunibyouRenLite", 13)]
         [InlineData("LoveLiveSecondTv", 25)]
@@ -80,6 +87,7 @@ namespace AniCharades.API.Tests.Relations
         [Theory]
         [InlineData("EfMemoriesTv", "EfMelodiesTv")]
         [InlineData("ZombieDesuKaSecondTv", "ZombieDesuKaFirstTv")]
+        [InlineData("FateFirstTv", "FateUbwMovie")]
         public void FranchisesMadeFromSharedEntriesShouldHaveEqualLength(string firstEntryName, string secondEntryName)
         {
             // given
@@ -95,6 +103,7 @@ namespace AniCharades.API.Tests.Relations
         [Theory]
         [InlineData("KamiNomiFirstTv", "MagicalStarKanon")]
         [InlineData("SakiFirstTv", "SakiAchigaTv")]
+        [InlineData("PrismaIllyaFirstTv", "PrismaIllyaMovieSpecial")]
         public void FranchiseShouldContainCertainEntry(string firstEntryName, string expectedEntryName)
         {
             // given
@@ -113,6 +122,13 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("GintamaSecondTv", "GintamaMameshiba")]
         [InlineData("MahoukaTv", "MahoukaMameshiba")]
         [InlineData("DragonBallGT", "DrSlumpTv")]
+        [InlineData("KimiGaNozomuEienTv", "MobileSuitGundamFirstTv")]
+        [InlineData("FateUbwMovie", "FateZeroFirstTv")]
+        [InlineData("FateUbwMovie", "FateApocrypha")]
+        [InlineData("FateGrandOrderFirstOva", "FateExtraTv")]
+        [InlineData("FateFirstTv", "PrismaIllyaFirstTv")]
+        [InlineData("FateFirstTv", "FateExtraTv")]
+        [InlineData("FateUbwMovie", "EmiyaGohan")]
         public void FranchiseShouldNotContainCertainEntry(string firstEntryName, string expectedNonContainedEntryName)
         {
             // given
