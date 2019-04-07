@@ -11,6 +11,7 @@ namespace AniCharades.Data.Enumerations
         AlternativeVersion,
         Adaptation,
         Characters,
+        FullStory,
         Other,
         ParentStory,
         Prequel,

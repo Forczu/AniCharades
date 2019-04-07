@@ -13,15 +13,21 @@ namespace AniCharades.Adapters.Jikan
     {
         private readonly RelatedManga relatedManga;
 
+        public ICollection<MALSubItem> AlternativeSettings => relatedManga.AlternativeSettings;
+
         public ICollection<MALSubItem> AlternativeVersions => relatedManga.AlternativeVersions;
 
         public ICollection<MALSubItem> Adaptations => relatedManga.Adaptations;
 
         public ICollection<MALSubItem> Characters => relatedManga.Characters;
 
-        public ICollection<MALSubItem> Prequels => relatedManga.Prequels;
+        public ICollection<MALSubItem> FullStories => relatedManga.FullStories;
 
         public ICollection<MALSubItem> Others => relatedManga.Others;
+
+        public ICollection<MALSubItem> ParentStories => relatedManga.ParentStories;
+
+        public ICollection<MALSubItem> Prequels => relatedManga.Prequels;
 
         public ICollection<MALSubItem> Sequels => relatedManga.Sequels;
 

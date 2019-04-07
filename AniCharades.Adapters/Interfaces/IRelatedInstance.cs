@@ -10,12 +10,18 @@ namespace AniCharades.Adapters.Interfaces
 {
     public interface IRelatedInstance
     {
+        ICollection<MALSubItem> AlternativeSettings { get; }
+
         ICollection<MALSubItem> AlternativeVersions { get; }
 
         ICollection<MALSubItem> Adaptations { get; }
         
-        ICollection<MALSubItem> Characters { get;  }
-        
+        ICollection<MALSubItem> Characters { get; }
+
+        ICollection<MALSubItem> FullStories { get; }
+
+        ICollection<MALSubItem> ParentStories { get; }
+
         ICollection<MALSubItem> Prequels { get; }
 
         ICollection<MALSubItem> Others { get; }

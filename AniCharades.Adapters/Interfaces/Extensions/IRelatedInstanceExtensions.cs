@@ -12,9 +12,12 @@ namespace AniCharades.Adapters.Interfaces.Extensions
         {
             var allRelatedCollections = new[]
             {
+                new { RelatedCollection = relatedInstance.AlternativeSettings, RelationType = RelationType.AlternativeSetting },
                 new { RelatedCollection = relatedInstance.AlternativeVersions, RelationType = RelationType.AlternativeVersion },
                 new { RelatedCollection = relatedInstance.Characters, RelationType = RelationType.Characters },
+                new { RelatedCollection = relatedInstance.FullStories, RelationType = RelationType.FullStory },
                 new { RelatedCollection = relatedInstance.Others, RelationType = RelationType.Other },
+                new { RelatedCollection = relatedInstance.ParentStories, RelationType = RelationType.ParentStory },
                 new { RelatedCollection = relatedInstance.Prequels, RelationType = RelationType.Prequel },
                 new { RelatedCollection = relatedInstance.Sequels, RelationType = RelationType.Sequel },
                 new { RelatedCollection = relatedInstance.SideStories, RelationType = RelationType.SideStory },
