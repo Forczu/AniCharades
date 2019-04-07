@@ -25,12 +25,13 @@ namespace AniCharades.API.Tests.Relations
         {
             { "KamiNomiFirstTv", 8525 },
             { "NyarukoFirstTv", 11785 },
-            { "KaijiFirstTv", 3002 },
+            { "KaijiFirstTv", 3002 }, { "TonegawaTv", 37338 },
             { "SakiFirstTv", 5671 },
             { "EfMemoriesTv", 2924 }, { "EfMelodiesTv", 4789 },
             { "ClannadTv", 2167 },
             { "SataniaDropoutSpecials", 34855 },
-            { "GintamaThirdTv", 15417 },
+            { "GintamaSecondTv", 9969 }, { "GintamaThirdTv", 15417 },
+            { "MahoukaTv", 20785 }
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -55,9 +56,10 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("SakiFirstTv",  7)]
         [InlineData("EfMemoriesTv",  5)]
         [InlineData("EfMelodiesTv",  5)]
-        //[InlineData("ClannadTv",  5)]
+        [InlineData("ClannadTv",  5)]
         [InlineData("SataniaDropoutSpecials",  2)]
         [InlineData("GintamaThirdTv",  19)]
+        [InlineData("MahoukaTv", 4)]
         public void FranchiseShouldHaveExpectedCount(string firstEntryName, int expectedCount)
         {
             // given
@@ -84,7 +86,10 @@ namespace AniCharades.API.Tests.Relations
 
         [Theory]
         [InlineData("KaijiFirstTv", 37338)] // Tonegawa
+        [InlineData("TonegawaTv", 3002)] // Kaiji
         [InlineData("GintamaThirdTv", 9863)] // SketDance
+        [InlineData("GintamaSecondTv", 19261)] // Mameshiba
+        [InlineData("MahoukaTv", 35631)] // Mameshiba
         public void FranchiseShouldNotContainCertainEntry(string firstEntryName, int expectedNonContainedEntryId)
         {
             // given
