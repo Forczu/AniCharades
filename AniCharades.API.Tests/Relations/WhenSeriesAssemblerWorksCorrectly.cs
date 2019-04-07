@@ -19,71 +19,63 @@ namespace AniCharades.API.Tests.Relations
 {
     public class WhenSeriesAssemblerWorksCorrectly : BaseTest
     {
+        private static readonly string[] Franchises = { "Kaiji", "KamiNomi", "Nyaruko", "Saki" };
+
         private readonly IFranchiseService franchiseService;
 
         public WhenSeriesAssemblerWorksCorrectly()
         {
-            var jikanMock = new JikanMockBuilder()
-                .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:Nyaruko").Get<long[]>())
-                .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:KamiNomi").Get<long[]>())
-                .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:Kaiji").Get<long[]>())
-                .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:Saki").Get<long[]>())
-                .Build();
+            var jikanMockBuilder = new JikanMockBuilder();
+            foreach (var franchise in Franchises)
+            {
+                jikanMockBuilder.HasAnimes(Config.GetSection($"Jikan:Anime:Franchises:{franchise}").Get<long[]>());
+            }
+            var jikanMock = jikanMockBuilder.Build();
             var serviceProvider = new Mock<IServiceProvider>();
             serviceProvider.Setup(s => s.GetService(typeof(JikanAnimeProvider))).Returns(new JikanAnimeProvider(jikanMock.Object));
             serviceProvider.Setup(s => s.GetService(typeof(JikanMangaProvider))).Returns(new JikanMangaProvider(jikanMock.Object));
             franchiseService = new FranchiseService(serviceProvider.Object, new RelationService());
         }
 
-        [Fact]
-        public void NyarukoFranchiseShouldHaveAllTitles()
+        [Theory]
+        [InlineData(11785, 8)] // Nyaruko
+        [InlineData(8525,  9)] // KamiNomi
+        [InlineData(3002,  2)] // Kaiji
+        [InlineData(5671,  7)] // Saki
+        public void FranchiseShouldHaveExpectedCount(int malEntryId, int expectedCount)
         {
             // given
-            long nyarukoId = 11785;
+            long firstId = malEntryId;
             // when
-            var nyarukoSeries = franchiseService.CreateFromAnime(nyarukoId);
+            var franchise = franchiseService.CreateFromAnime(firstId);
             // then
-            Assert.Equal(8, nyarukoSeries.AnimePositions.Count);
-            Assert.True(nyarukoSeries.AnimePositions.GroupBy(x => x).All(g => g.Count() == 1));
+            Assert.Equal(expectedCount, franchise.AnimePositions.Count);
+            Assert.True(franchise.AnimePositions.GroupBy(x => x).All(g => g.Count() == 1));
         }
 
-        [Fact]
-        public void KamiNomiFranchiseShouldContainMagicalStarKanon()
+        [Theory]
+        [InlineData(8525, 17725)] // KamiNomi, Magical Star Kanon
+        [InlineData(5671, 10884)] // Saki, Achiga
+        public void FranchiseShouldContainCertainEntry(int malEntryId, int expectedEntryId)
         {
             // given
-            long kamiNomiId = 8525;
+            long firstId = malEntryId;
             // when
-            var kamiNomiFranchise = franchiseService.CreateFromAnime(kamiNomiId);
+            var franchise = franchiseService.CreateFromAnime(firstId);
             // then
-            Assert.Equal(9, kamiNomiFranchise.AnimePositions.Count);
-            Assert.Contains(kamiNomiFranchise.AnimePositions, a => a.MalId == 17725);
-            Assert.True(kamiNomiFranchise.AnimePositions.GroupBy(x => x).All(g => g.Count() == 1));
+            Assert.Contains(franchise.AnimePositions, a => a.MalId == expectedEntryId);
         }
 
-        [Fact]
-        public void KaijiFranchiseShouldNotContainTonegawa()
+        [Theory]
+        [InlineData(3002, 37338)] // Kaiji, Tonegawa
+        public void FranchiseShouldNotContainCertainEntry(int malEntryId, int expectedNonContainedEntryId)
         {
             // given
-            long kaijiId = 3002;
+            long firstId = malEntryId;
             // when
-            var kaijiFranchise = franchiseService.CreateFromAnime(kaijiId);
+            var franchise = franchiseService.CreateFromAnime(firstId);
             // then
-            Assert.Equal(2, kaijiFranchise.AnimePositions.Count);
-            Assert.DoesNotContain(kaijiFranchise.AnimePositions, a => a.MalId == 37338);
-            Assert.True(kaijiFranchise.AnimePositions.GroupBy(x => x).All(g => g.Count() == 1));
-        }
-
-        [Fact]
-        public void SakiFranchiseShouldContainAchiga()
-        {
-            // given
-            long sakiId = 5671;
-            // when
-            var sakiFranchise = franchiseService.CreateFromAnime(sakiId);
-            // then
-            Assert.Equal(7, sakiFranchise.AnimePositions.Count);
-            Assert.Contains(sakiFranchise.AnimePositions, a => a.MalId == 10884);
-            Assert.True(sakiFranchise.AnimePositions.GroupBy(x => x).All(g => g.Count() == 1));
+            Assert.DoesNotContain(franchise.AnimePositions, a => a.MalId == expectedNonContainedEntryId);
         }
     }
 }
