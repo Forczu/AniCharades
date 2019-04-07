@@ -12,22 +12,10 @@ namespace AniCharades.API.Tests.Relations
     public class WhenJsonFileIsPassed : BaseTest
     {
         [Theory]
-        [InlineData("Haiyore! Nyaruko-san", typeof(NyarukoRelationStrategy))]
-        [InlineData("Kami nomi zo shiru sekai", typeof(KamiNomiRelationStrategy))]
-        [InlineData("Magical☆Star Kanon 100%", typeof(KamiNomiRelationStrategy))]
-        public void ConfigurationShouldContainDataForTitle(string title, Type type)
-        {
-            // given
-            var config = RelationConfiguration.Instance;
-            // when
-            var criteria = config.Get(title);
-            var strategy = RelationFactory.Instance.Create(criteria.Strategy);
-            // then
-            Assert.IsType(type, strategy);
-        }
-
-        [Theory]
-        [InlineData(RelationType.Sequel, typeof(NoWordMatchesStrategy))]
+        [InlineData(RelationType.Sequel, typeof(AnyWordMatchesStrategy))]
+        [InlineData(RelationType.SpinOff, typeof(SpinOffRelationStrategy))]
+        [InlineData(RelationType.Summary, typeof(NoWordMatchesStrategy))]
+        [InlineData(RelationType.AlternativeSetting, typeof(EveryWordMatchesStrategy))]
         public void ConfigurationShouldContainDataForRelations(RelationType relationType, Type type)
         {
             // given

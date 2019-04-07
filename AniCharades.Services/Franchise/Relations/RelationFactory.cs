@@ -23,14 +23,15 @@ namespace AniCharades.Services.Franchise.Relations
         {
             switch(type)
             {
-                case "nyaruko":
-                    return new NyarukoRelationStrategy();
-                case "kamiNomi":
-                    return new KamiNomiRelationStrategy();
                 case "noword":
                     return new NoWordMatchesStrategy();
+                case "anyword": 
                 default:
                     return new AnyWordMatchesStrategy();
+                case "everyword":
+                    return new EveryWordMatchesStrategy();
+                case "spinoff":
+                    return new SpinOffRelationStrategy();
             }
         }
     }

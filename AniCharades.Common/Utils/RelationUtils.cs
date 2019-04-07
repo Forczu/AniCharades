@@ -48,7 +48,8 @@ namespace AniCharades.Common.Utils
 
         private static bool WordsAreEqual(string firstWord, string secondWord)
         {
-            return firstWord.RemoveSpecialCharacters().Equals(secondWord.RemoveSpecialCharacters());
+            return firstWord.RemoveSpecialCharacters().ToLower()
+                .Equals(secondWord.RemoveSpecialCharacters().ToLower());
         }
 
         public static string RemoveSpecialCharacters(this string title)
