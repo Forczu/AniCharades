@@ -1,6 +1,7 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.Adapters.Jikan;
 using AniCharades.Common.Extensions;
+using AniCharades.Data.Enumerations;
 using AniCharades.Services.Interfaces;
 using AniCharades.Services.Providers;
 using System;
@@ -66,7 +67,7 @@ namespace AniCharades.Services.Franchise
                 var relatedEntry = entryProvider.Get(subItem.MalId);
                 if (relatedEntry != null)
                 {
-                    var relation = new RelationBetweenEntries(entry, relatedEntry, subItem.RelationType);
+                    var relation = CreateRelation(entry, relatedEntry, subItem.RelationType);
                     relations.Add(relation);
                 }
             }
@@ -86,6 +87,18 @@ namespace AniCharades.Services.Franchise
         private bool CanEntryBeAddedToSeries(long entryId)
         {
             return series.All(s => s.SourceEntry.Id != entryId && s.TargetEntry.Id != entryId);
+        }
+
+        private RelationBetweenEntries CreateRelation(IEntryInstance entry, IEntryInstance relatedEntry, RelationType relationType)
+        {
+            if (relationType != RelationType.ParentStory)
+            {
+                return new RelationBetweenEntries(entry, relatedEntry, relationType);
+            }
+            var entryAsRelatedSubItem = relatedEntry.Related.AllRelatedPositions.First(e => e.MalId == entry.Id);
+            var targetToSourceRelation = entryAsRelatedSubItem.RelationType;
+            var relation = new RelationBetweenEntries(entry, relatedEntry, relationType, targetToSourceRelation);
+            return relation;
         }
     }
 }
