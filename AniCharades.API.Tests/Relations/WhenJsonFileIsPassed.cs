@@ -1,7 +1,6 @@
 ﻿using AniCharades.Data.Enumerations;
 using AniCharades.Services.Franchise.Relations;
 using AniCharades.Services.Franchise.Relations.Common;
-using AniCharades.Services.Franchise.Relations.Custom;
 using System;
 using System.Collections.Generic;
 using System.Text;

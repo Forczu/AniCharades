@@ -1,5 +1,4 @@
 ﻿using AniCharades.Services.Franchise.Relations.Common;
-using AniCharades.Services.Franchise.Relations.Custom;
 
 namespace AniCharades.Services.Franchise.Relations
 {

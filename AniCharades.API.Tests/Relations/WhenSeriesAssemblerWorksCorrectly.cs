@@ -26,6 +26,8 @@ namespace AniCharades.API.Tests.Relations
             var jikanMock = new JikanMockBuilder()
                 .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:Nyaruko").Get<long[]>())
                 .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:KamiNomi").Get<long[]>())
+                .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:Kaiji").Get<long[]>())
+                .HasAnimes(Config.GetSection("Jikan:Anime:Franchises:Saki").Get<long[]>())
                 .Build();
             var serviceProvider = new Mock<IServiceProvider>();
             serviceProvider.Setup(s => s.GetService(typeof(JikanAnimeProvider))).Returns(new JikanAnimeProvider(jikanMock.Object));
@@ -56,6 +58,32 @@ namespace AniCharades.API.Tests.Relations
             Assert.Equal(9, kamiNomiFranchise.AnimePositions.Count);
             Assert.Contains(kamiNomiFranchise.AnimePositions, a => a.MalId == 17725);
             Assert.True(kamiNomiFranchise.AnimePositions.GroupBy(x => x).All(g => g.Count() == 1));
+        }
+
+        [Fact]
+        public void KaijiFranchiseShouldNotContainTonegawa()
+        {
+            // given
+            long kaijiId = 3002;
+            // when
+            var kaijiFranchise = franchiseService.CreateFromAnime(kaijiId);
+            // then
+            Assert.Equal(2, kaijiFranchise.AnimePositions.Count);
+            Assert.DoesNotContain(kaijiFranchise.AnimePositions, a => a.MalId == 37338);
+            Assert.True(kaijiFranchise.AnimePositions.GroupBy(x => x).All(g => g.Count() == 1));
+        }
+
+        [Fact]
+        public void SakiFranchiseShouldContainAchiga()
+        {
+            // given
+            long sakiId = 5671;
+            // when
+            var sakiFranchise = franchiseService.CreateFromAnime(sakiId);
+            // then
+            Assert.Equal(7, sakiFranchise.AnimePositions.Count);
+            Assert.Contains(sakiFranchise.AnimePositions, a => a.MalId == 10884);
+            Assert.True(sakiFranchise.AnimePositions.GroupBy(x => x).All(g => g.Count() == 1));
         }
     }
 }
