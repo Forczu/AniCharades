@@ -23,6 +23,14 @@ namespace AniCharades.API.Tests.Relations
 
         private readonly IFranchiseService franchiseService;
 
+        private static readonly Dictionary<string, long> malDictionary = new Dictionary<string, long>()
+        {
+            { "KamiNomiFirstTv", 8525 },
+            { "NyarukoFirstTv", 11785 },
+            { "KaijiFirstTv", 3002 },
+            { "SakiFirstTv", 5671 },
+        };
+
         public WhenSeriesAssemblerWorksCorrectly()
         {
             var jikanMockBuilder = new JikanMockBuilder();
@@ -38,14 +46,14 @@ namespace AniCharades.API.Tests.Relations
         }
 
         [Theory]
-        [InlineData(11785, 8)] // Nyaruko
-        [InlineData(8525,  9)] // KamiNomi
-        [InlineData(3002,  2)] // Kaiji
-        [InlineData(5671,  7)] // Saki
-        public void FranchiseShouldHaveExpectedCount(int malEntryId, int expectedCount)
+        [InlineData("NyarukoFirstTv", 8)]
+        [InlineData("KamiNomiFirstTv",  9)]
+        [InlineData("KaijiFirstTv",  2)]
+        [InlineData("SakiFirstTv",  7)]
+        public void FranchiseShouldHaveExpectedCount(string firstEntryName, int expectedCount)
         {
             // given
-            long firstId = malEntryId;
+            long firstId = malDictionary[firstEntryName];
             // when
             var franchise = franchiseService.CreateFromAnime(firstId);
             // then
@@ -54,12 +62,12 @@ namespace AniCharades.API.Tests.Relations
         }
 
         [Theory]
-        [InlineData(8525, 17725)] // KamiNomi, Magical Star Kanon
-        [InlineData(5671, 10884)] // Saki, Achiga
-        public void FranchiseShouldContainCertainEntry(int malEntryId, int expectedEntryId)
+        [InlineData("KamiNomiFirstTv", 17725)] // Magical Star Kanon
+        [InlineData("SakiFirstTv", 10884)] // Achiga
+        public void FranchiseShouldContainCertainEntry(string firstEntryName, int expectedEntryId)
         {
             // given
-            long firstId = malEntryId;
+            long firstId = malDictionary[firstEntryName];
             // when
             var franchise = franchiseService.CreateFromAnime(firstId);
             // then
@@ -67,11 +75,11 @@ namespace AniCharades.API.Tests.Relations
         }
 
         [Theory]
-        [InlineData(3002, 37338)] // Kaiji, Tonegawa
-        public void FranchiseShouldNotContainCertainEntry(int malEntryId, int expectedNonContainedEntryId)
+        [InlineData("KaijiFirstTv", 37338)] // Tonegawa
+        public void FranchiseShouldNotContainCertainEntry(string firstEntryName, int expectedNonContainedEntryId)
         {
             // given
-            long firstId = malEntryId;
+            long firstId = malDictionary[firstEntryName];
             // when
             var franchise = franchiseService.CreateFromAnime(firstId);
             // then
