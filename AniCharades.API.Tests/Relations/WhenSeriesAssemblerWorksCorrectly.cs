@@ -23,15 +23,19 @@ namespace AniCharades.API.Tests.Relations
 
         private static readonly Dictionary<string, long> malDictionary = new Dictionary<string, long>()
         {
-            { "KamiNomiFirstTv", 8525 },
+            { "KamiNomiFirstTv", 8525 }, { "MagicalStarKanon", 17725 },
             { "NyarukoFirstTv", 11785 },
             { "KaijiFirstTv", 3002 }, { "TonegawaTv", 37338 },
-            { "SakiFirstTv", 5671 },
+            { "SakiFirstTv", 5671 }, { "SakiAchigaTv", 10884 },
             { "EfMemoriesTv", 2924 }, { "EfMelodiesTv", 4789 },
             { "ClannadTv", 2167 },
             { "SataniaDropoutSpecials", 34855 },
-            { "GintamaSecondTv", 9969 }, { "GintamaThirdTv", 15417 },
-            { "MahoukaTv", 20785 }
+            { "GintamaSecondTv", 9969 }, { "GintamaThirdTv", 15417 }, { "SketDanceTv", 9863 }, { "GintamaMameshiba", 19261 },
+            { "MahoukaTv", 20785 }, { "MahoukaMameshiba", 35631 },
+            { "LoveLiveSecondTv", 19111 },
+            { "ZombieDesuKaFirstTv", 8841 },{ "ZombieDesuKaSecondTv", 10790 },
+            { "ChuunibyouRenLite", 21797 },
+            { "DragonBallGT", 225 }, { "DrSlumpTv", 2222 }
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -55,11 +59,13 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("KaijiFirstTv",  2)]
         [InlineData("SakiFirstTv",  7)]
         [InlineData("EfMemoriesTv",  5)]
-        [InlineData("EfMelodiesTv",  5)]
         [InlineData("ClannadTv",  5)]
         [InlineData("SataniaDropoutSpecials",  2)]
-        [InlineData("GintamaThirdTv",  19)]
         [InlineData("MahoukaTv", 4)]
+        [InlineData("GintamaThirdTv", 19)]
+        [InlineData("ChuunibyouRenLite", 13)]
+        [InlineData("LoveLiveSecondTv", 25)]
+        [InlineData("DragonBallGT", 41)]
         public void FranchiseShouldHaveExpectedCount(string firstEntryName, int expectedCount)
         {
             // given
@@ -72,12 +78,28 @@ namespace AniCharades.API.Tests.Relations
         }
 
         [Theory]
-        [InlineData("KamiNomiFirstTv", 17725)] // Magical Star Kanon
-        [InlineData("SakiFirstTv", 10884)] // Achiga
-        public void FranchiseShouldContainCertainEntry(string firstEntryName, int expectedEntryId)
+        [InlineData("EfMemoriesTv", "EfMelodiesTv")]
+        [InlineData("ZombieDesuKaSecondTv", "ZombieDesuKaFirstTv")]
+        public void FranchisesMadeFromSharedEntriesShouldHaveEqualLength(string firstEntryName, string secondEntryName)
         {
             // given
             long firstId = malDictionary[firstEntryName];
+            long secondId = malDictionary[secondEntryName];
+            // when
+            var firstFranchise = franchiseService.CreateFromAnime(firstId);
+            var secondFranchise = franchiseService.CreateFromAnime(secondId);
+            // then
+            Assert.Equal(firstFranchise.AnimePositions.Count, secondFranchise.AnimePositions.Count);
+        }
+
+        [Theory]
+        [InlineData("KamiNomiFirstTv", "MagicalStarKanon")]
+        [InlineData("SakiFirstTv", "SakiAchigaTv")]
+        public void FranchiseShouldContainCertainEntry(string firstEntryName, string expectedEntryName)
+        {
+            // given
+            long firstId = malDictionary[firstEntryName];
+            long expectedEntryId = malDictionary[expectedEntryName];
             // when
             var franchise = franchiseService.CreateFromAnime(firstId);
             // then
@@ -85,15 +107,17 @@ namespace AniCharades.API.Tests.Relations
         }
 
         [Theory]
-        [InlineData("KaijiFirstTv", 37338)] // Tonegawa
-        [InlineData("TonegawaTv", 3002)] // Kaiji
-        [InlineData("GintamaThirdTv", 9863)] // SketDance
-        [InlineData("GintamaSecondTv", 19261)] // Mameshiba
-        [InlineData("MahoukaTv", 35631)] // Mameshiba
-        public void FranchiseShouldNotContainCertainEntry(string firstEntryName, int expectedNonContainedEntryId)
+        [InlineData("KaijiFirstTv", "TonegawaTv")]
+        [InlineData("TonegawaTv", "KaijiFirstTv")]
+        [InlineData("GintamaThirdTv", "SketDanceTv")]
+        [InlineData("GintamaSecondTv", "GintamaMameshiba")]
+        [InlineData("MahoukaTv", "MahoukaMameshiba")]
+        [InlineData("DragonBallGT", "DrSlumpTv")]
+        public void FranchiseShouldNotContainCertainEntry(string firstEntryName, string expectedNonContainedEntryName)
         {
             // given
             long firstId = malDictionary[firstEntryName];
+            long expectedNonContainedEntryId = malDictionary[expectedNonContainedEntryName];
             // when
             var franchise = franchiseService.CreateFromAnime(firstId);
             // then

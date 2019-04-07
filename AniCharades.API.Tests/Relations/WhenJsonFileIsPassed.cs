@@ -14,7 +14,7 @@ namespace AniCharades.API.Tests.Relations
         [InlineData(RelationType.Sequel, typeof(AnyWordMatchesStrategy))]
         [InlineData(RelationType.SpinOff, typeof(SpinOffRelationStrategy))]
         [InlineData(RelationType.Summary, typeof(NoWordMatchesStrategy))]
-        [InlineData(RelationType.AlternativeSetting, typeof(EveryWordMatchesStrategy))]
+        [InlineData(RelationType.AlternativeSetting, typeof(AnyWordMatchesStrategy))]
         public void ConfigurationShouldContainDataForRelations(RelationType relationType, Type type)
         {
             // given
