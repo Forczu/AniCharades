@@ -43,7 +43,7 @@ namespace AniCharades.Common.Utils
             var shorterTitleWords = shorterTitle.Split(' ');
             var longerTitleWords = longerTitle.Split(' ');
             bool hasAllSharedWord = shorterTitleWords.All(stw => longerTitleWords.Any(ltw => WordsAreEqual(ltw, stw)));
-            return true;
+            return hasAllSharedWord;
         }
 
         private static bool WordsAreEqual(string firstWord, string secondWord)
