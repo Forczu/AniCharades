@@ -31,6 +31,8 @@ namespace AniCharades.Services.Franchise
             {
                 ResolveTopEntry(entryProvider);
             }
+            if (series.Count == 0)
+                series.Add(new RelationBetweenEntries(entry));
             return series;
         }
 

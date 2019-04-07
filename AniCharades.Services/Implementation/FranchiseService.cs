@@ -75,6 +75,7 @@ namespace AniCharades.Services.Implementation
         private ICollection<IEntryInstance> GetEntries(ICollection<RelationBetweenEntries> relations)
         {
             var validEntries = relations
+                .Where(r => r.TargetEntry != null)
                 .Select(r => r.TargetEntry)
                 .ToList();
             validEntries.Add(relations.First().SourceEntry);
