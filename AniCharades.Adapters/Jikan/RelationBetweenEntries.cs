@@ -9,17 +9,17 @@ namespace AniCharades.Adapters.Jikan
 
         public IEntryInstance TargetEntry { get; set; }
 
-        public RelationType SourceToTargetType { get; set; }
+        public RelationType TargetForSourceType { get; set; }
 
-        public RelationType TargetToSourceType { get; set; }
+        public RelationType SourceForTargetType { get; set; }
 
-        public RelationBetweenEntries(IEntryInstance source, IEntryInstance related, RelationType sourceToTargetType,
-            RelationType targetToSourceType = RelationType.None)
+        public RelationBetweenEntries(IEntryInstance source, IEntryInstance related, RelationType targetForSourceType,
+            RelationType sourceForTargetType = RelationType.None)
         {
             SourceEntry = source;
             TargetEntry = related;
-            SourceToTargetType = sourceToTargetType;
-            TargetToSourceType = targetToSourceType;
+            TargetForSourceType = targetForSourceType;
+            SourceForTargetType = sourceForTargetType;
         }
     }
 }
