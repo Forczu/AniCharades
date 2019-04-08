@@ -54,15 +54,17 @@ namespace AniCharades.API.Tests.LargeMocks
 
         public JikanMockBuilder HasUserAnimeList(string username)
         {
-            var userKey = $"Jikan:User:{username}:Animelist";
-            var filePath = config[userKey + ":Path"];
-            var pageNubmer = Convert.ToInt32(config[userKey + ":PageNumber"]);
-            var animeListPageTemplate = config[userKey + ":PageNameTemplate"];
+            username = username.ToLower();
+            var userDataPath = config["Jikan:DataPath"] + config["Jikan:UserFolder"];
+
+            var fileNameFront = username + "_animelist_";
+            var pageNumber = Directory.EnumerateFiles(userDataPath).Count(
+                f => Path.GetFileNameWithoutExtension(f).Contains(fileNameFront));
             var filters = UserAnimeListExtension.All;
 
-            for (int index = 1; index <= pageNubmer; index++)
+            for (int index = 1; index <= pageNumber; index++)
             {
-                var pageFilePath = string.Format("{0}\\{1}{2}.json", filePath, animeListPageTemplate, index);
+                var pageFilePath = string.Format("{0}\\{1}{2}.json", userDataPath, fileNameFront, index);
                 var pageJson = File.ReadAllText(pageFilePath);
                 jikanMock.Setup(j => j.GetUserAnimeList("Ervelan", filters, index)).ReturnsAsync(
                     JsonConvert.DeserializeObject<UserAnimeList>(pageJson)
@@ -73,15 +75,17 @@ namespace AniCharades.API.Tests.LargeMocks
 
         public JikanMockBuilder HasUserMangaeList(string username)
         {
-            var userKey = $"Jikan:User:{username}:Mangalist";
-            var filePath = config[userKey + ":Path"];
-            var pageNubmer = Convert.ToInt32(config[userKey + ":PageNumber"]);
-            var animeListPageTemplate = config[userKey + ":PageNameTemplate"];
+            username = username.ToLower();
+            var userDataPath = config["Jikan:DataPath"] + config["Jikan:UserFolder"];
+
+            var fileNameFront = username + "_mangalist_";
+            var pageNumber = Directory.EnumerateFiles(userDataPath).Count(
+                f => Path.GetFileNameWithoutExtension(f).Contains(fileNameFront));
             var filters = UserMangaListExtension.All;
 
-            for (int index = 1; index <= pageNubmer; index++)
+            for (int index = 1; index <= pageNumber; index++)
             {
-                var pageFilePath = string.Format("{0}\\{1}{2}.json", filePath, animeListPageTemplate, index);
+                var pageFilePath = string.Format("{0}\\{1}{2}.json", userDataPath, fileNameFront, index);
                 var pageJson = File.ReadAllText(pageFilePath);
                 jikanMock.Setup(j => j.GetUserMangaList("Ervelan", filters, index)).ReturnsAsync(
                     JsonConvert.DeserializeObject<UserMangaList>(pageJson)
