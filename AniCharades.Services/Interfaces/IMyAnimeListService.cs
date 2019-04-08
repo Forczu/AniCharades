@@ -1,7 +1,6 @@
-﻿using JikanDotNet;
-using System;
+﻿using AniCharades.Adapters.Interfaces;
+using JikanDotNet;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AniCharades.Services.Interfaces
@@ -11,5 +10,9 @@ namespace AniCharades.Services.Interfaces
         Task<ICollection<AnimeListEntry>> GetAnimeList(string username);
 
         Task<ICollection<MangaListEntry>> GetMangaList(string username);
+
+        Task<ICollection<IListEntry>> GetMergedAnimeLists(ICollection<string> usernames);
+
+        Task<ICollection<IListEntry>> GetMergedMangaLists(ICollection<string> usernames);
     }
 }

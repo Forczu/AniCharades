@@ -11,24 +11,19 @@ namespace AniCharades.Adapters.Jikan
     {
         public ICollection<IListEntry> Entries { get; set; }
 
-        public string Username { get; set; }
-
-        public UserList(ICollection<IListEntry> entries, string username)
+        public UserList(ICollection<IListEntry> entries)
         {
             Entries = entries;
-            Username = username;
         }
 
-        public UserList(ICollection<AnimeListEntry> entries, string username)
+        public UserList(ICollection<AnimeListEntry> entries)
         {
             Entries = entries.Select(e => new JikanAnimeListEntryAdapter(e)).Cast<IListEntry>().ToList();
-            Username = username;
         }
 
-        public UserList(ICollection<MangaListEntry> entries, string username)
+        public UserList(ICollection<MangaListEntry> entries)
         {
             Entries = entries.Select(e => new JikanMangaListEntryAdapter(e)).Cast<IListEntry>().ToList();
-            Username = username;
         }
     }
 }
