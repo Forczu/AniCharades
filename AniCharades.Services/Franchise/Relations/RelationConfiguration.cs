@@ -1,4 +1,5 @@
-﻿using AniCharades.Common.Extensions;
+﻿using AniCharades.Adapters.Jikan;
+using AniCharades.Common.Extensions;
 using AniCharades.Data.Enumerations;
 using AniCharades.Data.Models;
 using Microsoft.Extensions.Configuration;
@@ -36,34 +37,36 @@ namespace AniCharades.Services.Franchise.Relations
             relationCriterias = config.GetSection("Relations").Get<RelationCriteria[]>();
         }
 
-        public RelationCriteria Get(string title)
+        public RelationCriteria GetFromTitle(RelationBetweenEntries relation)
         {
+            var sourceTitle = relation.SourceEntry.Title;
+            var targetTitle = relation.TargetEntry.Title;
             var relationStrategy = relationCriterias.FirstOrDefault(
-                s => s.KeywordsMatch == KeywordMatch.Every && 
-                s.Keywords.All(k => title.ContainsCaseInsensitive(k)));
+                s => s.Keywords != null  && s.Keywords.Any(k => sourceTitle.ContainsCaseInsensitive(k)));
             if (relationStrategy != null)
                 return relationStrategy;
             relationStrategy = relationCriterias.FirstOrDefault(
-                s => s.KeywordsMatch == KeywordMatch.Any && 
-                s.Keywords.Any(k => title.ContainsCaseInsensitive(k)));
+                s => s.Keywords != null && s.Keywords.Any(k => targetTitle.ContainsCaseInsensitive(k)));
             return relationStrategy;
         }
 
-        public RelationCriteria Get(RelationType relationType)
+        public RelationCriteria GetFromRelation(RelationType relationType)
         {
             var relationStrategy = relationCriterias.FirstOrDefault(s => s.Relations != null && s.Relations.Contains(relationType));
             return relationStrategy;
         }
 
-        public RelationCriteria Get(string type, string title, RelationType relationType)
+        public RelationCriteria Get(RelationBetweenEntries relation)
         {
-            var relationStrategy = GetFromType(type);
+            var relationStrategy = GetFromTitle(relation);
             if (relationStrategy != null)
                 return relationStrategy;
-            relationStrategy = Get(relationType);
+            relationStrategy = GetFromType(relation.TargetEntry.Type);
             if (relationStrategy != null)
                 return relationStrategy;
-            relationStrategy = Get(title);
+            var isTargetParentStory = relation.TargetForSourceType == RelationType.ParentStory;
+            var relationType = !isTargetParentStory ? relation.TargetForSourceType : relation.SourceForTargetType;
+            relationStrategy = GetFromRelation(relationType);
             if (relationStrategy != null)
                 return relationStrategy;
             return relationCriterias.FirstOrDefault(s => s.Relations.Contains(RelationType.None));

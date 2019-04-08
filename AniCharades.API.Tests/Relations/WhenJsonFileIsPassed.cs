@@ -20,7 +20,7 @@ namespace AniCharades.API.Tests.Relations
             // given
             var config = RelationConfiguration.Instance;
             // when
-            var criteria = config.Get(relationType);
+            var criteria = config.GetFromRelation(relationType);
             var strategy = RelationFactory.Instance.Create(criteria.Strategy);
             // then
             Assert.IsType(type, strategy);
