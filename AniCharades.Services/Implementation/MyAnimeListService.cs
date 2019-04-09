@@ -1,7 +1,6 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.Adapters.Jikan;
-using AniCharades.Algorithms.MyAnimeList.AnimeList;
-using AniCharades.Algorithms.MyAnimeList.MangaList;
+using AniCharades.Algorithms.MyAnimeList;
 using AniCharades.Services.Interfaces;
 using JikanDotNet;
 using System.Collections.Generic;
@@ -12,24 +11,22 @@ namespace AniCharades.Services.Implementation
 {
     public class MyAnimeListService : IMyAnimeListService
     {
-        private readonly IAnimeListExtractor animeListExtractor;
-        private readonly IMangaListExtractor mangaListExtractor;
+        private readonly IListExtractor listExtractor;
 
-        public MyAnimeListService(IAnimeListExtractor animeListExtractor, IMangaListExtractor mangaListExtractor)
+        public MyAnimeListService(IListExtractor listExtractor)
         {
-            this.animeListExtractor = animeListExtractor;
-            this.mangaListExtractor = mangaListExtractor;
+            this.listExtractor = listExtractor;
         }
 
         public async Task<ICollection<AnimeListEntry>> GetAnimeList(string username)
         {
-            var userAnimeList = await animeListExtractor.GetFullList(username);
+            var userAnimeList = await listExtractor.GetFullAnimeList(username);
             return userAnimeList;
         }
 
         public async Task<ICollection<MangaListEntry>> GetMangaList(string username)
         {
-            var userMangaList = await mangaListExtractor.GetFullList(username);
+            var userMangaList = await listExtractor.GetFullMangaList(username);
             return userMangaList;
         }
 

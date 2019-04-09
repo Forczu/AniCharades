@@ -21,19 +21,23 @@ namespace AniCharades.Services.Implementation
         private readonly ISeriesRepository seriesRepository;
         private readonly IFranchiseService franchiseService;
 
-        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, FranchiseAssembler seriesAssembler,
-            IFranchiseService franchiseService, IServiceProvider serviceProvider)
+        public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, IFranchiseService franchiseService)
         {
             this.myAnimeListService = myAnimeListService;
             this.seriesRepository = seriesRepository;
             this.franchiseService = franchiseService;
         }
 
-        public async Task<ICollection<CharadesEntry>> GetCompositedCharades(ICollection<string> usernames)
+        public async Task<ICollection<CharadesEntry>> GetCharades(ICollection<string> usernames)
         {
             var mergedList = await myAnimeListService.GetMergedAnimeLists(usernames);
             var charades = await CreateCharadesFromAnimeList(mergedList);
             return charades;
+        }
+
+        public async Task<ICollection<CharadesEntry>> GetCharades(params string[] usernames)
+        {
+            return await GetCharades(usernames.ToList());
         }
 
         private async Task<ICollection<CharadesEntry>> CreateCharadesFromAnimeList(ICollection<IListEntry> mergedList)

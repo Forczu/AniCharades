@@ -23,7 +23,7 @@ namespace AniCharades.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            var charades = await charadesCompositionService.GetCompositedCharades(parameters.Usernames);
+            var charades = await charadesCompositionService.GetCharades(parameters.Usernames);
             return Ok(charades);
         }
     }

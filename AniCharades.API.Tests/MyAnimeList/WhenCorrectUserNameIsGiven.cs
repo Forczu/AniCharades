@@ -1,5 +1,4 @@
-﻿using AniCharades.Algorithms.MyAnimeList.AnimeList;
-using AniCharades.Algorithms.MyAnimeList.MangaList;
+﻿using AniCharades.Algorithms.MyAnimeList;
 using AniCharades.API.Tests.LargeMocks;
 using AniCharades.Services.Implementation;
 using AniCharades.Services.Interfaces;
@@ -24,9 +23,8 @@ namespace AniCharades.API.Tests.MyAnimeList
         public WhenCorrectUserNameIsGiven()
         {
             var jikanMock = PrepareJikanMock();
-            var animeListExtractorMock = new AnimeListExtractor(jikanMock.Object);
-            var mangaListExtractorMock = new MangaListExtractor(jikanMock.Object);
-            myAnimeListService = new MyAnimeListService(animeListExtractorMock, mangaListExtractorMock);
+            var listExtractorMock = new ListExtractor(jikanMock.Object);
+            myAnimeListService = new MyAnimeListService(listExtractorMock);
         }
 
         private Mock<IJikan> PrepareJikanMock()
