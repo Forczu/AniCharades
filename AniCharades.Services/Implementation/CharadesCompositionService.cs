@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AniCharades.Adapters.Interfaces;
+using AniCharades.Common.Extensions;
 using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Franchise;
@@ -21,6 +22,10 @@ namespace AniCharades.Services.Implementation
         private readonly ISeriesRepository seriesRepository;
         private readonly IFranchiseService franchiseService;
 
+        private IList<IListEntry> mergedList;
+        private ICollection<CharadesEntry> charades;
+        private int nextEntryIndex = 0;
+
         public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, IFranchiseService franchiseService)
         {
             this.myAnimeListService = myAnimeListService;
@@ -31,7 +36,7 @@ namespace AniCharades.Services.Implementation
         public async Task<ICollection<CharadesEntry>> GetCharades(ICollection<string> usernames)
         {
             var mergedList = await myAnimeListService.GetMergedAnimeLists(usernames);
-            var charades = await CreateCharadesFromAnimeList(mergedList);
+            await CreateCharadesFromAnimeList(mergedList);
             return charades;
         }
 
@@ -40,57 +45,84 @@ namespace AniCharades.Services.Implementation
             return await GetCharades(usernames.ToList());
         }
 
-        private async Task<ICollection<CharadesEntry>> CreateCharadesFromAnimeList(ICollection<IListEntry> mergedList)
+        public async Task StartComposing(ICollection<string> usernames)
         {
-            var charades = new List<CharadesEntry>();
-            foreach (var entry in mergedList)
-            {
-                var existingCharades = charades.FirstOrDefault(c => c.Series.AnimePositions.Any(a => a.MalId == entry.Id));
-                if (existingCharades != null)
-                {
-                    foreach (var username in entry.Users)
-                    {
-                        if (!existingCharades.KnownBy.Contains(username))
-                            existingCharades.KnownBy.Add(username);
-                        continue;
-                    }
-                }
-                var seriesExistsInDb = await seriesRepository.SeriesExistsByAnimeId(entry.Id);
-                if (seriesExistsInDb)
-                {
-                    var charadesEntry = await GetCharadesFromDatabase(entry.Id, entry.Users);
-                    charades.Add(charadesEntry);
-                }
-                else
-                {
-                    var franchise = franchiseService.CreateFromAnime(entry.Id);
-                    var indirectExistingRelation = GetIndirectExistingRelation(charades, entry.Id, franchise);
-                    if (indirectExistingRelation != null)
-                    {
-                        AddAnimeToCharadesEntry(indirectExistingRelation, entry.Id);
-                    }
-                    else
-                    {
-                        charades.Add(new CharadesEntry() { Series = franchise, KnownBy = entry.Users });
-                    }
-                }
-            }
-            return charades;
+            var mergedAnimeLists = await myAnimeListService.GetMergedAnimeLists(usernames);
+            mergedList = mergedAnimeLists.ToList();
+            charades = new List<CharadesEntry>();
         }
 
-        private async Task<CharadesEntry> GetCharadesFromDatabase(long malId, ICollection<string> usernames)
+        public int GetMergedPositionsCount()
         {
+            return mergedList.Count;
+        }
+
+        public async Task<CharadesEntry> MakeNextCharadesEntry()
+        {
+            var entry = mergedList[nextEntryIndex++];
+            var nextCharades = await CreateNextCharadesEntryIfDoesntExist(entry);
+            return nextCharades;
+        }
+
+        private async Task CreateCharadesFromAnimeList(ICollection<IListEntry> mergedList)
+        {
+            charades = new List<CharadesEntry>();
+            foreach (var entry in mergedList)
+            {
+                await CreateNextCharadesEntryIfDoesntExist(entry);
+            }
+        }
+
+        private async Task<CharadesEntry> CreateNextCharadesEntryIfDoesntExist(IListEntry entry)
+        {
+            var seriesExistsInDb = await seriesRepository.SeriesExistsByAnimeId(entry.Id);
+            if (seriesExistsInDb)
+            {
+                var nextCharades = await GetCharadesFromDatabase(entry.Id);
+                charades.Add(nextCharades);
+                return nextCharades;
+            }
+            var franchise = franchiseService.CreateFromAnime(entry.Id);
+            var indirectExistingRelation = GetIndirectExistingRelation(charades, entry.Id, franchise);
+            if (indirectExistingRelation != null)
+            {
+                AddAnimeToCharadesEntry(indirectExistingRelation, entry);
+                return null;
+            }
+            var charadesEntry = new CharadesEntry() { Series = franchise, KnownBy = GetAllUsersForFranchise(franchise) };
+            charades.Add(charadesEntry);
+            return charadesEntry;
+        }
+
+        private async Task<CharadesEntry> GetCharadesFromDatabase(long malId)
+        {
+            var franchise = await seriesRepository.GetByAnimeId(malId);
             var myCharadesEntry = new CharadesEntry()
             {
-                Series = await seriesRepository.GetByAnimeId(malId),
-                KnownBy = usernames
+                Series = franchise,
+                KnownBy = GetAllUsersForFranchise(franchise)
             };
             return myCharadesEntry;
         }
 
-        private void AddAnimeToCharadesEntry(CharadesEntry charadesEntry, long malId)
+        private ICollection<string> GetAllUsersForFranchise(SeriesEntry franchise)
         {
-            charadesEntry.Series.AnimePositions.Add(new AnimeEntry() { MalId = malId, Series = charadesEntry.Series });
+            var usernames = new List<string>();
+            foreach (var id in franchise.AnimePositions.Select(a => a.MalId))
+            {
+                var existingEntry = mergedList.FirstOrDefault(x => x.Id == id);
+                if (existingEntry != null)
+                {
+                    existingEntry.Users.Where(u => !usernames.Contains(u)).ForEach(u => usernames.Add(u));
+                }
+            }
+            return usernames;
+        }
+
+        private void AddAnimeToCharadesEntry(CharadesEntry charadesEntry, IListEntry entry)
+        {
+            charadesEntry.Series.AnimePositions.Add(new AnimeEntry() { MalId = entry.Id, Title = entry.Title, Series = charadesEntry.Series });
+            charadesEntry.KnownBy = GetAllUsersForFranchise(charadesEntry.Series);
         }
 
         private CharadesEntry GetIndirectExistingRelation(ICollection<CharadesEntry> charades, long malId, SeriesEntry franchise)

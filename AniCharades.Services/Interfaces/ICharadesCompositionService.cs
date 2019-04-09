@@ -11,5 +11,11 @@ namespace AniCharades.Services.Interfaces
         Task<ICollection<CharadesEntry>> GetCharades(ICollection<string> usernames);
 
         Task<ICollection<CharadesEntry>> GetCharades(params string[] usernames);
+
+        Task StartComposing(ICollection<string> usernames);
+
+        int GetMergedPositionsCount();
+
+        Task<CharadesEntry> MakeNextCharadesEntry();
     }
 }

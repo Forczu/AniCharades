@@ -64,8 +64,8 @@ namespace AniCharades.Services.Implementation
             var mainEntry = MainEntryFinder.GetMainEntry(mainEntries);
             var mainTitle = MainTitleFinder.GetMainTitle(mainEntry, mainEntries);
             var series = new SeriesEntry();
-            series.AnimePositions = animes?.Select(e => new AnimeEntry() { MalId = e.Id, Series = series }).ToArray();
-            series.MangaPositions = mangas?.Select(e => new MangaEntry() { MalId = e.Id, Series = series }).ToArray();
+            series.AnimePositions = animes?.Select(e => new AnimeEntry() { MalId = e.Id, Title = e.Title, Series = series }).ToList();
+            series.MangaPositions = mangas?.Select(e => new MangaEntry() { MalId = e.Id, Title = e.Title, Series = series }).ToList();
             series.ImageUrl = mainEntry.ImageUrl;
             series.Title = mainTitle;
             series.Translations = new[] { mainEntry.Translation };

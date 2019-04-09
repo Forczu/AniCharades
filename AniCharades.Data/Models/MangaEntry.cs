@@ -11,6 +11,8 @@ namespace AniCharades.Data.Models
         [Key]
         public long MalId { get; set; }
 
+        public string Title { get; set; }
+
         public SeriesEntry Series { get; set; }
     }
 }

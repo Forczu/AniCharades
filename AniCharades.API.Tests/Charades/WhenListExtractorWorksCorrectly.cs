@@ -41,5 +41,18 @@ namespace AniCharades.API.Tests.Charades
             Assert.True(entry.Users.Contains("Ervelan"));
             Assert.False(entry.Users.Contains("SonMati"));
         }
+
+        [Theory]
+        [InlineData("Fairy Tail")]
+        public void OnHoldEntriesShouldBeAdded(string title)
+        {
+            // given
+            string[] usernames = { "Ervelan", "SonMati" };
+            // when
+            var mergedList = fixture.Object.GetMergedAnimeLists(usernames).Result;
+            // then
+            var entry = mergedList.First(e => e.Title == title);
+            Assert.True(entry.Users.All(u => usernames.Contains(u)));
+        }
     }
 }

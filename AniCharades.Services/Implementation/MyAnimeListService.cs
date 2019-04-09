@@ -36,7 +36,7 @@ namespace AniCharades.Services.Implementation
             foreach (var username in usernames)
             {
                 var animeList = await GetAnimeList(username);
-                foreach (var animeListEntry in animeList)
+                foreach (var animeListEntry in animeList.Where(a => a.WatchingStatus != UserAnimeListExtension.PlanToWatch))
                 {
                     var animeListEntryAdapter = mergedList.FirstOrDefault(e => e.Id == animeListEntry.MalId);
                     if (animeListEntryAdapter != null)
@@ -59,7 +59,7 @@ namespace AniCharades.Services.Implementation
             foreach (var username in usernames)
             {
                 var mangaList = await GetMangaList(username);
-                foreach (var mangaListEntry in mangaList)
+                foreach (var mangaListEntry in mangaList.Where(m => m.ReadingStatus != UserMangaListExtension.PlanToRead))
                 {
                     var mangaListEntryAdapter = mergedList.FirstOrDefault(e => e.Id == mangaListEntry.MalId);
                     if (mangaListEntryAdapter != null)
