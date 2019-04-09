@@ -16,14 +16,30 @@ namespace AniCharades.API.Tests.Charades
         [Theory]
         [InlineData("Cardcaptor Sakura")]
         [InlineData("Seto no Hanayome")]
-        public void MergedListEntriesShouldHaveBothUsers(string title)
+        public void SharedEntriesShouldHaveBothUsers(string title)
         {
             // given
             string[] usernames = { "Ervelan", "SonMati" };
             // when
             var mergedList = fixture.Object.GetMergedAnimeLists(usernames).Result;
             // then
-            Assert.True(mergedList.First(e => e.Title == title).Users.All(u => usernames.Contains(u)));
+            var entry = mergedList.First(e => e.Title == title);
+            Assert.True(entry.Users.All(u => usernames.Contains(u)));
+        }
+
+        [Theory]
+        [InlineData("Mobile Suit Gundam")]
+        [InlineData("Owarimonogatari")]
+        public void SeparateEntriesShouldHaveBothUsers(string title)
+        {
+            // given
+            string[] usernames = { "Ervelan", "SonMati" };
+            // when
+            var mergedList = fixture.Object.GetMergedAnimeLists(usernames).Result;
+            // then
+            var entry = mergedList.First(e => e.Title == title);
+            Assert.True(entry.Users.Contains("Ervelan"));
+            Assert.False(entry.Users.Contains("SonMati"));
         }
     }
 }
