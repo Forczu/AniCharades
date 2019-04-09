@@ -10,6 +10,8 @@ namespace AniCharades.Adapters.Jikan
 
         public long Id => animeListEntry.MalId;
 
+        public string Title => animeListEntry.Title;
+
         public ICollection<string> Users { get; set; } = new List<string>();
 
         public JikanAnimeListEntryAdapter(AnimeListEntry animeListEntry)

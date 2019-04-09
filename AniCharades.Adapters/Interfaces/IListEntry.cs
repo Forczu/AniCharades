@@ -8,6 +8,8 @@ namespace AniCharades.Adapters.Interfaces
     {
         long Id { get; }
 
+        string Title { get; }
+
         ICollection<string> Users { get; }
 
         void AddUser(string username);

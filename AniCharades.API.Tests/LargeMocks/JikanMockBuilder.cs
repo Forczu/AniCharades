@@ -102,9 +102,10 @@ namespace AniCharades.API.Tests.LargeMocks
         private void SetAnime(long malId, string filePath)
         {
             var animeJson = File.ReadAllText(filePath);
-            jikanMock.Setup(j => j.GetAnime(malId)).ReturnsAsync(
-                    JsonConvert.DeserializeObject<Anime>(animeJson)
-                );
+            jikanMock.Setup(j => j.GetAnime(malId)).ReturnsAsync(() =>
+            {
+                return JsonConvert.DeserializeObject<Anime>(animeJson);
+            });
         }
     }
 }
