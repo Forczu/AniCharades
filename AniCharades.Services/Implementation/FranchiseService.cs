@@ -1,6 +1,7 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.Adapters.Jikan;
 using AniCharades.Algorithms.Franchise;
+using AniCharades.Common.Extensions;
 using AniCharades.Common.Utils;
 using AniCharades.Data.Models;
 using AniCharades.Services.Franchise;
@@ -58,11 +59,11 @@ namespace AniCharades.Services.Implementation
 
         private SeriesEntry CreateFranchise(ICollection<IEntryInstance> animes, ICollection<IEntryInstance> mangas)
         {
-            var mainEntries = animes;
+            var entries = animes;
             if (CollectionUtils.IsCollectionNullOrEmpty(animes))
-                mainEntries = mangas;
-            var mainEntry = MainEntryFinder.GetMainEntry(mainEntries);
-            var mainTitle = MainTitleFinder.GetMainTitle(mainEntry, mainEntries);
+                entries = mangas;
+            var mainEntry = MainEntryFinder.GetMainEntry(entries);
+            var mainTitle = GetMainTitle(entries);
             var series = new SeriesEntry();
             series.AnimePositions = animes?.Select(e => new AnimeEntry() { MalId = e.Id, Title = e.Title, Series = series }).ToList();
             series.MangaPositions = mangas?.Select(e => new MangaEntry() { MalId = e.Id, Title = e.Title, Series = series }).ToList();
@@ -80,6 +81,16 @@ namespace AniCharades.Services.Implementation
                 .ToList();
             validEntries.Add(relations.First().SourceEntry);
             return validEntries;
+        }
+
+        private static string GetMainTitle(ICollection<IEntryInstance> entries)
+        {
+            var importantEntries = entries
+                .Where(e => e.Type.NotIn("Special", "Music", "ONA"))
+                .ToArray();
+            if (CollectionUtils.IsCollectionNullOrEmpty(importantEntries))
+                return MainTitleFinder.GetMainTitle(entries);
+            return MainTitleFinder.GetMainTitle(importantEntries);
         }
     }
 }

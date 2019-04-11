@@ -11,127 +11,169 @@ namespace AniCharades.Algorithms.Franchise
 {
     public static class MainTitleFinder
     {
-        private static readonly string[] RedundantEnglishArticles = { "The", "the", "From" };
-        private static readonly string[] RedundantWords = { "Animation", "Movie", "TV", "(TV)", "OVA", "OAV" };
-        private static readonly char[] SpecialSymbols = { '.', ',', ':', ':', '!' };
-        private static readonly string ValidWordsSeparators = @"\s+";
+        private static readonly string OtherThanSemiColon = "[^:]";
+        private static readonly string NonAscii = @"[^\u0000-\u007F]+";
+        private static readonly string AlphaNumeric = @"([0-9]\.[0-9])?[^:\.]+"; //@"[A-Za-z0-9\s!?,;\\""&@#*'-]";
+        private static readonly string SubtitlePattern = $@"(?<mainTitle>{OtherThanSemiColon}+):\s(?<subTitle>{AlphaNumeric})$";
+        private static readonly Regex SubtitleRegex = new Regex(SubtitlePattern);
+        private static readonly int RedundantNumberalsNumber = 20;
 
-        private static Regex ValidWordsSeparatorRegex = new Regex(ValidWordsSeparators);
-
-        public static string GetMainTitle(IEntryInstance mainEntry, ICollection<IEntryInstance> otherEntries)
+        public static string GetMainTitle(ICollection<IEntryInstance> entries)
         {
-            if (CollectionUtils.IsCollectionNullOrEmpty(otherEntries))
+            var titles = entries.Select(e => Clean(e.Title)).ToArray();
+            if (titles.Count() == 1)
+                return titles.First();
+            var title = FindMostFrequentPhrase(titles);
+            return title;
+        }
+
+        private static string Clean(string title)
+        {
+            title = GetMainTitle(title);
+            title = RemoveRedundantWords(title);
+            title = RemoveNonAsciiCharacters(title);
+            return title;
+        }
+
+        private static string GetMainTitle(string title)
+        {
+            var match = SubtitleRegex.Match(title);
+            if (match.Success)
             {
-                var mainTitle = RemoveRedundantWords(mainEntry.Title);
-                return mainTitle;
+                title = match.Groups["mainTitle"].Value;
             }
-            var otherTitles = otherEntries.Where(a => a != mainEntry).Select(a => a.Title).ToArray();
-            var coreTitle = GetCoreTitle(mainEntry.Title, otherTitles);
-            return coreTitle;
+            return title;
         }
 
         private static string RemoveRedundantWords(string title)
         {
-            string newTitle = title;
-            foreach (var word in RedundantWords)
+            var words = title.Split(' ');
+            var lastWord = words.Last();
+            if (IsWordRedundant(lastWord))
             {
-                string redundantWord = ' ' + word;
-                foreach (var article in RedundantEnglishArticles)
+                if (words.Count() > 1)
                 {
-                    string redundantPhrase = ' ' + article + redundantWord;
-                    newTitle = newTitle.Replace(redundantPhrase, string.Empty);
-                }
-                newTitle = newTitle.Replace(redundantWord, string.Empty);
-            }
-            return newTitle;
-        }
-
-        private static string GetCoreTitle(string mainTitle, ICollection<string> otherFamilyTitles)
-        {
-            var currentTitle = RemoveRedundantWords(mainTitle);
-            var otherTitles = otherFamilyTitles.Select(t => RemoveRedundantWords(t)).ToArray();
-            var coreWords = ExtractCoreWords(currentTitle, otherTitles);
-            string newTitle = string.Join(' ', coreWords);
-            return newTitle;
-        }
-
-        private static string[] ExtractCoreWords(string currentMainTitle, ICollection<string> otherFamilyTitles)
-        {
-            IList<string> mainTitle = new List<string>();
-            var initialTitleAsWords = GetTitleAsWords(currentMainTitle).ToArray();
-            var otherTitlesAsWords = otherFamilyTitles.Select(t => GetTitleAsWords(t).ToArray());
-            
-            for (int wordIndex = 0; wordIndex < initialTitleAsWords.Count(); wordIndex++)
-            {
-                string currentTitleWord = initialTitleAsWords[wordIndex];
-                var wordStatistics = new Dictionary<string, int>();
-                wordStatistics.IncrementValue(currentTitleWord);
-                int additionalSum = 0;
-                foreach (string[] titleAsWords in otherTitlesAsWords)
-                {
-                    if (IsIndexOutOfOtherTitleBounds(wordIndex, titleAsWords.Length))
+                    var secondLastWord = words[words.Count() - 2];
+                    if (IsConnective(secondLastWord))
                     {
-                        additionalSum++;
-                        continue;
+                        words = words.SubArray(0, words.Length - 2);
                     }
-                    string otherTitleWord = titleAsWords[wordIndex];
-                    if (HasWordSpecialCharacter(currentTitleWord) && HasWordSpecialCharacter(otherTitleWord))
+                    else if (IsWordNumeral(secondLastWord))
                     {
-                        wordStatistics.IncrementValue(otherTitleWord);
-                        continue;
-                    }
-                    if (!AreWordsEqual(currentTitleWord, otherTitleWord))
-                    {
-                        wordStatistics.IncrementValue(otherTitleWord);
+                        words = words.SubArray(0, words.Length - 2);
                     }
                     else
                     {
-                        wordStatistics.IncrementValue(currentTitleWord);
+                        words = words.SubArray(0, words.Length - 1);
                     }
                 }
-                AddNewWordToTitle(mainTitle, wordStatistics);
             }
-            RemoveLastCharacterIfNecessary(mainTitle);
-            return mainTitle.ToArray();
-        }
-
-        private static IEnumerable<string> GetTitleAsWords(string title)
-        {
-            return ValidWordsSeparatorRegex.Split(title).Cast<string>();
-        }
-
-        private static bool HasWordSpecialCharacter(string titleWord)
-        {
-            return titleWord.Any(c => SpecialSymbols.Any(ss => ss.Equals(c)));
-        }
-
-        private static bool IsIndexOutOfOtherTitleBounds(int wordIndex, int otherTitleLength)
-        {
-            return wordIndex + 1 > otherTitleLength;
-        }
-
-        private static bool AreWordsEqual(string currentTitleWord, string otherTitleWord)
-        {
-            return currentTitleWord.RemoveSpecialCharacters().Equals(otherTitleWord.RemoveSpecialCharacters());
-        }
-
-        private static void RemoveLastCharacterIfNecessary(IList<string> title)
-        {
-            var lastCharacter = title.Last().Last();
-            if (lastCharacter == ':' || lastCharacter == '-')
+            else if (IsWordNumeral(lastWord) && words.Count() > 1)
             {
-                string lastWord = title.Last();
-                lastWord = lastWord.Remove(lastWord.Count() - 1);
-                title[title.Count() - 1] = lastWord;
+                var secondLastWord = words[words.Count() - 2];
+                if (IsWordRedundant(secondLastWord))
+                    words = words.SubArray(0, words.Length - 2);
             }
+            return string.Join(' ', words);
         }
 
-        private static void AddNewWordToTitle(IList<string> title, Dictionary<string, int> wordStatistics)
+        private static string RemoveNonAsciiCharacters(string title)
         {
-            int maxScore = wordStatistics.Values.Max();
-            var valuesWithMax = wordStatistics.Where(x => x.Value == maxScore);
-            var word = valuesWithMax.FirstOrDefault().Key;
-            title.Add(word);
+            title = Regex.Replace(title, NonAscii + "$", string.Empty);
+            return Regex.Replace(title, NonAscii, " ");
+        }
+
+        private static bool IsWordRedundant(string word)
+        {
+            return TitleUtils.RedundantLastWords.Any(rlw => rlw.EqualsCaseInsensitive(word)) 
+                || TitleUtils.AnimeTypes.Any(at => at.EqualsWithBrackets(word));
+        }
+
+        private static bool IsConnective(string word)
+        {
+            return TitleUtils.RedundantConnectives.Any(rc => rc.EqualsCaseInsensitive(word));
+        }
+
+        private static bool IsWordNumeral(string word)
+        {
+            var numerals = TitleUtils.GetRedundantNumerals(RedundantNumberalsNumber);
+            var isNumeral = numerals.Any(n => n.Equals(word));
+            if (isNumeral)
+                return true;
+            var numbers = TitleUtils.GetRedundantNumbers(RedundantNumberalsNumber);
+            var isNumber = numbers.Any(n => n.Equals(word));
+            return isNumber;
+        }
+
+        private static string FindMostFrequentPhrase(ICollection<string> titles)
+        {
+            var statistics = new Dictionary<string, int>();
+            foreach (var title in titles)
+            {
+                var phrases = GetPhrases(title);
+                phrases.ForEach(p => statistics.IncrementValue(p));
+            }
+            var phrase = GetPhraseWithMaxScore(statistics, titles.Count);
+            return phrase;
+        }
+
+        private static ICollection<string> GetPhrases(string title)
+        {
+            var words = title.Split(' ');
+            var length = GetPhrasesArrayLength(words.Length);
+            var phrases = new string[length];
+            for (int i = 0, k = 0; i < words.Length; ++i)
+            {
+                for (int j = 1; j <= words.Length - i; ++j, ++k)
+                {
+                    phrases[k] = string.Join(' ', words.SubArray(i, j));
+                }
+            }
+            return phrases;
+        }
+
+        private static long GetPhrasesArrayLength(int length)
+        {
+            long sum = 0;
+            for (int i = 1; i <= length; ++i)
+            {
+                sum += i;
+            }
+            return sum;
+        }
+
+        private static string GetPhraseWithMaxScore(Dictionary<string, int> statistics, int titleCount)
+        {
+            int maxScore = statistics.Values.Max();
+            string mostImportantPhrase = statistics
+                .Where(x => x.Value == maxScore)
+                .Select(x => x.Key)
+                .OrderByDescending(x => x.Length)
+                .First();
+            while (true)
+            {
+                var nextLongestPhrases = statistics
+                    .Where(s => s.Key.Contains(mostImportantPhrase) && !s.Key.Equals(mostImportantPhrase))
+                    .ToArray();
+                if (nextLongestPhrases.Count() != 0)
+                {
+                    var nextMaxScore = nextLongestPhrases.Max(x => x.Value);
+                    nextLongestPhrases = nextLongestPhrases
+                        .Where(x => x.Value == nextMaxScore)
+                        .ToArray();
+                    if ((nextMaxScore > Math.Floor((float)titleCount / 2) ||
+                        nextLongestPhrases.Count() >= maxScore))
+                    {
+                        mostImportantPhrase = nextLongestPhrases
+                            .Select(x => x.Key)
+                            .OrderByDescending(x => x.Length)
+                            .First();
+                        maxScore = nextMaxScore;
+                        continue;
+                    }
+                }
+                return mostImportantPhrase;
+            }
         }
     }
 }
