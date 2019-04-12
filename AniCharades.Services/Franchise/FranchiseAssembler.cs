@@ -105,7 +105,11 @@ namespace AniCharades.Services.Franchise
             {
                 return new RelationBetweenEntries(entry, relatedEntry, relationType);
             }
-            var entryAsRelatedSubItem = relatedEntry.Related.AllRelatedPositions.First(e => e.MalId == entry.Id);
+            var entryAsRelatedSubItem = relatedEntry.Related.AllRelatedPositions.FirstOrDefault(e => e.MalId == entry.Id);
+            if (entryAsRelatedSubItem == null)
+            {
+                return new RelationBetweenEntries(entry, relatedEntry, relationType);
+            }
             var targetToSourceRelation = entryAsRelatedSubItem.RelationType;
             var relation = new RelationBetweenEntries(entry, relatedEntry, relationType, targetToSourceRelation);
             return relation;

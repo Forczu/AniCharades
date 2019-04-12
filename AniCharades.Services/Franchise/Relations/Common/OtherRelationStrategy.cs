@@ -29,6 +29,7 @@ namespace AniCharades.Services.Franchise.Relations.Common
                 {
                     firstTitle = GetMainTitlePart(firstTitle, separator);
                     secondTitle = GetMainTitlePart(secondTitle, separator);
+                    break;
                 }
             }
         }

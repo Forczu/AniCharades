@@ -18,13 +18,18 @@ namespace AniCharades.Algorithms.Franchise
         private static readonly Regex SubtitleRegex = new Regex(SubtitlePattern);
         private static readonly int RedundantNumberalsNumber = 20;
 
-        public static string GetMainTitle(ICollection<IEntryInstance> entries)
+        public static string GetMainTitle(ICollection<string> entries)
         {
-            var titles = entries.Select(e => Clean(e.Title)).ToArray();
+            var titles = entries.Select(e => Clean(e)).ToArray();
             if (titles.Count() == 1)
                 return titles.First();
             var title = FindMostFrequentPhrase(titles);
             return title;
+        }
+
+        public static string GetMainTitle(ICollection<IEntryInstance> entries)
+        {
+            return GetMainTitle(entries.Select(e => e.Title).ToArray());
         }
 
         private static string Clean(string title)
@@ -161,8 +166,8 @@ namespace AniCharades.Algorithms.Franchise
                     nextLongestPhrases = nextLongestPhrases
                         .Where(x => x.Value == nextMaxScore)
                         .ToArray();
-                    if ((nextMaxScore > Math.Floor((float)titleCount / 2) ||
-                        nextLongestPhrases.Count() >= maxScore))
+                    if (IsScoreGreaterThanHalfOfTitles(titleCount, nextMaxScore) ||
+                        IsPhrasesLengthGreaterOrEqualScore(maxScore, nextMaxScore, nextLongestPhrases))
                     {
                         mostImportantPhrase = nextLongestPhrases
                             .Select(x => x.Key)
@@ -174,6 +179,16 @@ namespace AniCharades.Algorithms.Franchise
                 }
                 return mostImportantPhrase;
             }
+        }
+
+        private static bool IsScoreGreaterThanHalfOfTitles(int titleCount, int nextMaxScore)
+        {
+            return nextMaxScore > Math.Floor((float)titleCount / 2);
+        }
+
+        private static bool IsPhrasesLengthGreaterOrEqualScore(int maxScore, int nextMaxScore, KeyValuePair<string, int>[] nextLongestPhrases)
+        {
+            return (nextMaxScore > 1 || nextMaxScore == maxScore - 1) && nextLongestPhrases.Count() >= maxScore;
         }
     }
 }
