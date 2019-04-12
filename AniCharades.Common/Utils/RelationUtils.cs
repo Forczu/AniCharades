@@ -54,7 +54,9 @@ namespace AniCharades.Common.Utils
 
         public static string RemoveSpecialCharacters(this string title)
         {
-            return Regex.Replace(title, @"[^\w\d\s]", string.Empty);
+            title = Regex.Replace(title, @"[^\w\d\s]", string.Empty);
+            title = Regex.Replace(title, @"x2", string.Empty);
+            return title;
         }
     }
 }

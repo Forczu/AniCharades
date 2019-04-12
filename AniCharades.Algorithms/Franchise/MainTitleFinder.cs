@@ -13,9 +13,13 @@ namespace AniCharades.Algorithms.Franchise
     {
         private static readonly string OtherThanSemiColon = "[^:]";
         private static readonly string NonAscii = @"[^\u0000-\u007F]+";
-        private static readonly string AlphaNumeric = @"([0-9]\.[0-9])?[^:\.]+"; //@"[A-Za-z0-9\s!?,;\\""&@#*'-]";
+        private static readonly string AlphaNumeric = @"([0-9]\.[0-9])?[^:\.]+";
         private static readonly string SubtitlePattern = $@"(?<mainTitle>{OtherThanSemiColon}+):\s(?<subTitle>{AlphaNumeric})$";
         private static readonly Regex SubtitleRegex = new Regex(SubtitlePattern);
+        private static readonly string ExtraCharactersPattern = @"(?<mainPart>[^!?]+[!?])(?<extraPart>[!?]+$)";
+        private static readonly Regex ExtraCharactersRegex = new Regex(ExtraCharactersPattern);
+        private static readonly string CustomCharactersPattern = @"(?<mainPart1>.+)(?<extraPart>x2)(?<mainPart2>.+)$";
+        private static readonly Regex CustomCharactersRegex = new Regex(CustomCharactersPattern);
         private static readonly int RedundantNumberalsNumber = 20;
 
         public static string GetMainTitle(ICollection<string> entries)
@@ -35,6 +39,8 @@ namespace AniCharades.Algorithms.Franchise
         private static string Clean(string title)
         {
             title = GetMainTitle(title);
+            title = RemoveCustomCharacters(title);
+            title = RemoveExtraCharacters(title);
             title = RemoveRedundantWords(title);
             title = RemoveNonAsciiCharacters(title);
             return title;
@@ -46,6 +52,26 @@ namespace AniCharades.Algorithms.Franchise
             if (match.Success)
             {
                 title = match.Groups["mainTitle"].Value;
+            }
+            return title;
+        }
+
+        private static string RemoveExtraCharacters(string title)
+        {
+            var match = ExtraCharactersRegex.Match(title);
+            if (match.Success)
+            {
+                title = match.Groups["mainPart"].Value;
+            }
+            return title;
+        }
+
+        private static string RemoveCustomCharacters(string title)
+        {
+            var match = CustomCharactersRegex.Match(title);
+            if (match.Success)
+            {
+                title = match.Groups["mainPart1"].Value + match.Groups["mainPart2"].Value;
             }
             return title;
         }
