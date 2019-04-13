@@ -1,25 +1,16 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.Common.Extensions;
+using AniCharades.Common.Titles;
 using AniCharades.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AniCharades.Algorithms.Franchise
 {
     public static class MainTitleFinder
     {
-        private static readonly string OtherThanSemiColon = "[^:]";
-        private static readonly string NonAscii = @"[^\u0000-\u007F]+";
-        private static readonly string AlphaNumeric = @"([0-9]\.[0-9])?[^:\.]+";
-        private static readonly string SubtitlePattern = $@"(?<mainTitle>{OtherThanSemiColon}+):\s(?<subTitle>{AlphaNumeric})$";
-        private static readonly Regex SubtitleRegex = new Regex(SubtitlePattern);
-        private static readonly string ExtraCharactersPattern = @"(?<mainPart>[^!?]+[!?])(?<extraPart>[!?]+$)";
-        private static readonly Regex ExtraCharactersRegex = new Regex(ExtraCharactersPattern);
-        private static readonly string CustomCharactersPattern = @"(?<mainPart1>.+)(?<extraPart>x2)(?<mainPart2>.+)$";
-        private static readonly Regex CustomCharactersRegex = new Regex(CustomCharactersPattern);
         private static readonly int RedundantNumberalsNumber = 20;
 
         public static string GetMainTitle(ICollection<string> entries)
@@ -42,13 +33,13 @@ namespace AniCharades.Algorithms.Franchise
             title = RemoveCustomCharacters(title);
             title = RemoveExtraCharacters(title);
             title = RemoveRedundantWords(title);
-            title = RemoveNonAsciiCharacters(title);
+            title = TitleRegularExpressions.RemoveNonAsciiCharacters(title);
             return title;
         }
 
         private static string GetMainTitle(string title)
         {
-            var match = SubtitleRegex.Match(title);
+            var match = TitleRegularExpressions.SubtitleRegex.Match(title);
             if (match.Success)
             {
                 title = match.Groups["mainTitle"].Value;
@@ -58,7 +49,7 @@ namespace AniCharades.Algorithms.Franchise
 
         private static string RemoveExtraCharacters(string title)
         {
-            var match = ExtraCharactersRegex.Match(title);
+            var match = TitleRegularExpressions.ExtraCharactersRegex.Match(title);
             if (match.Success)
             {
                 title = match.Groups["mainPart"].Value;
@@ -68,7 +59,7 @@ namespace AniCharades.Algorithms.Franchise
 
         private static string RemoveCustomCharacters(string title)
         {
-            var match = CustomCharactersRegex.Match(title);
+            var match = TitleRegularExpressions.CustomCharactersRegex.Match(title);
             if (match.Success)
             {
                 title = match.Groups["mainPart1"].Value + match.Groups["mainPart2"].Value;
@@ -106,12 +97,6 @@ namespace AniCharades.Algorithms.Franchise
                     words = words.SubArray(0, words.Length - 2);
             }
             return string.Join(' ', words);
-        }
-
-        private static string RemoveNonAsciiCharacters(string title)
-        {
-            title = Regex.Replace(title, NonAscii + "$", string.Empty);
-            return Regex.Replace(title, NonAscii, " ");
         }
 
         private static bool IsWordRedundant(string word)

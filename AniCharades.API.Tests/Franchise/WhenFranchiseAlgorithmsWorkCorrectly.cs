@@ -41,9 +41,9 @@ namespace AniCharades.API.Tests.Franchise
 
         [Theory]
         [InlineData("Nyaruko", "Haiyore! Nyaruko-san", "https://cdn.myanimelist.net/images/anime/6/49081.jpg")]
-        [InlineData("LoveLive", "Love Live! School Idol Project", "https://cdn.myanimelist.net/images/anime/11/56849.jpg")]
+        [InlineData("LoveLive", "Love Live!", "https://cdn.myanimelist.net/images/anime/11/56849.jpg")]
         [InlineData("KamiNomi", "Kami nomi zo Shiru Sekai", "https://cdn.myanimelist.net/images/anime/2/43361.jpg")]
-        [InlineData("CodeGeass", "Code Geass: Hangyaku no Lelouch", "https://cdn.myanimelist.net/images/anime/5/50331.jpg")]
+        [InlineData("CodeGeass", "Code Geass", "https://cdn.myanimelist.net/images/anime/5/50331.jpg")]
         public void SeriesShouldHaveFirstTvSeriesSelectedAsMain(string franchiseName, string expectedTitle, string expectedImageUrl)
         {
             // given

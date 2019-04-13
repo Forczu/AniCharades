@@ -39,7 +39,8 @@ namespace AniCharades.API.Tests.Relations
             { "KimiGaNozomuEienTv", 147 },
             { "MobileSuitGundamFirstTv", 80 },
             { "FateFirstTv", 356 }, { "FateUbwMovie", 6922 },
-            { "FateZeroFirstTv", 11741 }, { "FateApocrypha", 34662 }, { "FateExtraTv", 33047 }, { "FateGrandOrderFirstOva", 34321 },
+            { "FateZeroFirstTv", 11741 }, { "FateApocrypha", 34662 }, { "FateExtraTv", 33047 },
+            { "FateGrandOrderFirstOva", 34321 },  { "FateGrandOrderCMs", 36064 }, { "FateGrandOrderMangaDeWakaru", 38958 },
             { "PrismaIllyaFirstTv", 14829 }, { "PrismaIllyaMovieSpecial", 36833 }, { "EmiyaGohan", 37033 }
         };
 
@@ -104,6 +105,8 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("KamiNomiFirstTv", "MagicalStarKanon")]
         [InlineData("SakiFirstTv", "SakiAchigaTv")]
         [InlineData("PrismaIllyaFirstTv", "PrismaIllyaMovieSpecial")]
+        [InlineData("FateGrandOrderFirstOva", "FateGrandOrderCMs")]
+        [InlineData("FateGrandOrderFirstOva", "FateGrandOrderMangaDeWakaru")]
         public void FranchiseShouldContainCertainEntry(string firstEntryName, string expectedEntryName)
         {
             // given

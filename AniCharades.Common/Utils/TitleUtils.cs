@@ -8,7 +8,7 @@ namespace AniCharades.Common.Utils
     public static class TitleUtils
     {
         public static readonly string[] RedundantLastWords = { "OVA", "OAV", "Movie", "Special", "PV", "Season",
-            "Gaiden", "Prologue", "Animation", "Recollections" };
+            "Gaiden", "Prologue", "Animation", "Recollections", "CM", "CMs" };
         public static readonly string[] RedundantConnectives = { "the", "a", "an" };
         public static readonly string[] AnimeTypes = { "OVA", "Movie", "Special", "TV", "ONA" };
 
