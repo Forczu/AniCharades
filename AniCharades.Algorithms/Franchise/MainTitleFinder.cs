@@ -32,7 +32,8 @@ namespace AniCharades.Algorithms.Franchise
             title = GetMainTitle(title);
             title = RemoveCustomCharacters(title);
             title = RemoveExtraCharacters(title);
-            title = RemoveRedundantWords(title);
+            title = RemoveLastRedundantWords(title);
+            title = RemoveFirstRedundantWords(title);
             title = TitleRegularExpressions.RemoveNonAsciiCharacters(title);
             return title;
         }
@@ -67,7 +68,18 @@ namespace AniCharades.Algorithms.Franchise
             return title;
         }
 
-        private static string RemoveRedundantWords(string title)
+        private static string RemoveFirstRedundantWords(string title)
+        {
+            var words = title.Split(' ');
+            var firstWord = words.First();
+            if (TitleUtils.RedundantFirstWords.Any(w => w.EqualsCaseInsensitive(firstWord)))
+            {
+                words = words.SubArray(1, words.Length - 1);
+            }
+            return string.Join(' ', words);
+        }
+
+        private static string RemoveLastRedundantWords(string title)
         {
             var words = title.Split(' ');
             var lastWord = words.Last();
