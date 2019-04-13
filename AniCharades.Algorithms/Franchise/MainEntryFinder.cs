@@ -48,7 +48,7 @@ namespace AniCharades.Algorithms.Franchise
         private static bool IsSecondaryTitle(IEntryInstance entry)
         {
             return SecondaryTitleKeywords.Any(k => entry.Title.Contains(k))
-                || SecondaryTypeKeywords.Any(k => entry.Type.Contains(k))
+                || (SecondaryTypeKeywords.Any(k => entry.Type.Contains(k) && entry.Episodes < 7))
                 || IsMovieExplicitly(entry);
         }
 

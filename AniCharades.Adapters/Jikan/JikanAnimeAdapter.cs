@@ -32,6 +32,15 @@ namespace AniCharades.Adapters.Jikan
 
         public string Description => anime.Synopsis ?? string.Empty;
 
+        public int Episodes
+        {
+            get
+            {
+                var parsed = int.TryParse(anime.Episodes, out var episodes);
+                return parsed ? episodes : 0;
+            }
+        }
+
         public JikanAnimeAdapter(Anime anime)
         {
             this.anime = anime;

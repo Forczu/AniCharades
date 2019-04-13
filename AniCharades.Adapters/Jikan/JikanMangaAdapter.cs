@@ -32,6 +32,15 @@ namespace AniCharades.Adapters.Jikan
 
         public string Description => manga.Synopsis ?? string.Empty;
 
+        public int Episodes
+        {
+            get
+            {
+                var parsed = int.TryParse(manga.Chapters, out var chapters);
+                return parsed ? chapters : 0;
+            }
+        }
+
         public JikanMangaAdapter(Manga manga)
         {
             this.manga = manga;

@@ -5,7 +5,7 @@ namespace AniCharades.Common.Titles
 {
     internal static class TitlePatterns
     {
-        private static readonly string[] TitlesEndingsForExplicitSubtitle = { @"ies\.", "Sand", "Stratos.+", "Reconguista", "Orphans", "Control" };
+        private static readonly string[] TitlesEndingsForExplicitSubtitle = { @"ies\.", "Sand", "Stratos.+", "Reconguista", "Orphans", "Control", "Zvezda" };
 
         public static readonly string OtherThanSemiColon = "[^:]";
         public static readonly string NonAscii = @"[^\u0000-\u007F]+";

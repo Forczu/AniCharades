@@ -40,6 +40,8 @@ namespace AniCharades.Services.Franchise.Relations
                     return new GundamRelationStrategy();
                 case "devilman":
                     return new DevilmanRelationStrategy();
+                case "mameshiba":
+                    return new MameshibaRelationStrategy();
             }
         }
     }
