@@ -13,6 +13,7 @@ namespace AniCharades.Common.Titles
         public static readonly string LooseSubtitlePattern = $@"(?<mainTitle>{AlphaNumeric}+){LooseSubtitleSeparators}(?<subTitle>{AlphaNumeric}+)";
         public static readonly string ExtraCharactersPattern = @"(?<mainPart>[^!?]+[!?])(?<extraPart>[!?]+$)";
         public static readonly string CustomCharactersPattern = @"(?<mainPart1>.+)(?<extraPart>x2)(?<mainPart2>.+)$";
+        public static readonly string CollaborationPattern = @"(?<firstPart>.+)\sx\s(?<secondPart>.+)";
     }
 
     public static class TitleRegularExpressions
@@ -21,6 +22,7 @@ namespace AniCharades.Common.Titles
         public static readonly Regex LooseSubtitleRegex = new Regex(TitlePatterns.LooseSubtitlePattern);
         public static readonly Regex ExtraCharactersRegex = new Regex(TitlePatterns.ExtraCharactersPattern);
         public static readonly Regex CustomCharactersRegex = new Regex(TitlePatterns.CustomCharactersPattern);
+        public static readonly Regex CollaborationRegex = new Regex(TitlePatterns.CollaborationPattern);
 
         public static string RemoveNonAsciiCharacters(string title)
         {
