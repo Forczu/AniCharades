@@ -1,13 +1,16 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AniCharades.Common.Titles
 {
     internal static class TitlePatterns
     {
+        private static readonly string[] TitlesEndingsForExplicitSubtitle = { @"ies\.", "Sand", "Stratos.+", "Reconguista", "Orphans", "Control" };
+
         public static readonly string OtherThanSemiColon = "[^:]";
         public static readonly string NonAscii = @"[^\u0000-\u007F]+";
         public static readonly string OtherThanSemicolonWithNumbers = @"([0-9]\.[0-9])?[^:]+";
-        public static readonly string SubtitlePattern = $@"(?<mainTitle>{OtherThanSemiColon}+):\s(?!(.+(ies\.|Sand|Stratos.+|Reconguista|Orphans))$)(?<subTitle>{OtherThanSemicolonWithNumbers})";
+        public static readonly string SubtitlePattern = CreateSubtitlePattern();
         public static readonly string LooseSubtitleSeparators = "[!?:]";
         public static readonly string AlphaNumeric = @"[A-Za-z0-9\s]";
         public static readonly string LooseSubtitlePattern = $@"(?<mainTitle>{AlphaNumeric}+){LooseSubtitleSeparators}(?<subTitle>{AlphaNumeric}+)";
@@ -16,6 +19,22 @@ namespace AniCharades.Common.Titles
         public static readonly string CollaborationPattern = @"(?<firstPart>.+)\sx\s(?<secondPart>.+)";
         public static readonly string NonAlphanumericAtEndPattern = @"(?<mainPart>[A-Za-z0-9\s]+)(?<endPart>[^A-Za-z0-9\s]+)$";
         public static readonly string YearInBracketsPattern = @"\([1-2][0-9][0-9][0-9]\)";
+
+        private static string CreateSubtitlePattern()
+        {
+            var patternFirstPart = $@"(?<mainTitle>{OtherThanSemiColon}+):\s(?!(.+(";
+            var patternSecondPart = $@"))$)(?<subTitle>{OtherThanSemicolonWithNumbers})";
+            var patternBuilder = new StringBuilder();
+            patternBuilder.Append(patternFirstPart);
+            for (int i = 0; i < TitlesEndingsForExplicitSubtitle.Length; ++i)
+            {
+                patternBuilder.Append(TitlesEndingsForExplicitSubtitle[i]);
+                if (i != TitlesEndingsForExplicitSubtitle.Length - 1)
+                    patternBuilder.Append('|');
+            }
+            patternBuilder.Append(patternSecondPart);
+            return patternBuilder.ToString();
+        }
     }
 
     public static class TitleRegularExpressions
