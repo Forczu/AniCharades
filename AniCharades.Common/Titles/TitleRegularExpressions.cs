@@ -6,8 +6,8 @@ namespace AniCharades.Common.Titles
     {
         public static readonly string OtherThanSemiColon = "[^:]";
         public static readonly string NonAscii = @"[^\u0000-\u007F]+";
-        public static readonly string OtherThanSemicolonAndDot = @"([0-9]\.[0-9])?[^:\.]+";
-        public static readonly string SubtitlePattern = $@"(?<mainTitle>{OtherThanSemiColon}+):\s(?<subTitle>{OtherThanSemicolonAndDot})$";
+        public static readonly string OtherThanSemicolonWithNumbers = @"([0-9]\.[0-9])?[^:]+";
+        public static readonly string SubtitlePattern = $@"(?<mainTitle>{OtherThanSemiColon}+):\s(?!.+ies\.$)(?<subTitle>{OtherThanSemicolonWithNumbers})";
         public static readonly string LooseSubtitleSeparators = "[!?:]";
         public static readonly string AlphaNumeric = @"[A-Za-z0-9\s]";
         public static readonly string LooseSubtitlePattern = $@"(?<mainTitle>{AlphaNumeric}+){LooseSubtitleSeparators}(?<subTitle>{AlphaNumeric}+)";

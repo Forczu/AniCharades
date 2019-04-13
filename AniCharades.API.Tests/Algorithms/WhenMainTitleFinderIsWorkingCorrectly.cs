@@ -36,6 +36,7 @@ namespace AniCharades.API.Tests.Algorithms
         [InlineData("FullMetalPanic", "Full Metal Panic!")]
         [InlineData("GochiUsa", "Gochuumon wa Usagi Desu ka?")]
         [InlineData("HajimeNoIppo", "Hajime no Ippo")]
+        [InlineData("NewGame", "New Game!")]
         public void CollectionShouldHaveExpectedMainTitle(string franchiseKey, string expectedTitle)
         {
             // given
