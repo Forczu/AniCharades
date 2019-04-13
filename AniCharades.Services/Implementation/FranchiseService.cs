@@ -86,7 +86,7 @@ namespace AniCharades.Services.Implementation
         private static string GetMainTitle(ICollection<IEntryInstance> entries, IEntryInstance mainEntry)
         {
             var importantEntries = entries
-                .Where(e => e.Type.NotIn("Special", "Music", "ONA"))
+                .Where(e => e.Type.NotIn("Music", "ONA"))
                 .ToArray();
             if (CollectionUtils.IsCollectionNullOrEmpty(importantEntries))
                 return new MainTitleFinder().GetMainTitle(entries, mainEntry);

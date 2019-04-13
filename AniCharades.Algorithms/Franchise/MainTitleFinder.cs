@@ -97,10 +97,19 @@ namespace AniCharades.Algorithms.Franchise
         private string RemoveFirstRedundantWords(string title)
         {
             var words = title.Split(' ');
+            if (words.Count() <= 1)
+                return title;
             var firstWord = words.First();
             if (TitleUtils.RedundantFirstWords.Any(w => w.EqualsCaseInsensitive(firstWord)))
             {
-                words = words.SubArray(1, words.Length - 1);
+                var nextWordIndex = title.IndexOf(' ') + 1;
+                var titleWithoutPrefix = title.Substring(nextWordIndex, title.Length - nextWordIndex);
+                var containsTitleWithoutPrefix = originalTitles
+                    .Any(t => t.Contains(titleWithoutPrefix) && !t.Contains(firstWord));
+                if (containsTitleWithoutPrefix)
+                {
+                    words = words.SubArray(1, words.Length - 1);
+                }
             }
             return string.Join(' ', words);
         }
@@ -116,7 +125,7 @@ namespace AniCharades.Algorithms.Franchise
                 var nextLastWord = words[words.Count() - 2];
                 int wordsToRemoveNumber = 1;
                 while (words.Count() > 1 && (IsConnective(nextLastWord) ||
-                     IsWordRedundant(nextLastWord)))
+                     IsWordRedundant(nextLastWord)) || IsNumeral(nextLastWord))
                 {
                     wordsToRemoveNumber++;
                     nextLastWord = words[words.Count() - wordsToRemoveNumber - 1];
@@ -184,6 +193,12 @@ namespace AniCharades.Algorithms.Franchise
                 return true;
             var isRomanNumber = RedundantRomanNumbers.Any(n => n.Equals(word));
             return isRomanNumber;
+        }
+
+        private bool IsNumeral(string word)
+        {
+            var isNumeral = RedundantNumerals.Any(n => n.Equals(word));
+            return isNumeral;
         }
 
         private bool EntriesContainTitleWithoutSuffix(string title, string suffix)
