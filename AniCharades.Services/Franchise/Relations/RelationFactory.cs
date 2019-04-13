@@ -1,4 +1,5 @@
 ﻿using AniCharades.Services.Franchise.Relations.Common;
+using AniCharades.Services.Franchise.Relations.Custom;
 
 namespace AniCharades.Services.Franchise.Relations
 {
@@ -35,6 +36,10 @@ namespace AniCharades.Services.Franchise.Relations
                     return new OtherRelationStrategy();
                 case "hasParentStory":
                     return new HasParentStoryStrategy();
+                case "gundam":
+                    return new GundamRelationStrategy();
+                case "devilman":
+                    return new DevilmanRelationStrategy();
             }
         }
     }
