@@ -15,11 +15,15 @@ namespace AniCharades.Services.Implementation
         public bool IsRelationValid(RelationBetweenEntries relation)
         {
             var relationCriteria = RelationConfiguration.Instance.Get(relation);
-            var relationStrategy = RelationFactory.Instance.Create(relationCriteria.Strategy);
+            var relationStrategies = relationCriteria.Strategies.Select(s => RelationFactory.Instance.Create(s)).ToArray();
             var isTargetParentStory = relation.TargetForSourceType == Data.Enumerations.RelationType.ParentStory;
-            var areEqual = !isTargetParentStory
-                ? relationStrategy.AreRelated(relation.SourceEntry, relation.TargetEntry)
-                : relationStrategy.AreRelated(relation.TargetEntry, relation.SourceEntry);
+            bool areEqual = true;
+            foreach (var relationStrategy in relationStrategies)
+            {
+                areEqual &= !isTargetParentStory
+                    ? relationStrategy.AreRelated(relation.SourceEntry, relation.TargetEntry)
+                    : relationStrategy.AreRelated(relation.TargetEntry, relation.SourceEntry);
+            }
             return areEqual;
         }
     }

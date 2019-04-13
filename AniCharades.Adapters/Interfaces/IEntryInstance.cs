@@ -25,5 +25,7 @@ namespace AniCharades.Adapters.Interfaces
         string Type { get; }
 
         string Duration { get; }
+
+        string Description { get; }
     }
 }

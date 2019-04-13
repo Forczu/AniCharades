@@ -42,7 +42,8 @@ namespace AniCharades.API.Tests.Relations
             { "FateZeroFirstTv", 11741 }, { "FateApocrypha", 34662 }, { "FateExtraTv", 33047 },
             { "FateGrandOrderFirstOva", 34321 },  { "FateGrandOrderCMs", 36064 }, { "FateGrandOrderMangaDeWakaru", 38958 },
             { "PrismaIllyaFirstTv", 14829 }, { "PrismaIllyaMovieSpecial", 36833 }, { "EmiyaGohan", 37033 },
-            { "MajiKoiTv", 10213 }, { "KimiAruTv", 3229 }
+            { "MajiKoiTv", 10213 }, { "KimiAruTv", 3229 },
+            { "LupinFirstTv", 1412 }, { "LupinVsConanMovie", 6115 }
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -75,6 +76,7 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("ChuunibyouRenLite", 13)]
         [InlineData("LoveLiveSecondTv", 25)]
         [InlineData("DragonBallGT", 41)]
+        [InlineData("LupinFirstTv", 52)]
         public void FranchiseShouldHaveExpectedCount(string firstEntryName, int expectedCount)
         {
             // given
@@ -125,6 +127,7 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("MahoukaTv", "MahoukaMameshiba")]
         [InlineData("DragonBallGT", "DrSlumpTv")]
         [InlineData("KimiGaNozomuEienTv", "MobileSuitGundamFirstTv")]
+        [InlineData("LupinFirstTv", "LupinVsConanMovie")]
         public void FranchiseShouldNotContainCertainEntry(string firstEntryName, string expectedNonContainedEntryName)
         {
             // given

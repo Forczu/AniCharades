@@ -30,6 +30,8 @@ namespace AniCharades.Adapters.Jikan
 
         public string Duration => null;
 
+        public string Description => manga.Synopsis ?? string.Empty;
+
         public JikanMangaAdapter(Manga manga)
         {
             this.manga = manga;

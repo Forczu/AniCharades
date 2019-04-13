@@ -3,6 +3,7 @@ using AniCharades.Services.Franchise.Relations;
 using AniCharades.Services.Franchise.Relations.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -21,9 +22,9 @@ namespace AniCharades.API.Tests.Relations
             var config = RelationConfiguration.Instance;
             // when
             var criteria = config.GetFromRelation(relationType);
-            var strategy = RelationFactory.Instance.Create(criteria.Strategy);
+            var strategies = criteria.Strategies.Select(s => RelationFactory.Instance.Create(s));
             // then
-            Assert.IsType(type, strategy);
+            Assert.IsType(type, strategies.First());
         }
     }
 }

@@ -33,6 +33,8 @@ namespace AniCharades.Services.Franchise.Relations
                     return new SpinOffRelationStrategy();
                 case "other":
                     return new OtherRelationStrategy();
+                case "hasParentStory":
+                    return new HasParentStoryStrategy();
             }
         }
     }

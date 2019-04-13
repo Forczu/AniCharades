@@ -24,8 +24,8 @@ namespace AniCharades.Data.Models
         [JsonConverter(typeof(StringEnumConverter))]
         public RelationType[] Relations { get; set; }
 
-        [JsonProperty("strategy")]
-        public string Strategy { get; set; }
+        [JsonProperty("strategies")]
+        public string[] Strategies { get; set; }
 
         [JsonProperty("types")]
         public string[] Types { get; set; }

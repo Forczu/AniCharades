@@ -30,6 +30,8 @@ namespace AniCharades.Adapters.Jikan
 
         public string Duration => anime.Duration;
 
+        public string Description => anime.Synopsis ?? string.Empty;
+
         public JikanAnimeAdapter(Anime anime)
         {
             this.anime = anime;
