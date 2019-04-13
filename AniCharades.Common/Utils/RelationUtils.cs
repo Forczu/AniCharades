@@ -9,6 +9,7 @@ namespace AniCharades.Common.Utils
     public static class RelationUtils
     {
         private static readonly string[] NonImportantWord = { "ni", "de", "a", "an", "the" };
+        private static readonly char[] Separators = { ' ', '+', '☆' };
 
         public static bool ContainsAnyKeyword(this string title, string[] keywords)
         {
@@ -27,8 +28,8 @@ namespace AniCharades.Common.Utils
 
         public static bool ContainsAnySharedWord(this string firstTitle, string secondTitle)
         {
-            var firstWords = firstTitle.Split(' ');
-            var secondWords = secondTitle.Split(' ');
+            var firstWords = firstTitle.Split(Separators);
+            var secondWords = secondTitle.Split(Separators);
             bool hasSharedWord = firstWords.Any(
                 fw => !NonImportantWord.Contains(fw.ToLower()) &&
                 secondWords.Any(sw => WordsAreEqual(sw, fw)));
