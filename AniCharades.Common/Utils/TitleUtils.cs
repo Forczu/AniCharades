@@ -8,7 +8,7 @@ namespace AniCharades.Common.Utils
     public static class TitleUtils
     {
         public static readonly string[] RedundantLastWords = { "OVA", "OAV", "Movie", "Special", "PV", "Season",
-            "Gaiden", "Prologue", "Animation", "Recollections", "CM", "CMs" };
+            "Gaiden", "Prologue", "Animation", "Recollections", "CM", "CMs", "Zoku", "Shou", "ONA", "The" };
         public static readonly string[] RedundantFirstWords = { "Shin" };
         public static readonly string[] RedundantConnectives = { "the", "a", "an" };
         public static readonly string[] AnimeTypes = { "OVA", "Movie", "Special", "TV", "ONA" };
@@ -45,6 +45,16 @@ namespace AniCharades.Common.Utils
             for (int i = 1; i <= numberCount; ++i)
             {
                 numbers[i - 1] = i.ToString();
+            }
+            return numbers;
+        }
+
+        public static ICollection<string> GetRedundantRomanNumbers(int numberCount)
+        {
+            var numbers = new string[numberCount];
+            for (int i = 1; i <= numberCount; ++i)
+            {
+                numbers[i - 1] = new RomanNumerals.RomanNumeral(i).ToString();
             }
             return numbers;
         }

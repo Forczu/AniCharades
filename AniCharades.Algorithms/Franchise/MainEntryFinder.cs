@@ -27,16 +27,16 @@ namespace AniCharades.Algorithms.Franchise
             var sortedEntries = series.Where(s => s.TimePeriod.From != null).OrderBy(a => a.Id).ToList();
             IEntryInstance mainEntry = sortedEntries.First(), otherEntry = null;
             var rejectedEntries = new List<IEntryInstance>();
-            for (int i = 0; i < series.Count; ++i)
+            for (int i = 0; i < sortedEntries.Count; ++i)
             {
                 if (IsSecondaryTitle(mainEntry))
                 {
-                    otherEntry = series.Where(a => !IsSecondaryTitle(a) && !rejectedEntries.Contains(a)).FirstOrDefault();
+                    otherEntry = sortedEntries.Where(a => !IsSecondaryTitle(a) && !rejectedEntries.Contains(a)).FirstOrDefault();
                     mainEntry = ReplaceMainEntryIfOtherNotNull(mainEntry, otherEntry, rejectedEntries);
                 }
                 if (IsTooShortForMainSeries(mainEntry))
                 {
-                    otherEntry = series.Where(a => !IsTooShortForMainSeries(a) && !rejectedEntries.Contains(a)).FirstOrDefault();
+                    otherEntry = sortedEntries.Where(a => !IsTooShortForMainSeries(a) && !rejectedEntries.Contains(a)).FirstOrDefault();
                     mainEntry = ReplaceMainEntryIfOtherNotNull(mainEntry, otherEntry, rejectedEntries);
                     continue;
                 }

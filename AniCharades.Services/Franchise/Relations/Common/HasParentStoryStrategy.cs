@@ -11,7 +11,7 @@ namespace AniCharades.Services.Franchise.Relations.Common
         {
             var firstIsParentStoryForSecond = secondEntry.Related.AllRelatedPositions
                 .Any(r => r.MalId == firstEntry.Id && 
-                    (r.RelationType.In(RelationType.ParentStory, RelationType.FullStory)));
+                    (r.RelationType.In(RelationType.ParentStory, RelationType.FullStory, RelationType.SideStory)));
             return firstIsParentStoryForSecond;
         }
     }

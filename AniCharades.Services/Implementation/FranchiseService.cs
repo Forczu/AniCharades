@@ -63,7 +63,7 @@ namespace AniCharades.Services.Implementation
             if (CollectionUtils.IsCollectionNullOrEmpty(animes))
                 entries = mangas;
             var mainEntry = MainEntryFinder.GetMainEntry(entries);
-            var mainTitle = GetMainTitle(entries);
+            var mainTitle = GetMainTitle(entries, mainEntry);
             var series = new SeriesEntry();
             series.AnimePositions = animes?.Select(e => new AnimeEntry() { MalId = e.Id, Title = e.Title, Series = series }).ToList();
             series.MangaPositions = mangas?.Select(e => new MangaEntry() { MalId = e.Id, Title = e.Title, Series = series }).ToList();
@@ -83,14 +83,14 @@ namespace AniCharades.Services.Implementation
             return validEntries;
         }
 
-        private static string GetMainTitle(ICollection<IEntryInstance> entries)
+        private static string GetMainTitle(ICollection<IEntryInstance> entries, IEntryInstance mainEntry)
         {
             var importantEntries = entries
                 .Where(e => e.Type.NotIn("Special", "Music", "ONA"))
                 .ToArray();
             if (CollectionUtils.IsCollectionNullOrEmpty(importantEntries))
-                return MainTitleFinder.GetMainTitle(entries);
-            return MainTitleFinder.GetMainTitle(importantEntries);
+                return new MainTitleFinder().GetMainTitle(entries, mainEntry);
+            return new MainTitleFinder().GetMainTitle(importantEntries, mainEntry);
         }
     }
 }

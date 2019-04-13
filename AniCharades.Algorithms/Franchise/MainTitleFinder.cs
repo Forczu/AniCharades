@@ -9,12 +9,20 @@ using System.Text.RegularExpressions;
 
 namespace AniCharades.Algorithms.Franchise
 {
-    public static class MainTitleFinder
+    public class MainTitleFinder
     {
         private static readonly int RedundantNumberalsNumber = 20;
+        private static readonly ICollection<string> RedundantNumerals = TitleUtils.GetRedundantNumerals(RedundantNumberalsNumber);
+        private static readonly ICollection<string> RedundantNumbers = TitleUtils.GetRedundantNumbers(RedundantNumberalsNumber);
+        private static readonly ICollection<string> RedundantRomanNumbers = TitleUtils.GetRedundantRomanNumbers(RedundantNumberalsNumber);
 
-        public static string GetMainTitle(ICollection<string> entries)
+        private static readonly Regex SplitIntoPhrasesRegex = new Regex(@"(\s\(.+\))|(\s)");
+
+        private ICollection<string> originalTitles = null;
+
+        public string GetMainTitle(ICollection<string> entries)
         {
+            originalTitles = entries;
             var titles = entries.Select(e => Clean(e)).ToArray();
             if (titles.Count() == 1)
                 return titles.First();
@@ -22,23 +30,41 @@ namespace AniCharades.Algorithms.Franchise
             return title;
         }
 
-        public static string GetMainTitle(ICollection<IEntryInstance> entries)
+        public string GetMainTitle(ICollection<IEntryInstance> entries)
         {
             return GetMainTitle(entries.Select(e => e.Title).ToArray());
         }
 
-        private static string Clean(string title)
+        public string GetMainTitle(ICollection<string> entries, string mainTitle)
+        {
+            originalTitles = entries;
+            var title = GetMainTitle(entries);
+            mainTitle = Clean(mainTitle);
+            if (!mainTitle.Equals(title) && mainTitle.Contains(title) &&
+                mainTitle.Split(' ').Count() == title.Split(' ').Count() + 1)
+            {
+                return mainTitle;
+            }
+            return title;
+        }
+
+        public string GetMainTitle(ICollection<IEntryInstance> entries, IEntryInstance mainTitle)
+        {
+            return GetMainTitle(entries.Select(e => e.Title).ToArray(), mainTitle.Title);
+        }
+
+        private string Clean(string title)
         {
             title = GetMainTitle(title);
             title = RemoveCustomCharacters(title);
             title = RemoveExtraCharacters(title);
             title = RemoveLastRedundantWords(title);
             title = RemoveFirstRedundantWords(title);
-            title = TitleRegularExpressions.RemoveNonAsciiCharacters(title);
+            title = RemoveNonAsciiCharacters(title);
             return title;
         }
 
-        private static string GetMainTitle(string title)
+        private string GetMainTitle(string title)
         {
             var match = TitleRegularExpressions.SubtitleRegex.Match(title);
             if (match.Success)
@@ -48,7 +74,7 @@ namespace AniCharades.Algorithms.Franchise
             return title;
         }
 
-        private static string RemoveExtraCharacters(string title)
+        private string RemoveExtraCharacters(string title)
         {
             var match = TitleRegularExpressions.ExtraCharactersRegex.Match(title);
             if (match.Success)
@@ -58,7 +84,7 @@ namespace AniCharades.Algorithms.Franchise
             return title;
         }
 
-        private static string RemoveCustomCharacters(string title)
+        private string RemoveCustomCharacters(string title)
         {
             var match = TitleRegularExpressions.CustomCharactersRegex.Match(title);
             if (match.Success)
@@ -68,7 +94,7 @@ namespace AniCharades.Algorithms.Franchise
             return title;
         }
 
-        private static string RemoveFirstRedundantWords(string title)
+        private string RemoveFirstRedundantWords(string title)
         {
             var words = title.Split(' ');
             var firstWord = words.First();
@@ -79,61 +105,106 @@ namespace AniCharades.Algorithms.Franchise
             return string.Join(' ', words);
         }
 
-        private static string RemoveLastRedundantWords(string title)
+        private string RemoveLastRedundantWords(string title)
         {
             var words = title.Split(' ');
+            if (words.Count() <= 1)
+                return title;
             var lastWord = words.Last();
             if (IsWordRedundant(lastWord))
             {
-                if (words.Count() > 1)
+                var nextLastWord = words[words.Count() - 2];
+                int wordsToRemoveNumber = 1;
+                while (words.Count() > 1 && (IsConnective(nextLastWord) ||
+                     IsWordRedundant(nextLastWord)))
                 {
-                    var secondLastWord = words[words.Count() - 2];
-                    if (IsConnective(secondLastWord))
-                    {
-                        words = words.SubArray(0, words.Length - 2);
-                    }
-                    else if (IsWordNumeral(secondLastWord))
-                    {
-                        words = words.SubArray(0, words.Length - 2);
-                    }
-                    else
-                    {
-                        words = words.SubArray(0, words.Length - 1);
-                    }
+                    wordsToRemoveNumber++;
+                    nextLastWord = words[words.Count() - wordsToRemoveNumber - 1];
                 }
+                words = words.SubArray(0, words.Length - wordsToRemoveNumber);
             }
-            else if (IsWordNumeral(lastWord) && words.Count() > 1)
+            else if (IsWordNumeral(lastWord))
             {
-                var secondLastWord = words[words.Count() - 2];
-                if (IsWordRedundant(secondLastWord))
-                    words = words.SubArray(0, words.Length - 2);
+                var nextLastWord = words[words.Count() - 2];
+                int wordsToRemoveNumber = 1;
+                while (words.Count() > 1 && IsWordRedundant(nextLastWord))
+                {
+                    wordsToRemoveNumber++;
+                    nextLastWord = words[words.Count() - wordsToRemoveNumber - 1];
+                }
+                words = words.SubArray(0, words.Length - wordsToRemoveNumber);
+                title = string.Join(' ', words);
+                
+            }
+            else if (IsWordYear(lastWord))
+            {
+                words = words.SubArray(0, words.Length - 1);
             }
             return string.Join(' ', words);
         }
 
-        private static bool IsWordRedundant(string word)
+        private string RemoveNonAsciiCharacters(string title)
+        {
+            var words = title.Split(' ');
+            if (words.Count() == 0)
+                return title;
+            var lastWord = words.Last();
+            if (WordEndsWithNonAlphanumericCharacters(lastWord))
+            {
+                var match = TitleRegularExpressions.NonAlphanumericAtEndRegex.Match(title);
+                var matchMainTitle = match.Groups["mainPart"].Value;
+                var containsTitleWithoutSuffix = originalTitles
+                    .Any(t => t.Equals(matchMainTitle));
+                if (containsTitleWithoutSuffix)
+                {
+                    return matchMainTitle;
+                }
+            }
+            return string.Join(' ', words);
+        }
+
+        private bool IsWordRedundant(string word)
         {
             return TitleUtils.RedundantLastWords.Any(rlw => rlw.EqualsCaseInsensitive(word)) 
                 || TitleUtils.AnimeTypes.Any(at => at.EqualsWithBrackets(word));
         }
 
-        private static bool IsConnective(string word)
+        private bool IsConnective(string word)
         {
             return TitleUtils.RedundantConnectives.Any(rc => rc.EqualsCaseInsensitive(word));
         }
 
-        private static bool IsWordNumeral(string word)
+        private bool IsWordNumeral(string word)
         {
-            var numerals = TitleUtils.GetRedundantNumerals(RedundantNumberalsNumber);
-            var isNumeral = numerals.Any(n => n.Equals(word));
+            var isNumeral = RedundantNumerals.Any(n => n.Equals(word));
             if (isNumeral)
                 return true;
-            var numbers = TitleUtils.GetRedundantNumbers(RedundantNumberalsNumber);
-            var isNumber = numbers.Any(n => n.Equals(word));
-            return isNumber;
+            var isNumber = RedundantNumbers.Any(n => n.Equals(word));
+            if (isNumber)
+                return true;
+            var isRomanNumber = RedundantRomanNumbers.Any(n => n.Equals(word));
+            return isRomanNumber;
         }
 
-        private static string FindMostFrequentPhrase(ICollection<string> titles)
+        private bool EntriesContainTitleWithoutSuffix(string title, string suffix)
+        {
+            var titleWithoutSuffix = title.Substring(0, title.LastIndexOf(' '));
+            var containsTitleWithoutSuffix = originalTitles
+                .Any(t => t.Contains(titleWithoutSuffix) && !t.Contains(suffix));
+            return containsTitleWithoutSuffix;
+        }
+
+        private bool WordEndsWithNonAlphanumericCharacters(string lastWord)
+        {
+            return TitleRegularExpressions.NonAlphanumericAtEndRegex.IsMatch(lastWord);
+        }
+
+        private bool IsWordYear(string word)
+        {
+            return TitleRegularExpressions.YearInBracketsRegex.IsMatch(word);
+        }
+
+        private string FindMostFrequentPhrase(ICollection<string> titles)
         {
             var statistics = new Dictionary<string, int>();
             foreach (var title in titles)
@@ -145,9 +216,9 @@ namespace AniCharades.Algorithms.Franchise
             return phrase;
         }
 
-        private static ICollection<string> GetPhrases(string title)
+        private ICollection<string> GetPhrases(string title)
         {
-            var words = title.Split(' ');
+            var words = SplitIntoPhrasesRegex.Split(title).Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
             var length = GetPhrasesArrayLength(words.Length);
             var phrases = new string[length];
             for (int i = 0, k = 0; i < words.Length; ++i)
@@ -160,7 +231,7 @@ namespace AniCharades.Algorithms.Franchise
             return phrases;
         }
 
-        private static long GetPhrasesArrayLength(int length)
+        private long GetPhrasesArrayLength(int length)
         {
             long sum = 0;
             for (int i = 1; i <= length; ++i)
@@ -170,7 +241,7 @@ namespace AniCharades.Algorithms.Franchise
             return sum;
         }
 
-        private static string GetPhraseWithMaxScore(Dictionary<string, int> statistics, int titleCount)
+        private string GetPhraseWithMaxScore(Dictionary<string, int> statistics, int titleCount)
         {
             int maxScore = statistics.Values.Max();
             string mostImportantPhrase = statistics
@@ -190,7 +261,8 @@ namespace AniCharades.Algorithms.Franchise
                         .Where(x => x.Value == nextMaxScore)
                         .ToArray();
                     if (IsScoreGreaterThanHalfOfTitles(titleCount, nextMaxScore) ||
-                        IsPhrasesLengthGreaterOrEqualScore(maxScore, nextMaxScore, nextLongestPhrases))
+                        IsPhrasesLengthGreaterOrEqualScore(maxScore, nextMaxScore, nextLongestPhrases) ||
+                        char.IsLower(mostImportantPhrase[0]))
                     {
                         mostImportantPhrase = nextLongestPhrases
                             .Select(x => x.Key)
@@ -204,14 +276,14 @@ namespace AniCharades.Algorithms.Franchise
             }
         }
 
-        private static bool IsScoreGreaterThanHalfOfTitles(int titleCount, int nextMaxScore)
+        private bool IsScoreGreaterThanHalfOfTitles(int titleCount, int nextMaxScore)
         {
             return nextMaxScore > Math.Floor((float)titleCount / 2);
         }
 
-        private static bool IsPhrasesLengthGreaterOrEqualScore(int maxScore, int nextMaxScore, KeyValuePair<string, int>[] nextLongestPhrases)
+        private bool IsPhrasesLengthGreaterOrEqualScore(int maxScore, int nextMaxScore, KeyValuePair<string, int>[] nextLongestPhrases)
         {
-            return (nextMaxScore > 1 || nextMaxScore == maxScore - 1) && nextLongestPhrases.Count() >= maxScore;
+            return (nextMaxScore > 1 || nextMaxScore == maxScore - 1) && nextLongestPhrases.Count() > maxScore;
         }
     }
 }

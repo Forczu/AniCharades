@@ -24,7 +24,7 @@ namespace AniCharades.Services.Franchise.Relations.Common
                 return true;
             if (IsCollaboration(firstEntry, secondEntry))
                 return false;
-            if (secondEntry.Description.Contains(firstEntry.Title))
+            if (secondEntry.Description.Contains(firstEntry.Title) && firstEntry.Title.ContainsAnySharedWord(secondEntry.Title))
                 return true;
             return BothEntiresContainEveryWord(firstEntry, secondEntry);
         }
