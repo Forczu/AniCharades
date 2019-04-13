@@ -41,7 +41,8 @@ namespace AniCharades.API.Tests.Relations
             { "FateFirstTv", 356 }, { "FateUbwMovie", 6922 },
             { "FateZeroFirstTv", 11741 }, { "FateApocrypha", 34662 }, { "FateExtraTv", 33047 },
             { "FateGrandOrderFirstOva", 34321 },  { "FateGrandOrderCMs", 36064 }, { "FateGrandOrderMangaDeWakaru", 38958 },
-            { "PrismaIllyaFirstTv", 14829 }, { "PrismaIllyaMovieSpecial", 36833 }, { "EmiyaGohan", 37033 }
+            { "PrismaIllyaFirstTv", 14829 }, { "PrismaIllyaMovieSpecial", 36833 }, { "EmiyaGohan", 37033 },
+            { "MajiKoiTv", 10213 }, { "KimiAruTv", 3229 }
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -119,19 +120,11 @@ namespace AniCharades.API.Tests.Relations
         }
 
         [Theory]
-        [InlineData("KaijiFirstTv", "TonegawaTv")]
-        [InlineData("TonegawaTv", "KaijiFirstTv")]
         [InlineData("GintamaThirdTv", "SketDanceTv")]
         [InlineData("GintamaSecondTv", "GintamaMameshiba")]
         [InlineData("MahoukaTv", "MahoukaMameshiba")]
         [InlineData("DragonBallGT", "DrSlumpTv")]
         [InlineData("KimiGaNozomuEienTv", "MobileSuitGundamFirstTv")]
-        [InlineData("FateUbwMovie", "FateZeroFirstTv")]
-        [InlineData("FateUbwMovie", "FateApocrypha")]
-        [InlineData("FateGrandOrderFirstOva", "FateExtraTv")]
-        [InlineData("FateFirstTv", "PrismaIllyaFirstTv")]
-        [InlineData("FateFirstTv", "FateExtraTv")]
-        [InlineData("FateUbwMovie", "EmiyaGohan")]
         public void FranchiseShouldNotContainCertainEntry(string firstEntryName, string expectedNonContainedEntryName)
         {
             // given
@@ -141,6 +134,25 @@ namespace AniCharades.API.Tests.Relations
             var franchise = franchiseService.CreateFromAnime(firstId);
             // then
             Assert.DoesNotContain(franchise.AnimePositions, a => a.MalId == expectedNonContainedEntryId);
+        }
+
+        [Theory]
+        [InlineData("KaijiFirstTv", "TonegawaTv")]
+        [InlineData("FateUbwMovie", "FateZeroFirstTv")]
+        [InlineData("FateGrandOrderFirstOva", "FateExtraTv")]
+        [InlineData("FateFirstTv", "PrismaIllyaFirstTv")]
+        [InlineData("MajiKoiTv", "KimiAruTv")]
+        public void FranchisesShouldBeSeparate(string firstEntryName, string secondEntryName)
+        {
+            // given
+            long firstId = malDictionary[firstEntryName];
+            long secondId = malDictionary[secondEntryName];
+            // when
+            var firstFranchise = franchiseService.CreateFromAnime(firstId);
+            var secondFranchise = franchiseService.CreateFromAnime(secondId);
+            // then
+            Assert.DoesNotContain(firstFranchise.AnimePositions, a => a.MalId == secondId);
+            Assert.DoesNotContain(secondFranchise.AnimePositions, a => a.MalId == firstId);
         }
     }
 }

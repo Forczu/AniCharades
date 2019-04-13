@@ -8,6 +8,8 @@ namespace AniCharades.Common.Utils
 {
     public static class RelationUtils
     {
+        private static readonly int MinimalWordLength = 4;
+
         public static bool ContainsAnyKeyword(this string title, string[] keywords)
         {
             return keywords.Any(k => title.ToLower().Contains(k.ToLower()));
@@ -27,7 +29,9 @@ namespace AniCharades.Common.Utils
         {
             var firstWords = firstTitle.Split(' ');
             var secondWords = secondTitle.Split(' ');
-            bool hasSharedWord = firstWords.Any(fw => secondWords.Any(sw => WordsAreEqual(sw, fw)));
+            bool hasSharedWord = firstWords.Any(
+                fw => fw.Length >= MinimalWordLength &&
+                secondWords.Any(sw => WordsAreEqual(sw, fw)));
             return hasSharedWord;
         }
 
