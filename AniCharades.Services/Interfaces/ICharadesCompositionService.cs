@@ -1,4 +1,5 @@
-﻿using AniCharades.Data.Models;
+﻿using AniCharades.Adapters.Interfaces;
+using AniCharades.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,11 @@ namespace AniCharades.Services.Interfaces
 
         Task<ICollection<CharadesEntry>> GetCharades(params string[] usernames);
 
+        Task StartComposing(ICollection<IListEntry> entires);
+
         Task StartComposing(ICollection<string> usernames);
+
+        Task<ICollection<CharadesEntry>> GetFinishedCharades();
 
         int GetMergedPositionsCount();
 
