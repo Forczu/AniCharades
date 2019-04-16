@@ -13,5 +13,9 @@ namespace AniCharades.Data.Models
         public string English { get; set; }
 
         public string Japanese { get; set; }
+
+        public int SeriesId { get; set; }
+
+        public virtual SeriesEntry Series { get; set; }
     }
 }

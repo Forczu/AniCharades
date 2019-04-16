@@ -13,6 +13,6 @@ namespace AniCharades.Data.Models
 
         public string Title { get; set; }
 
-        public SeriesEntry Series { get; set; }
+        public virtual SeriesEntry Series { get; set; }
     }
 }

@@ -8,6 +8,11 @@ namespace AniCharades.Data.Models
 {
     public class CharadesEntry
     {
+        public CharadesEntry()
+        {
+            KnownBy = new HashSet<string>();
+        }
+
         public SeriesEntry Series { get; set; }
 
         public ICollection<string> KnownBy { get; set; }

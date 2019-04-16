@@ -19,6 +19,35 @@ namespace AniCharades.Data.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<SeriesEntry>(entity =>
+            {
+                entity.Property(e => e.Title).IsRequired();
+                entity.Property(e => e.ImageUrl).IsRequired();
+
+                entity.HasOne(s => s.Translation)
+                    .WithOne(t => t.Series)
+                    .HasForeignKey<Translation>(t => t.SeriesId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(s => s.AnimePositions)
+                    .WithOne(a => a.Series)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(s => s.MangaPositions)
+                    .WithOne(m => m.Series)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<AnimeEntry>(entity =>
+            {
+                entity.Property(e => e.Title).IsRequired();
+            });
+
+            modelBuilder.Entity<MangaEntry>(entity =>
+            {
+                entity.Property(e => e.Title).IsRequired();
+            });
+
             modelBuilder
                .Entity<RelationCriteria>()
                .Property(e => e.Strategies)
