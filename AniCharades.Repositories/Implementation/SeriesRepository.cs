@@ -77,7 +77,7 @@ namespace AniCharades.Repositories.Implementation
             dbEntry.Title = series.Title;
             dbEntry.AnimePositions = series.AnimePositions;
             dbEntry.MangaPositions = series.MangaPositions;
-            dbEntry.Translations = series.Translations;
+            dbEntry.Translation = series.Translation;
             dbEntry.ImageUrl = series.ImageUrl;
             context.Update(dbEntry);
             context.SaveChanges();

@@ -69,7 +69,7 @@ namespace AniCharades.Services.Implementation
             series.MangaPositions = mangas?.Select(e => new MangaEntry() { MalId = e.Id, Title = e.Title, Series = series }).ToList();
             series.ImageUrl = mainEntry.ImageUrl;
             series.Title = mainTitle;
-            series.Translations = new[] { mainEntry.Translation };
+            series.Translation = new Translation() { English = mainEntry.Translation };
             return series;
         }
 

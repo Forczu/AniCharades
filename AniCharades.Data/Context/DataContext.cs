@@ -20,8 +20,12 @@ namespace AniCharades.Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder
-               .Entity<SeriesEntry>()
-               .Property(e => e.Translations)
+               .Entity<RelationCriteria>()
+               .Property(e => e.Strategies)
+               .HasConversion(DataConverters.StringArrayToStringConverter);
+            modelBuilder
+               .Entity<RelationCriteria>()
+               .Property(e => e.Types)
                .HasConversion(DataConverters.StringArrayToStringConverter);
             modelBuilder
                .Entity<RelationCriteria>()

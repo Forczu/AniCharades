@@ -17,6 +17,6 @@ namespace AniCharades.Data.Models
 
         public string ImageUrl { get; set; }
 
-        public string[] Translations { get; set; }
+        public Translation Translation { get; set; }
     }
 }
