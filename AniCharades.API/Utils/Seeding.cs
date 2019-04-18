@@ -19,7 +19,7 @@ namespace AniCharades.API.Utils
         public static void FillDatabaseFromJson(string filePath, ISeriesRepository seriesRepository)
         {
             var jsonFile = File.ReadAllText(filePath);
-            var seriesCollection = Serialization.JsonToEntityCollection<SeriesEntry>(jsonFile);
+            var seriesCollection = Serialization.JsonToCollection<SeriesEntry>(jsonFile);
             foreach (var series in seriesCollection)
             {
                 if (!seriesRepository.SeriesExists(series.Id).Result)
