@@ -1,15 +1,10 @@
 ﻿using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace AniCharades.API.Utils
+namespace AniCharades.Common
 {
-    public static class Seeding
+    public static class Seeder
     {
         /// <summary>
         /// Helper for filling a database with series from old JSON file.

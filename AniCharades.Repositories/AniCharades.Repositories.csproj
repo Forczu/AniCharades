@@ -9,7 +9,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AniCharades.Common\AniCharades.Common.csproj" />
     <ProjectReference Include="..\AniCharades.Data\AniCharades.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Seeding\" />
   </ItemGroup>
 
 </Project>

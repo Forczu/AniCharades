@@ -1,5 +1,4 @@
-﻿using AniCharades.API.Utils;
-using AniCharades.Data.Models;
+﻿using AniCharades.Data.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -29,7 +28,7 @@ namespace AniCharades.API.Tests.Serialization
             var filePath = config["SeriesCollectionFile"];
             var json = System.IO.File.ReadAllText(filePath);
             // when
-            var seriesCollection = Utils.Serialization.JsonToCollection<SeriesEntry>(json).ToArray();
+            var seriesCollection = Common.Serialization.JsonToCollection<SeriesEntry>(json).ToArray();
             // then
             var accelWorldEntry = seriesCollection[3];
             Assert.Equal("Accel World", accelWorldEntry.Title);
@@ -55,9 +54,9 @@ namespace AniCharades.API.Tests.Serialization
                 }
             };
             // when
-            Utils.Serialization.SaveCollectionToJson(series, filePath);
+            Common.Serialization.SaveCollectionToJson(series, filePath);
             var json = System.IO.File.ReadAllText(filePath);
-            var seriesCollection = Utils.Serialization.JsonToCollection<SeriesEntry>(json).ToArray();
+            var seriesCollection = Common.Serialization.JsonToCollection<SeriesEntry>(json).ToArray();
             // then
             var bleachBeats = seriesCollection[0];
             Assert.Equal("Bleach Beats!", bleachBeats.Title);
