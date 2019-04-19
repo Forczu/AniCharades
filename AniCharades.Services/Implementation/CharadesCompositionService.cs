@@ -80,6 +80,7 @@ namespace AniCharades.Services.Implementation
         private async Task CreateCharadesFromAnimeList(ICollection<IListEntry> mergedList)
         {
             Reset();
+            this.mergedList = mergedList.ToList();
             foreach (var entry in mergedList)
             {
                 await CreateNextCharadesEntryIfDoesntExist(entry);
