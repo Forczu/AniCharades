@@ -9,7 +9,7 @@ namespace AniCharades.Contracts.Charades
     {
         public ICollection<string> Usernames { get; set; }
 
-        public ICollection<EntrySources> Sources { get; set; }
+        public ICollection<EntrySource> Sources { get; set; }
 
         public bool IncludeKnownAdaptations { get; set; }
     }

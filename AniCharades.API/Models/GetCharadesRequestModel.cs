@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
 
-namespace AniCharades.API.RequestParameters
+namespace AniCharades.API.Models
 {
     public class GetCharadesRequestModel
     {

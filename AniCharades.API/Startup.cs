@@ -14,6 +14,8 @@ using AniCharades.Services.Implementation;
 using AniCharades.Services.Interfaces;
 using AniCharades.Services.Franchise;
 using AniCharades.Services.Providers;
+using AniCharades.API.Mapper;
+using AutoMapper;
 
 namespace AniCharades.API
 {
@@ -37,8 +39,7 @@ namespace AniCharades.API
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
             services.AddDbContext<DataContext>(
-                x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString), 
-                b => b.MigrationsAssembly(typeof(DataContext).Assembly.FullName)));
+                x => x.UseSqlite(Configuration.GetConnectionString(DbConnectionString)));
             services.AddScoped<ISeriesRepository, SeriesRepository>();
             services.AddScoped<ICharadesCompositionService, CharadesCompositionService>();
             services.AddScoped<IMyAnimeListService, MyAnimeListService>();
@@ -50,10 +51,18 @@ namespace AniCharades.API
             services.AddScoped<IFranchiseService, FranchiseService>();
             services.AddScoped<IRelationService, RelationService>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();
+            services.AddScoped<AutoMapper.IConfigurationProvider, AutoMapperConfiguration>();
+            services.AddScoped<IMapper, AutoMapper.Mapper>();
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<DataContext>();
+                context.Database.EnsureCreated();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

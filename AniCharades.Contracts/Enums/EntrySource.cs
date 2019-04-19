@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AniCharades.Contracts.Enums
 {
-    public enum EntrySources
+    public enum EntrySource
     {
         Anime,
         Manga

@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using AniCharades.API.RequestParameters;
+using AniCharades.API.Models;
+using AniCharades.Contracts.Charades;
+using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AniCharades.API.Controllers
@@ -12,10 +12,12 @@ namespace AniCharades.API.Controllers
     public class CharadesController : Controller
     {
         private readonly ICharadesCompositionService charadesCompositionService;
+        private readonly IMapper mapper;
 
-        public CharadesController(ICharadesCompositionService charadesCompositionService)
+        public CharadesController(ICharadesCompositionService charadesCompositionService, IMapper mapper)
         {
             this.charadesCompositionService = charadesCompositionService;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -23,7 +25,8 @@ namespace AniCharades.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            var charades = await charadesCompositionService.GetCharades(new Contracts.Charades.GetCharadesCriteria() { Usernames = model.Usernames });
+            var criteria = mapper.Map<GetCharadesCriteria>(model);
+            var charades = await charadesCompositionService.GetCharades(criteria);
             return Ok(charades);
         }
     }
