@@ -19,11 +19,11 @@ namespace AniCharades.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsersCharades([FromQuery] GetUsersCharadesParameters parameters)
+        public async Task<IActionResult> GetUsersCharades([FromQuery] GetCharadesRequestModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            var charades = await charadesCompositionService.GetCharades(parameters.Usernames);
+            var charades = await charadesCompositionService.GetCharades(new Contracts.Charades.GetCharadesCriteria() { Usernames = model.Usernames });
             return Ok(charades);
         }
     }

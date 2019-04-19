@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AniCharades.Adapters.Interfaces;
 using AniCharades.Common.Extensions;
+using AniCharades.Contracts.Charades;
 using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Franchise;
@@ -33,16 +34,11 @@ namespace AniCharades.Services.Implementation
             this.franchiseService = franchiseService;
         }
 
-        public async Task<ICollection<CharadesEntry>> GetCharades(ICollection<string> usernames)
+        public async Task<ICollection<CharadesEntry>> GetCharades(GetCharadesCriteria criteria)
         {
-            var mergedList = await myAnimeListService.GetMergedAnimeLists(usernames);
+            var mergedList = await myAnimeListService.GetMergedAnimeLists(criteria.Usernames);
             await CreateCharadesFromAnimeList(mergedList);
             return charades;
-        }
-
-        public async Task<ICollection<CharadesEntry>> GetCharades(params string[] usernames)
-        {
-            return await GetCharades(usernames.ToList());
         }
 
         public async Task StartComposing(ICollection<IListEntry> entires)

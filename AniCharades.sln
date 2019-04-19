@@ -15,9 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AniCharades.Adapters", "Ani
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AniCharades.Repositories", "AniCharades.Repositories\AniCharades.Repositories.csproj", "{428C8216-64C5-4C41-8658-15CBE968DE24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AniCharades.Services", "AniCharades.Services\AniCharades.Services.csproj", "{8901125D-7446-4B00-AF98-995324819CF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AniCharades.Services", "AniCharades.Services\AniCharades.Services.csproj", "{8901125D-7446-4B00-AF98-995324819CF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AniCharades.Algorithms", "AniCharades.Algorithms\AniCharades.Algorithms.csproj", "{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AniCharades.Algorithms", "AniCharades.Algorithms\AniCharades.Algorithms.csproj", "{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AniCharades.Contracts", "AniCharades.Contracts\AniCharades.Contracts.csproj", "{0809D215-38BE-42D8-A8F6-53CB03C5EA24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,14 @@ Global
 		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Release|x86.ActiveCfg = Release|Any CPU
 		{D1EEA360-DA5B-4FA8-8513-2C04AF60F9BA}.Release|x86.Build.0 = Release|Any CPU
+		{0809D215-38BE-42D8-A8F6-53CB03C5EA24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0809D215-38BE-42D8-A8F6-53CB03C5EA24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0809D215-38BE-42D8-A8F6-53CB03C5EA24}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0809D215-38BE-42D8-A8F6-53CB03C5EA24}.Debug|x86.Build.0 = Debug|Any CPU
+		{0809D215-38BE-42D8-A8F6-53CB03C5EA24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0809D215-38BE-42D8-A8F6-53CB03C5EA24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0809D215-38BE-42D8-A8F6-53CB03C5EA24}.Release|x86.ActiveCfg = Release|Any CPU
+		{0809D215-38BE-42D8-A8F6-53CB03C5EA24}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

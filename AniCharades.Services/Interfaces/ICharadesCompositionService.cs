@@ -1,4 +1,5 @@
 ﻿using AniCharades.Adapters.Interfaces;
+using AniCharades.Contracts.Charades;
 using AniCharades.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,7 @@ namespace AniCharades.Services.Interfaces
 {
     public interface ICharadesCompositionService
     {
-        Task<ICollection<CharadesEntry>> GetCharades(ICollection<string> usernames);
-
-        Task<ICollection<CharadesEntry>> GetCharades(params string[] usernames);
+        Task<ICollection<CharadesEntry>> GetCharades(GetCharadesCriteria criteria);
 
         Task StartComposing(ICollection<IListEntry> entires);
 

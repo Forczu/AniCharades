@@ -22,4 +22,7 @@
     <ProjectReference Include="..\AniCharades.Repositories\AniCharades.Repositories.csproj" />
     <ProjectReference Include="..\AniCharades.Services\AniCharades.Services.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
 </Project>
