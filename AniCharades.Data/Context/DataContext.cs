@@ -36,16 +36,23 @@ namespace AniCharades.Data.Context
                 entity.HasMany(s => s.MangaPositions)
                     .WithOne(m => m.Series)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(e => e.Id);
+                entity.HasIndex(e => e.Title);
             });
 
             modelBuilder.Entity<AnimeEntry>(entity =>
             {
                 entity.Property(e => e.Title).IsRequired();
+                entity.HasIndex(e => e.MalId);
+                entity.HasIndex(e => e.Title);
             });
 
             modelBuilder.Entity<MangaEntry>(entity =>
             {
                 entity.Property(e => e.Title).IsRequired();
+                entity.HasIndex(e => e.MalId);
+                entity.HasIndex(e => e.Title);
             });
 
             modelBuilder
