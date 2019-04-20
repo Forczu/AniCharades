@@ -1,4 +1,5 @@
 ﻿using AniCharades.Adapters.Jikan;
+using AniCharades.Contracts.Charades;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -35,7 +36,7 @@ namespace AniCharades.API.Tests.Charades
                 }, "Ervelan")
             };
             // when
-            await charadesCompositionService.Object.StartComposing(dateALiveEntries);
+            charadesCompositionService.Object.StartComposing(dateALiveEntries);
             // then
             var firstDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
             var nextDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
@@ -63,7 +64,7 @@ namespace AniCharades.API.Tests.Charades
                 }, "Progeusz")
             };
             // when
-            await charadesCompositionService.Object.StartComposing(dateALiveEntries);
+            charadesCompositionService.Object.StartComposing(dateALiveEntries);
             // then
             var firstDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
             var nextDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
@@ -77,16 +78,20 @@ namespace AniCharades.API.Tests.Charades
         public async Task MergedListShouldContainCorrectlyAssignedUsers()
         {
             // given
-            string[] usernames = { "Ervelan", "SonMati" };
+            var criteria = new GetCharadesCriteria()
+            {
+                Usernames = new[] { "Ervelan", "SonMati" },
+                Sources = new[] { Contracts.Enums.EntrySource.Anime },
+                IncludeKnownAdaptations = false
+            };
             // when
-            await charadesCompositionService.Object.StartComposing(usernames);
-            int length = charadesCompositionService.Object.GetMergedPositionsCount();
-            for (int i = 0; i < length; i++)
+            charadesCompositionService.Object.StartComposing(criteria);
+            while (!charadesCompositionService.Object.IsFinished())
             {
                 await charadesCompositionService.Object.MakeNextCharadesEntry();
             }
             // then
-            var charades = await charadesCompositionService.Object.GetFinishedCharades();
+            var charades = charadesCompositionService.Object.GetFinishedCharades();
             var setoHana = charades.First(c => c.Series.Title == "Seto no Hanayome");
             Assert.Contains("SonMati", setoHana.KnownBy);
             Assert.Contains("Ervelan", setoHana.KnownBy);

@@ -12,13 +12,13 @@ namespace AniCharades.Services.Interfaces
     {
         Task<ICollection<CharadesEntry>> GetCharades(GetCharadesCriteria criteria);
 
-        Task StartComposing(ICollection<IListEntry> entires);
+        void StartComposing(ICollection<IListEntry> entires);
 
-        Task StartComposing(ICollection<string> usernames);
+        void StartComposing(GetCharadesCriteria criteria);
 
-        Task<ICollection<CharadesEntry>> GetFinishedCharades();
+        ICollection<CharadesEntry> GetFinishedCharades();
 
-        int GetMergedPositionsCount();
+        bool IsFinished();
 
         Task<CharadesEntry> MakeNextCharadesEntry();
     }

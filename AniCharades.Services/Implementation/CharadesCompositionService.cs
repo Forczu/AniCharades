@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AniCharades.Adapters.Interfaces;
 using AniCharades.Common.Extensions;
 using AniCharades.Contracts.Charades;
+using AniCharades.Contracts.Enums;
 using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Franchise;
@@ -17,15 +18,19 @@ namespace AniCharades.Services.Implementation
 {
     public class CharadesCompositionService : ICharadesCompositionService
     {
-        private static readonly object obj = new object();
-
         private readonly IMyAnimeListService myAnimeListService;
         private readonly ISeriesRepository seriesRepository;
         private readonly IFranchiseService franchiseService;
 
-        private IList<IListEntry> mergedList;
-        private ICollection<CharadesEntry> charades;
+        private ICollection<string> usernames;
+        private Queue<EntrySource> sources = new Queue<EntrySource>();
+        private Queue<EntrySource> otherSources = new Queue<EntrySource>();
+
+        private IList<IListEntry> currentMergedList = new List<IListEntry>();
+        private EntrySource currentSource;
         private int nextEntryIndex = 0;
+
+        private ICollection<CharadesEntry> charades;
 
         public CharadesCompositionService(IMyAnimeListService myAnimeListService, ISeriesRepository seriesRepository, IFranchiseService franchiseService)
         {
@@ -36,58 +41,123 @@ namespace AniCharades.Services.Implementation
 
         public async Task<ICollection<CharadesEntry>> GetCharades(GetCharadesCriteria criteria)
         {
-            var mergedList = await myAnimeListService.GetMergedAnimeLists(criteria.Usernames);
-            await CreateCharadesFromAnimeList(mergedList);
+            StartComposing(criteria);
+            while(IsFinished())
+            {
+                await MakeNextCharadesEntry();
+            }
             return charades;
         }
 
-        public async Task StartComposing(ICollection<IListEntry> entires)
+        public void StartComposing(ICollection<IListEntry> entires)
         {
-            mergedList = entires.ToList();
+            currentMergedList = entires.ToList();
             Reset();
         }
 
-        public async Task StartComposing(ICollection<string> usernames)
+        public void StartComposing(GetCharadesCriteria criteria)
         {
-            var mergedAnimeLists = await myAnimeListService.GetMergedAnimeLists(usernames);
-            mergedList = mergedAnimeLists.ToList();
             Reset();
+            usernames = criteria.Usernames;
+            sources.AddRange(criteria.Sources);
+            if (criteria.IncludeKnownAdaptations && sources.Count != 0)
+            {
+                var allSources = Enum.GetValues(typeof(EntrySource)).Cast<EntrySource>();
+                var isAllDone = criteria.Sources.Count == allSources.Count();
+                if (!isAllDone)
+                {
+                    var otherSources = allSources.Except(criteria.Sources);
+                    this.otherSources.AddRange(otherSources);
+                }
+            }
         }
 
-        public async Task<ICollection<CharadesEntry>> GetFinishedCharades()
+        public ICollection<CharadesEntry> GetFinishedCharades()
         {
             return charades;
         }
 
-        public int GetMergedPositionsCount()
+        public bool IsFinished()
         {
-            return mergedList.Count;
+            return !(sources.Count != 0 || otherSources.Count != 0 || nextEntryIndex != currentMergedList.Count);
         }
 
         public async Task<CharadesEntry> MakeNextCharadesEntry()
         {
-            var entry = mergedList[nextEntryIndex++];
-            var nextCharades = await CreateNextCharadesEntryIfDoesntExist(entry);
+            bool shouldGoToNextSource = nextEntryIndex == currentMergedList.Count;
+            if (shouldGoToNextSource)
+            {
+                nextEntryIndex = 0;
+                if (sources.Count != 0)
+                {
+                    currentSource = sources.Dequeue();
+                    await GetCurrentMergedListFromSource();
+                }
+                else if (otherSources.Count != 0)
+                {
+                    currentSource = otherSources.Dequeue();
+                    await GetCurrentMergedListFromSource();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            var entry = currentMergedList[nextEntryIndex++];
+            var nextCharades = await CreateNextCharades(entry);
+            return nextCharades;
+        }
+
+        private async Task GetCurrentMergedListFromSource()
+        {
+            switch (currentSource)
+            {
+                case EntrySource.Anime:
+                    currentMergedList = (await myAnimeListService.GetMergedAnimeLists(usernames)).ToList();
+                    break;
+                case EntrySource.Manga:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private async Task<CharadesEntry> CreateNextCharades(IListEntry entry)
+        {
+            CharadesEntry nextCharades = null;
+            switch (currentSource)
+            {
+                case EntrySource.Anime:
+
+                    nextCharades = await CreateNextCharadesEntryFromAnime(entry);
+                    break;
+                case EntrySource.Manga:
+                    break;
+                default:
+                    break;
+            }
             return nextCharades;
         }
 
         private void Reset()
         {
             charades = new List<CharadesEntry>();
+            sources.Clear();
+            otherSources.Clear();
             nextEntryIndex = 0;
         }
 
-        private async Task CreateCharadesFromAnimeList(ICollection<IListEntry> mergedList)
+        private async Task CreateCharadesFromList(ICollection<IListEntry> mergedList)
         {
             Reset();
-            this.mergedList = mergedList.ToList();
+            currentMergedList = mergedList.ToList();
             foreach (var entry in mergedList)
             {
-                await CreateNextCharadesEntryIfDoesntExist(entry);
+                await CreateNextCharadesEntryFromAnime(entry);
             }
         }
 
-        private async Task<CharadesEntry> CreateNextCharadesEntryIfDoesntExist(IListEntry entry)
+        private async Task<CharadesEntry> CreateNextCharadesEntryFromAnime(IListEntry entry)
         {
             var existingCharadesWithEntry = charades.FirstOrDefault(c => c.Series.AnimePositions.Any(a => a.MalId == entry.Id));
             if (existingCharadesWithEntry != null)
@@ -129,7 +199,7 @@ namespace AniCharades.Services.Implementation
             var usernames = new List<string>();
             foreach (var id in franchise.AnimePositions.Select(a => a.MalId))
             {
-                var existingEntry = mergedList.FirstOrDefault(x => x.Id == id);
+                var existingEntry = currentMergedList.FirstOrDefault(x => x.Id == id);
                 if (existingEntry != null)
                 {
                     var newUsers = existingEntry.Users.Where(u => !usernames.Contains(u)).ToArray();
