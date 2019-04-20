@@ -4,7 +4,7 @@ namespace AniCharades.Common.Extensions
 {
     public static class QueueExtensions
     {
-        public static void AddRange<T>(this Queue<T> queue, IEnumerable<T> enumerable)
+        public static void EnqueueRange<T>(this Queue<T> queue, IEnumerable<T> enumerable)
         {
             foreach (T obj in enumerable)
             {

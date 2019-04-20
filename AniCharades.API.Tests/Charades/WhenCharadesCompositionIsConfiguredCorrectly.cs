@@ -36,7 +36,7 @@ namespace AniCharades.API.Tests.Charades
                 }, "Ervelan")
             };
             // when
-            charadesCompositionService.Object.StartComposing(dateALiveEntries);
+            charadesCompositionService.Object.StartComposing(dateALiveEntries, Contracts.Enums.EntrySource.Anime);
             // then
             var firstDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
             var nextDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
@@ -64,7 +64,7 @@ namespace AniCharades.API.Tests.Charades
                 }, "Progeusz")
             };
             // when
-            charadesCompositionService.Object.StartComposing(dateALiveEntries);
+            charadesCompositionService.Object.StartComposing(dateALiveEntries, Contracts.Enums.EntrySource.Anime);
             // then
             var firstDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
             var nextDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();

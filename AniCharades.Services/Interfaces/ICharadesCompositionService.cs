@@ -1,5 +1,6 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.Contracts.Charades;
+using AniCharades.Contracts.Enums;
 using AniCharades.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace AniCharades.Services.Interfaces
     {
         Task<ICollection<CharadesEntry>> GetCharades(GetCharadesCriteria criteria);
 
-        void StartComposing(ICollection<IListEntry> entires);
+        void StartComposing(ICollection<IListEntry> entires, EntrySource source);
 
         void StartComposing(GetCharadesCriteria criteria);
 
