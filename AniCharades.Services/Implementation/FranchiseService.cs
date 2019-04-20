@@ -51,20 +51,18 @@ namespace AniCharades.Services.Implementation
         public SeriesEntry CreateFromAnime(long id)
         {
             var provider = serviceProvider.GetService(typeof(JikanAnimeProvider)) as JikanAnimeProvider;
-            return Create(id, provider);
+            var relations = assembler.Assembly(id, provider);
+            var validEntries = GetEntries(relations);
+            var franchise = CreateFranchise(validEntries, null);
+            return franchise;
         }
 
         public SeriesEntry CreateFromManga(long id)
         {
             var provider = serviceProvider.GetService(typeof(JikanMangaProvider)) as JikanMangaProvider;
-            return Create(id, provider);
-        }
-
-        private SeriesEntry Create(long id, IEntryProvider provider)
-        {
             var relations = assembler.Assembly(id, provider);
             var validEntries = GetEntries(relations);
-            var franchise = CreateFranchise(validEntries, null);
+            var franchise = CreateFranchise(null, validEntries);
             return franchise;
         }
 

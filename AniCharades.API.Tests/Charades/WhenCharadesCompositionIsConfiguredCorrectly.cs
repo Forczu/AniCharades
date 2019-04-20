@@ -75,7 +75,7 @@ namespace AniCharades.API.Tests.Charades
         }
 
         [Fact]
-        public async Task MergedListShouldContainCorrectlyAssignedUsers()
+        public async Task MergedAnimeListShouldContainCorrectlyAssignedUsers()
         {
             // given
             var criteria = new GetCharadesCriteria()
@@ -101,6 +101,35 @@ namespace AniCharades.API.Tests.Charades
             var blendS = charades.First(c => c.Series.Title == "Blend S");
             Assert.Contains("SonMati", blendS.KnownBy);
             Assert.DoesNotContain("Ervelan", blendS.KnownBy);
+        }
+
+        [Fact]
+        public async Task MergedMangaListShouldContainCorrectlyAssignedUsers()
+        {
+            // given
+            var criteria = new GetCharadesCriteria()
+            {
+                Usernames = new[] { "Ervelan", "Progeusz" },
+                Sources = new[] { Contracts.Enums.EntrySource.Manga },
+                IncludeKnownAdaptations = false
+            };
+            // when
+            charadesCompositionService.Object.StartComposing(criteria);
+            while (!charadesCompositionService.Object.IsFinished())
+            {
+                await charadesCompositionService.Object.MakeNextCharadesEntry();
+            }
+            // then
+            var charades = charadesCompositionService.Object.GetFinishedCharades();
+            var berserk = charades.First(c => c.Series.Title == "Berserk");
+            Assert.Contains("Progeusz", berserk.KnownBy);
+            Assert.Contains("Ervelan", berserk.KnownBy);
+            var jojo = charades.First(c => c.Series.Title == "JoJo no Kimyou na Bouken");
+            Assert.Contains("Ervelan", jojo.KnownBy);
+            Assert.DoesNotContain("Progeusz", jojo.KnownBy);
+            var deathPanda = charades.First(c => c.Series.Title == "The Death Panda");
+            Assert.Contains("Progeusz", deathPanda.KnownBy);
+            Assert.DoesNotContain("Ervelan", deathPanda.KnownBy);
         }
     }
 }

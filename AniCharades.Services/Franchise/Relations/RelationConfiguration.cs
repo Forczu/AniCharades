@@ -69,7 +69,7 @@ namespace AniCharades.Services.Franchise.Relations
             relationStrategy = GetFromRelation(relationType);
             if (relationStrategy != null)
                 return relationStrategy;
-            return relationCriterias.FirstOrDefault(s => s.Relations.Contains(RelationType.None));
+            return relationCriterias.FirstOrDefault(s => s.Relations != null && s.Relations.Contains(RelationType.None));
         }
 
         private RelationCriteria GetFromType(string type)

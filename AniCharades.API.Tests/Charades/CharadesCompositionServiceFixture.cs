@@ -35,7 +35,10 @@ namespace AniCharades.API.Tests.Charades
             return new JikanMockBuilder()
                 .HasUserAnimeList("Ervelan")
                 .HasUserAnimeList("SonMati")
+                .HasUserMangaList("Ervelan")
+                .HasUserMangaList("Progeusz")
                 .HasAllAnimes()
+                .HasAllMangas()
                 .Build();
         }
 

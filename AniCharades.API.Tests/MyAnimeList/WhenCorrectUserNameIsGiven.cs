@@ -31,7 +31,7 @@ namespace AniCharades.API.Tests.MyAnimeList
         {
            return new JikanMockBuilder()
                 .HasUserAnimeList("Ervelan")
-                .HasUserMangaeList("Ervelan")
+                .HasUserMangaList("Ervelan")
                 .Build();
         }
 

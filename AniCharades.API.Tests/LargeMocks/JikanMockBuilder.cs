@@ -72,7 +72,33 @@ namespace AniCharades.API.Tests.LargeMocks
             return this;
         }
 
-        public JikanMockBuilder HasUserMangaeList(string username)
+        public JikanMockBuilder HasManga(long malId)
+        {
+            var mangaPath = config[$"Jikan:Manga:Path"];
+            var mangaFilePath = string.Format("{0}{1}.json", mangaPath, malId.ToString("D6"));
+            SetManga(malId, mangaFilePath);
+            return this;
+        }
+
+        public JikanMockBuilder HasMangas(IEnumerable<long> malIds)
+        {
+            malIds.ForEach(id => HasManga(id));
+            return this;
+        }
+
+        public JikanMockBuilder HasAllMangas()
+        {
+            var directory = config[$"Jikan:Manga:Path"];
+            var files = Directory.EnumerateFiles(directory);
+            foreach (var file in files)
+            {
+                var malId = Convert.ToInt32(Path.GetFileNameWithoutExtension(file));
+                SetManga(malId, file);
+            }
+            return this;
+        }
+
+        public JikanMockBuilder HasUserMangaList(string username)
         {
             var userDataPath = config["Jikan:DataPath"] + config["Jikan:UserFolder"];
 
@@ -103,6 +129,15 @@ namespace AniCharades.API.Tests.LargeMocks
             jikanMock.Setup(j => j.GetAnime(malId)).ReturnsAsync(() =>
             {
                 return JsonConvert.DeserializeObject<Anime>(animeJson);
+            });
+        }
+
+        private void SetManga(long malId, string filePath)
+        {
+            var json = File.ReadAllText(filePath);
+            jikanMock.Setup(j => j.GetManga(malId)).ReturnsAsync(() =>
+            {
+                return JsonConvert.DeserializeObject<Manga>(json);
             });
         }
     }

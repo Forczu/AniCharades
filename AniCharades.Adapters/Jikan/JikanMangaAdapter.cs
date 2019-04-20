@@ -28,7 +28,7 @@ namespace AniCharades.Adapters.Jikan
 
         public string Type => manga.Type;
 
-        public string Duration => null;
+        public string Duration => string.Empty;
 
         public string Description => manga.Synopsis ?? string.Empty;
 
@@ -44,7 +44,7 @@ namespace AniCharades.Adapters.Jikan
         public JikanMangaAdapter(Manga manga)
         {
             this.manga = manga;
-            this.relatedMangaAdapter = new JikanRelatedMangaAdapter(manga.Related);
+            this.relatedMangaAdapter = new JikanRelatedMangaAdapter(manga?.Related);
         }
 
         public override bool Equals(object obj)
