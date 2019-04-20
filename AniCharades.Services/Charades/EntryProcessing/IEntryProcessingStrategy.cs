@@ -15,12 +15,12 @@ namespace AniCharades.Services.Charades.EntryProcessing
 
         Task<SeriesEntry> GetFranchiseFromRepository(IListEntry entry, ISeriesRepository seriesRepository);
 
-        SeriesEntry CreateFranchise(IListEntry entry, IFranchiseService franchiseService);
+        SeriesEntry CreateFranchise(IListEntry entry, IFranchiseService franchiseService, bool includeAdaptations);
 
-        CharadesEntry GetIndirectExistingRelation(ICollection<CharadesEntry> charades, SeriesEntry franchise);
-
-        void AddEntryToCharadesEntry(CharadesEntry charadesEntry, IListEntry entry);
+        void AddEntryToCharadesEntry(CharadesEntry charadesEntry, IListEntry entry, SeriesEntry franchise);
 
         ICollection<long> GetFranchiseIds(SeriesEntry franchise);
+
+        bool HasAdaptations(SeriesEntry franchise);
     }
 }

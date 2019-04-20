@@ -37,6 +37,7 @@ namespace AniCharades.API.Tests.Charades
                 .HasUserAnimeList("SonMati")
                 .HasUserMangaList("Ervelan")
                 .HasUserMangaList("Progeusz")
+                .HasUserMangaList("SonMati")
                 .HasAllAnimes()
                 .HasAllMangas()
                 .Build();

@@ -14,7 +14,8 @@ namespace AniCharades.Services.Charades.EntryProcessing
     {
         public CharadesEntry EntryExistsInCharades(IListEntry entry, ICollection<CharadesEntry> charades)
         {
-            var existingCharadesWithEntry = charades.FirstOrDefault(c => c.Series.AnimePositions.Any(a => a.MalId == entry.Id));
+            var existingCharadesWithEntry = charades
+                .FirstOrDefault(c => c.Series.AnimePositions != null && c.Series.AnimePositions.Any(a => a.MalId == entry.Id));
             return existingCharadesWithEntry;
         }
 
@@ -30,31 +31,31 @@ namespace AniCharades.Services.Charades.EntryProcessing
             return franchise;
         }
 
-        public SeriesEntry CreateFranchise(IListEntry entry, IFranchiseService franchiseService)
+        public SeriesEntry CreateFranchise(IListEntry entry, IFranchiseService franchiseService, bool includeAdaptations)
         {
-            var franchise = franchiseService.CreateFromAnime(entry.Id);
+            var franchise = franchiseService.CreateFromAnime(entry.Id, includeAdaptations);
             return franchise;
         }
 
-        public CharadesEntry GetIndirectExistingRelation(ICollection<CharadesEntry> charades, SeriesEntry franchise)
-        {
-            var indirectExistingRelation = charades
-                .FirstOrDefault(c => c.Series.AnimePositions
-                    .Any(a => franchise.AnimePositions
-                        .Any(f => f.MalId == a.MalId)));
-            return indirectExistingRelation;
-        }
-
-        public void AddEntryToCharadesEntry(CharadesEntry charadesEntry, IListEntry entry)
+        public void AddEntryToCharadesEntry(CharadesEntry charadesEntry, IListEntry entry, SeriesEntry franchise)
         {
             charadesEntry.Series.AnimePositions.Add(new AnimeEntry() { MalId = entry.Id, Title = entry.Title, Series = charadesEntry.Series });
             var newUsers = entry.Users.Where(u => !charadesEntry.KnownBy.Contains(u)).ToArray();
             newUsers.ForEach(u => charadesEntry.KnownBy.Add(u));
+
+            franchise.MangaPositions
+                .Where(m => !charadesEntry.Series.MangaPositions.Any(a => a.MalId == m.MalId))
+                .ForEach(m => charadesEntry.Series.MangaPositions.Add(m));
         }
 
         public ICollection<long> GetFranchiseIds(SeriesEntry franchise)
         {
             return franchise.AnimePositions.Select(a => a.MalId).ToArray();
+        }
+
+        public bool HasAdaptations(SeriesEntry franchise)
+        {
+            return franchise.MangaPositions != null && franchise.MangaPositions.Count != 0;
         }
     }
 }

@@ -131,5 +131,28 @@ namespace AniCharades.API.Tests.Charades
             Assert.Contains("Progeusz", deathPanda.KnownBy);
             Assert.DoesNotContain("Ervelan", deathPanda.KnownBy);
         }
+
+        [Fact]
+        public async Task KnownAdaptationsShouldBeIncludedIfNeeded()
+        {
+            // given
+            var criteria = new GetCharadesCriteria()
+            {
+                Usernames = new[] { "Ervelan", "SonMati" },
+                Sources = new[] { Contracts.Enums.EntrySource.Anime },
+                IncludeKnownAdaptations = true
+            };
+            // when
+            charadesCompositionService.Object.StartComposing(criteria);
+            while (!charadesCompositionService.Object.IsFinished())
+            {
+                await charadesCompositionService.Object.MakeNextCharadesEntry();
+            }
+            // then
+            var charades = charadesCompositionService.Object.GetFinishedCharades();
+            var hokutoNoKen = charades.First(c => c.Series.Title == "Hokuto no Ken");
+            Assert.Contains("SonMati", hokutoNoKen.KnownBy);
+            Assert.Contains("Ervelan", hokutoNoKen.KnownBy);
+        }
     }
 }

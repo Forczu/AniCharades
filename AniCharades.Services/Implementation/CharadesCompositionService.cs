@@ -32,6 +32,7 @@ namespace AniCharades.Services.Implementation
         private EntrySource currentSource;
         private int nextEntryIndex = 0;
         private IEntryProcessingStrategy entryProcessingStrategy;
+        private bool includeKnownAdaptations = false;
 
         private ICollection<CharadesEntry> charades;
 
@@ -100,6 +101,7 @@ namespace AniCharades.Services.Implementation
                 }
                 else if (otherSources.Count != 0)
                 {
+                    includeKnownAdaptations = true;
                     currentSource = otherSources.Dequeue();
                     await GetCurrentMergedListFromSource();
                 }
@@ -140,28 +142,32 @@ namespace AniCharades.Services.Implementation
             if (seriesExistsInDb)
             {
                 var franchiseFromRepo = await entryProcessingStrategy.GetFranchiseFromRepository(entry, seriesRepository);
-                var nextCharades = CreateAndAddCharadesEntry(franchiseFromRepo);
-                return nextCharades;
+                return EnsureCreateAndAddToCharades(franchiseFromRepo);
             }
-            var franchise = entryProcessingStrategy.CreateFranchise(entry, franchiseService);
-            var indirectExistingRelation = entryProcessingStrategy.GetIndirectExistingRelation(charades, franchise);
+            var franchise = entryProcessingStrategy.CreateFranchise(entry, franchiseService, includeKnownAdaptations);
+            var indirectExistingRelation = GetIndirectExistingRelation(charades, franchise);
             if (indirectExistingRelation != null)
             {
-                entryProcessingStrategy.AddEntryToCharadesEntry(indirectExistingRelation, entry);
+                entryProcessingStrategy.AddEntryToCharadesEntry(indirectExistingRelation, entry, franchise);
                 return indirectExistingRelation;
             }
-            var charadesEntry = CreateAndAddCharadesEntry(franchise);
-            return charadesEntry;
+            return EnsureCreateAndAddToCharades(franchise);
         }
 
         private CharadesEntry CreateAndAddCharadesEntry(SeriesEntry franchise)
+        {
+            var charadesEntry = CreateCharadesEntry(franchise);
+            charades.Add(charadesEntry);
+            return charadesEntry;
+        }
+
+        private CharadesEntry CreateCharadesEntry(SeriesEntry franchise)
         {
             var charadesEntry = new CharadesEntry()
             {
                 Series = franchise,
                 KnownBy = GetAllUsersForFranchise(franchise, entryProcessingStrategy.GetFranchiseIds(franchise))
             };
-            charades.Add(charadesEntry);
             return charadesEntry;
         }
 
@@ -172,6 +178,7 @@ namespace AniCharades.Services.Implementation
             otherSources.Clear();
             nextEntryIndex = 0;
             currentMergedList.Clear();
+            includeKnownAdaptations = false;
         }
 
         private ICollection<string> GetAllUsersForFranchise(SeriesEntry franchise, ICollection<long> ids)
@@ -187,6 +194,33 @@ namespace AniCharades.Services.Implementation
                 }
             }
             return usernames;
+        }
+
+        private CharadesEntry EnsureCreateAndAddToCharades(SeriesEntry franchise)
+        {
+            if (!includeKnownAdaptations)
+            {
+                return CreateAndAddCharadesEntry(franchise);
+            }
+            if (entryProcessingStrategy.HasAdaptations(franchise))
+            {
+                return CreateAndAddCharadesEntry(franchise);
+            }
+            return null;
+        }
+
+        public CharadesEntry GetIndirectExistingRelation(ICollection<CharadesEntry> charades, SeriesEntry franchise)
+        {
+            var indirectExistingRelation = charades
+                .FirstOrDefault(c =>
+                {
+                    bool hasAnime = c.Series.AnimePositions != null && c.Series.AnimePositions.Any(a => franchise.AnimePositions.Any(f => f.MalId == a.MalId));
+                    if (hasAnime)
+                        return true;
+                    bool hasManga = c.Series.MangaPositions != null && c.Series.MangaPositions.Any(a => franchise.MangaPositions.Any(f => f.MalId == a.MalId));
+                    return hasManga;
+                });
+            return indirectExistingRelation;
         }
     }
 }

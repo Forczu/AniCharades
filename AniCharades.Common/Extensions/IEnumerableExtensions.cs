@@ -13,5 +13,13 @@ namespace AniCharades.Common.Extensions
                 action(item);
             }
         }
+
+        public static void AddRange<T>(this ICollection<T> source, IEnumerable<T> objects)
+        {
+            foreach (var item in objects)
+            {
+                source.Add(item);
+            }
+        }
     }
 }

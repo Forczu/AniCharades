@@ -75,7 +75,7 @@ namespace AniCharades.Services.Implementation
                 var adaptationId = GetFirstAdaptationId(mangaEntries);
                 if (adaptationId != 0)
                 {
-                    var animeProvider = serviceProvider.GetService(typeof(JikanMangaProvider)) as JikanMangaProvider;
+                    var animeProvider = serviceProvider.GetService(typeof(JikanAnimeProvider)) as JikanAnimeProvider;
                     var animeEntries = GetFranchiseEntries(adaptationId, animeProvider);
                     return CreateFranchise(animeEntries, mangaEntries);
                 }
@@ -98,8 +98,10 @@ namespace AniCharades.Services.Implementation
             var mainEntry = MainEntryFinder.GetMainEntry(entries);
             var mainTitle = GetMainTitle(entries, mainEntry);
             var series = new SeriesEntry();
-            series.AnimePositions = animes?.Select(e => new AnimeEntry() { MalId = e.Id, Title = e.Title, Series = series }).ToList();
-            series.MangaPositions = mangas?.Select(e => new MangaEntry() { MalId = e.Id, Title = e.Title, Series = series }).ToList();
+            if (animes != null)
+                series.AnimePositions.AddRange(animes.Select(e => new AnimeEntry() { MalId = e.Id, Title = e.Title, Series = series }));
+            if (mangas != null)
+                series.MangaPositions.AddRange(mangas.Select(e => new MangaEntry() { MalId = e.Id, Title = e.Title, Series = series }));
             series.ImageUrl = mainEntry.ImageUrl;
             series.Title = mainTitle;
             series.Translation = new Translation()
@@ -130,7 +132,7 @@ namespace AniCharades.Services.Implementation
         {
             var firstEntryWithAdaptation = entries.FirstOrDefault(e => e.Related.Adaptations != null && e.Related.Adaptations.Count != 0);
             if (firstEntryWithAdaptation != null)
-                return firstEntryWithAdaptation.Related.Adaptations.First().MalId;
+                return firstEntryWithAdaptation.Related.Adaptations.First(x => !string.IsNullOrEmpty(x.Name)).MalId;
             return 0;
         }
 
