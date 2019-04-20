@@ -20,7 +20,9 @@ namespace AniCharades.Services.Providers
         public IEntryInstance Get(long id)
         {
             var anime = jikan.GetAnimeWithRetries(id, RetryMaxNumber, RetryWaitingTime);
-            return new JikanAnimeAdapter(anime);
+            if (anime != null)
+                return new JikanAnimeAdapter(anime);
+            return null;
         }
     }
 }

@@ -49,11 +49,11 @@ namespace AniCharades.Services.Implementation
             return CreateFranchise(null, mangas.Cast<IEntryInstance>().ToArray());
         }
 
-        public SeriesEntry CreateFromAnime(long id, bool withAdaptations = false)
+        public SeriesEntry CreateFromAnime(long id, bool withAllAdaptations = false)
         {
             var provider = serviceProvider.GetService(typeof(JikanAnimeProvider)) as JikanAnimeProvider;
             var animeEntries = GetFranchiseEntries(id, provider);
-            if (withAdaptations)
+            if (withAllAdaptations)
             {
                 var adaptationId = GetFirstAdaptationId(animeEntries);
                 if (adaptationId != 0)
@@ -63,14 +63,24 @@ namespace AniCharades.Services.Implementation
                     return CreateFranchise(animeEntries, mangaEntries);
                 }
             }
+            else
+            {
+                var adaptations = animeEntries
+                    .Where(a => a.Related.Adaptations != null && a.Related.Adaptations.Count != 0)
+                    .SelectMany(a => a.Related.Adaptations.Select(ad => ad.MalId))
+                    .Distinct().ToArray();
+                var mangaProvider = serviceProvider.GetService(typeof(JikanMangaProvider)) as JikanMangaProvider;
+                var mangas = adaptations.Select(a => mangaProvider.Get(a)).Where(a => a != null).ToList();
+                return CreateFranchise(animeEntries, mangas);
+            }
             return CreateFranchise(animeEntries, null);
         }
 
-        public SeriesEntry CreateFromManga(long id, bool withAdaptations = false)
+        public SeriesEntry CreateFromManga(long id, bool withAllAdaptations = false)
         {
             var provider = serviceProvider.GetService(typeof(JikanMangaProvider)) as JikanMangaProvider;
             var mangaEntries = GetFranchiseEntries(id, provider);
-            if (withAdaptations)
+            if (withAllAdaptations)
             {
                 var adaptationId = GetFirstAdaptationId(mangaEntries);
                 if (adaptationId != 0)
@@ -79,6 +89,16 @@ namespace AniCharades.Services.Implementation
                     var animeEntries = GetFranchiseEntries(adaptationId, animeProvider);
                     return CreateFranchise(animeEntries, mangaEntries);
                 }
+            }
+            else
+            {
+                var adaptations = mangaEntries
+                    .Where(a => a.Related.Adaptations != null && a.Related.Adaptations.Count != 0)
+                    .SelectMany(a => a.Related.Adaptations.Select(ad => ad.MalId))
+                    .Distinct().ToArray();
+                var animeProvider = serviceProvider.GetService(typeof(JikanAnimeProvider)) as JikanAnimeProvider;
+                var animes = adaptations.Select(a => animeProvider.Get(a)).Where(a => a != null).ToList();
+                return CreateFranchise(animes, mangaEntries);
             }
             return CreateFranchise(null, mangaEntries);
         }

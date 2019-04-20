@@ -1,5 +1,6 @@
 ﻿using AniCharades.Adapters.Jikan;
 using AniCharades.Contracts.Charades;
+using AniCharades.Contracts.Enums;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -36,7 +37,7 @@ namespace AniCharades.API.Tests.Charades
                 }, "Ervelan")
             };
             // when
-            charadesCompositionService.Object.StartComposing(dateALiveEntries, Contracts.Enums.EntrySource.Anime);
+            charadesCompositionService.Object.StartComposing(dateALiveEntries, EntrySource.Anime);
             // then
             var firstDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
             var nextDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
@@ -64,7 +65,7 @@ namespace AniCharades.API.Tests.Charades
                 }, "Progeusz")
             };
             // when
-            charadesCompositionService.Object.StartComposing(dateALiveEntries, Contracts.Enums.EntrySource.Anime);
+            charadesCompositionService.Object.StartComposing(dateALiveEntries, EntrySource.Anime);
             // then
             var firstDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
             var nextDalCharades = await charadesCompositionService.Object.MakeNextCharadesEntry();
@@ -81,7 +82,7 @@ namespace AniCharades.API.Tests.Charades
             var criteria = new GetCharadesCriteria()
             {
                 Usernames = new[] { "Ervelan", "SonMati" },
-                Sources = new[] { Contracts.Enums.EntrySource.Anime },
+                Sources = new[] { EntrySource.Anime },
                 IncludeKnownAdaptations = false
             };
             // when
@@ -110,7 +111,7 @@ namespace AniCharades.API.Tests.Charades
             var criteria = new GetCharadesCriteria()
             {
                 Usernames = new[] { "Ervelan", "Progeusz" },
-                Sources = new[] { Contracts.Enums.EntrySource.Manga },
+                Sources = new[] { EntrySource.Manga },
                 IncludeKnownAdaptations = false
             };
             // when
@@ -139,7 +140,7 @@ namespace AniCharades.API.Tests.Charades
             var criteria = new GetCharadesCriteria()
             {
                 Usernames = new[] { "Ervelan", "SonMati" },
-                Sources = new[] { Contracts.Enums.EntrySource.Anime },
+                Sources = new[] { EntrySource.Anime },
                 IncludeKnownAdaptations = true
             };
             // when
@@ -153,6 +154,27 @@ namespace AniCharades.API.Tests.Charades
             var hokutoNoKen = charades.First(c => c.Series.Title == "Hokuto no Ken");
             Assert.Contains("SonMati", hokutoNoKen.KnownBy);
             Assert.Contains("Ervelan", hokutoNoKen.KnownBy);
+        }
+
+        [Fact]
+        public async Task AnimeAndMangaShouldntCreateSeparateEntries()
+        {
+            // given
+            var criteria = new GetCharadesCriteria()
+            {
+                Usernames = new[] { "Ervelan", "SonMati" },
+                Sources = new[] { EntrySource.Anime, EntrySource.Manga },
+                IncludeKnownAdaptations = false
+            };
+            // when
+            charadesCompositionService.Object.StartComposing(criteria);
+            while (!charadesCompositionService.Object.IsFinished())
+            {
+                await charadesCompositionService.Object.MakeNextCharadesEntry();
+            }
+            // then
+            var charades = charadesCompositionService.Object.GetFinishedCharades();
+            Assert.True(charades.Where(c => c.Series.Title == "Yakusoku no Neverland").Count() == 1);
         }
     }
 }
