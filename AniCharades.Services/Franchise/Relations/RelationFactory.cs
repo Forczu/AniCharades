@@ -1,5 +1,7 @@
 ﻿using AniCharades.Services.Franchise.Relations.Common;
 using AniCharades.Services.Franchise.Relations.Custom;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AniCharades.Services.Franchise.Relations
 {
@@ -7,42 +9,42 @@ namespace AniCharades.Services.Franchise.Relations
     {
         private static RelationFactory instance = null;
 
+        private readonly ICollection<IRelationStrategy> strategies;
+
         public static RelationFactory Instance
         {
             get
             {
                 if (instance == null)
-                    instance = new RelationFactory();
+                {
+                    instance = new RelationFactory(new List<IRelationStrategy>()
+                    {
+                        new NoWordMatchesStrategy(),
+                        new AnyWordMatchesStrategy(),
+                        new EveryWordMatchesStrategy(),
+                        new SpinOffRelationStrategy(),
+                        new OtherRelationStrategy(),
+                        new HasParentStoryStrategy(),
+                        new GundamRelationStrategy(),
+                        new DevilmanRelationStrategy(),
+                        new MameshibaRelationStrategy()
+                    });
+                }
                 return instance;
             }
         }
 
-        private RelationFactory() { }
-
-        public IRelationStrategy Create(string type)
+        private RelationFactory(ICollection<IRelationStrategy> strategies)
         {
-            switch(type)
-            {
-                case "noword":
-                    return new NoWordMatchesStrategy();
-                case "anyword": 
-                default:
-                    return new AnyWordMatchesStrategy();
-                case "everyword":
-                    return new EveryWordMatchesStrategy();
-                case "spinoff":
-                    return new SpinOffRelationStrategy();
-                case "other":
-                    return new OtherRelationStrategy();
-                case "hasParentStory":
-                    return new HasParentStoryStrategy();
-                case "gundam":
-                    return new GundamRelationStrategy();
-                case "devilman":
-                    return new DevilmanRelationStrategy();
-                case "mameshiba":
-                    return new MameshibaRelationStrategy();
-            }
+            this.strategies = strategies;
+        }
+
+        public IRelationStrategy Get(string type)
+        {
+            var strategy = strategies.FirstOrDefault(s => s.GetType().Name.StartsWith(type));
+            if (strategy != null)
+                return strategy;
+            return new AnyWordMatchesStrategy();
         }
     }
 }
