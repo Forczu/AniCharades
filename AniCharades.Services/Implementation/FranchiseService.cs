@@ -3,6 +3,7 @@ using AniCharades.Adapters.Jikan;
 using AniCharades.Algorithms.Franchise;
 using AniCharades.Common.Extensions;
 using AniCharades.Common.Utils;
+using AniCharades.Data.Enumerations;
 using AniCharades.Data.Models;
 using AniCharades.Services.Franchise;
 using AniCharades.Services.Interfaces;
@@ -48,22 +49,45 @@ namespace AniCharades.Services.Implementation
             return CreateFranchise(null, mangas.Cast<IEntryInstance>().ToArray());
         }
 
-        public SeriesEntry CreateFromAnime(long id)
+        public SeriesEntry CreateFromAnime(long id, bool withAdaptations = false)
         {
             var provider = serviceProvider.GetService(typeof(JikanAnimeProvider)) as JikanAnimeProvider;
-            var relations = assembler.Assembly(id, provider);
-            var validEntries = GetEntries(relations);
-            var franchise = CreateFranchise(validEntries, null);
-            return franchise;
+            var animeEntries = GetFranchiseEntries(id, provider);
+            if (withAdaptations)
+            {
+                var adaptationId = GetFirstAdaptationId(animeEntries);
+                if (adaptationId != 0)
+                {
+                    var mangaProvider = serviceProvider.GetService(typeof(JikanMangaProvider)) as JikanMangaProvider;
+                    var mangaEntries = GetFranchiseEntries(adaptationId, mangaProvider);
+                    return CreateFranchise(animeEntries, mangaEntries);
+                }
+            }
+            return CreateFranchise(animeEntries, null);
         }
 
-        public SeriesEntry CreateFromManga(long id)
+        public SeriesEntry CreateFromManga(long id, bool withAdaptations = false)
         {
             var provider = serviceProvider.GetService(typeof(JikanMangaProvider)) as JikanMangaProvider;
+            var mangaEntries = GetFranchiseEntries(id, provider);
+            if (withAdaptations)
+            {
+                var adaptationId = GetFirstAdaptationId(mangaEntries);
+                if (adaptationId != 0)
+                {
+                    var animeProvider = serviceProvider.GetService(typeof(JikanMangaProvider)) as JikanMangaProvider;
+                    var animeEntries = GetFranchiseEntries(adaptationId, animeProvider);
+                    return CreateFranchise(animeEntries, mangaEntries);
+                }
+            }
+            return CreateFranchise(null, mangaEntries);
+        }
+
+        private ICollection<IEntryInstance> GetFranchiseEntries(long id, IEntryProvider provider)
+        {
             var relations = assembler.Assembly(id, provider);
             var validEntries = GetEntries(relations);
-            var franchise = CreateFranchise(null, validEntries);
-            return franchise;
+            return validEntries;
         }
 
         private SeriesEntry CreateFranchise(ICollection<IEntryInstance> animes, ICollection<IEntryInstance> mangas)
@@ -100,6 +124,14 @@ namespace AniCharades.Services.Implementation
                 .ToList();
             validEntries.Add(relations.First().SourceEntry);
             return validEntries;
+        }
+
+        private long GetFirstAdaptationId(ICollection<IEntryInstance> entries)
+        {
+            var firstEntryWithAdaptation = entries.FirstOrDefault(e => e.Related.Adaptations != null && e.Related.Adaptations.Count != 0);
+            if (firstEntryWithAdaptation != null)
+                return firstEntryWithAdaptation.Related.Adaptations.First().MalId;
+            return 0;
         }
 
         private static string GetMainTitle(ICollection<IEntryInstance> entries, IEntryInstance mainEntry)

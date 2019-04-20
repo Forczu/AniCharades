@@ -57,7 +57,7 @@ namespace AniCharades.Services.Implementation
             Reset();
             sources.Enqueue(source);
             currentMergedList = entires.ToList();
-            entryProcessingStrategy = EntryProcessingFactory.Instance.Get(currentSource);
+            entryProcessingStrategy = EntryProcessingFactory.Instance.Get(source);
         }
 
         public void StartComposing(GetCharadesCriteria criteria)
@@ -171,6 +171,7 @@ namespace AniCharades.Services.Implementation
             sources.Clear();
             otherSources.Clear();
             nextEntryIndex = 0;
+            currentMergedList.Clear();
         }
 
         private ICollection<string> GetAllUsersForFranchise(SeriesEntry franchise, ICollection<long> ids)

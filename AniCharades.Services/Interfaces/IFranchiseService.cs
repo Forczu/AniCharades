@@ -16,8 +16,8 @@ namespace AniCharades.Services.Interfaces
 
         SeriesEntry Create(ICollection<JikanMangaAdapter> mangas);
 
-        SeriesEntry CreateFromAnime(long id);
+        SeriesEntry CreateFromAnime(long id, bool withAdaptations = false);
 
-        SeriesEntry CreateFromManga(long id);
+        SeriesEntry CreateFromManga(long id, bool withAdaptations = false);
     }
 }
