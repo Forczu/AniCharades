@@ -51,6 +51,8 @@ namespace AniCharades.Services.Implementation
         {
             var provider = providerFactory.Get(EntrySource.Anime);
             var animeEntries = GetFranchiseEntries(id, provider);
+            if (animeEntries.Count == 0)
+                return null;
             switch (withdaptations)
             {
                 case AdaptationIncluding.OnlyFromEntries:
@@ -70,6 +72,8 @@ namespace AniCharades.Services.Implementation
         {
             var provider = providerFactory.Get(EntrySource.Manga);
             var mangaEntries = GetFranchiseEntries(id, provider);
+            if (mangaEntries.Count == 0)
+                return null;
             switch (withdaptations)
             {
                 case AdaptationIncluding.OnlyFromEntries:
@@ -88,6 +92,8 @@ namespace AniCharades.Services.Implementation
         private ICollection<IEntryInstance> GetFranchiseEntries(long id, IEntryProvider provider)
         {
             var relations = assembler.Assembly(id, provider);
+            if (relations.Count == 0)
+                return new List<IEntryInstance>();
             var validEntries = GetEntries(relations);
             return validEntries;
         }

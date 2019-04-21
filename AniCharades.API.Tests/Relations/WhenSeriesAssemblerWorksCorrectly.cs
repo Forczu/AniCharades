@@ -42,7 +42,7 @@ namespace AniCharades.API.Tests.Relations
             { "MajiKoiTv", 10213 }, { "KimiAruTv", 3229 },
             { "LupinFirstTv", 1412 }, { "LupinVsConanMovie", 6115 },
             { "FairyTailManga", 598 }, { "FairyTailTv", 6702 },
-            { "HanasakuIrohaTv", 9289 }, { "UtopiaMusic", 21103 }
+            { "HanasakuIrohaTv", 9289 }, { "UtopiaMusic", 21103 }, { "SekiranunGraffiti", 11487 }
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -61,7 +61,11 @@ namespace AniCharades.API.Tests.Relations
             var jikanMock = jikanMockBuilder.Build();
             var ignoredRepo = new Mock<IIgnoredEntriesRepository>();
             ignoredRepo.SetReturnsDefault(false);
-            ignoredRepo.Setup(r => r.IsIgnored(malDictionary["UtopiaMusic"], EntrySource.Anime)).ReturnsAsync(true);
+            var ignoredAnimeIds = Config.GetSection($"Ignored:Anime").Get<long[]>();
+            foreach (var id in ignoredAnimeIds)
+            {
+                ignoredRepo.Setup(r => r.IsIgnored(id, EntrySource.Anime)).ReturnsAsync(true);
+            }
             var serviceProvider = new Mock<IEntryProviderFactory>();
             serviceProvider.Setup(s => s.Get(EntrySource.Anime)).Returns(new JikanAnimeProvider(jikanMock.Object, ignoredRepo.Object));
             serviceProvider.Setup(s => s.Get(EntrySource.Manga)).Returns(new JikanMangaProvider(jikanMock.Object, ignoredRepo.Object));
@@ -190,6 +194,17 @@ namespace AniCharades.API.Tests.Relations
             // then
             Assert.Contains(franchise.AnimePositions, a => a.MalId == hanasakuId);
             Assert.DoesNotContain(franchise.AnimePositions, a => a.MalId == utopiaId);
+        }
+
+        [Fact]
+        public void IgnoredEntryShouldNotCreateFranchise()
+        {
+            // given
+            var hanasakuId = malDictionary["SekiranunGraffiti"];
+            // when
+            var franchise = franchiseService.CreateFromAnime(hanasakuId);
+            // then
+            Assert.Null(franchise);
         }
     }
 }

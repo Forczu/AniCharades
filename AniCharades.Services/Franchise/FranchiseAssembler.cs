@@ -25,6 +25,8 @@ namespace AniCharades.Services.Franchise
         public ICollection<RelationBetweenEntries> Assembly(long entryId, IEntryProvider entryProvider)
         {
             ResetCollections();
+            if (entryProvider.IsIgnored(entryId))
+                return series;
             var entry = entryProvider.Get(entryId);
             AddEntryToCheckTheRelations(entry);
             while (!IsStackEmpty())

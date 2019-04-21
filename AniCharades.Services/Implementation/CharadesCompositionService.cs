@@ -143,6 +143,8 @@ namespace AniCharades.Services.Implementation
                 return EnsureCreateAndAddToCharades(franchiseFromRepo);
             }
             var franchise = entryProcessingStrategy.CreateFranchise(entry, franchiseService, adaptationStrategy);
+            if (franchise == null)
+                return null;
             var indirectExistingRelation = GetIndirectExistingRelation(charades, franchise);
             if (indirectExistingRelation != null)
             {
