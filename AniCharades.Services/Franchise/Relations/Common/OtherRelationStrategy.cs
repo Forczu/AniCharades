@@ -64,7 +64,7 @@ namespace AniCharades.Services.Franchise.Relations.Common
         private string GetMainTitlePart(string title)
         {
             var match = SubtitleRegex.Match(title);
-            var mainTitle = match.Groups["mainPart"].Value;
+            var mainTitle = match.Groups["mainTitle"].Value;
             return mainTitle;
         }
     }

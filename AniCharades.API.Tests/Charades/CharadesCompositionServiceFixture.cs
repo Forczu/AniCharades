@@ -99,6 +99,11 @@ namespace AniCharades.API.Tests.Charades
             {
                 ignoredRepo.Setup(r => r.IsIgnored(id, EntrySource.Anime)).ReturnsAsync(true);
             }
+            var ignoredMangaIds = Config.GetSection($"Ignored:Manga").Get<long[]>();
+            foreach (var id in ignoredMangaIds)
+            {
+                ignoredRepo.Setup(r => r.IsIgnored(id, EntrySource.Manga)).ReturnsAsync(true);
+            }
             var providerFactory = new Mock<IEntryProviderFactory>();
             providerFactory.Setup(s => s.Get(EntrySource.Anime)).Returns(new JikanAnimeProvider(jikanMock.Object, ignoredRepo.Object));
             providerFactory.Setup(s => s.Get(EntrySource.Manga)).Returns(new JikanMangaProvider(jikanMock.Object, ignoredRepo.Object));

@@ -42,7 +42,8 @@ namespace AniCharades.API.Tests.Relations
             { "MajiKoiTv", 10213 }, { "KimiAruTv", 3229 },
             { "LupinFirstTv", 1412 }, { "LupinVsConanMovie", 6115 },
             { "FairyTailManga", 598 }, { "FairyTailTv", 6702 },
-            { "HanasakuIrohaTv", 9289 }, { "UtopiaMusic", 21103 }, { "SekiranunGraffiti", 11487 }
+            { "HanasakuIrohaTv", 9289 }, { "UtopiaMusic", 21103 }, { "SekiranunGraffiti", 11487 },
+            { "TsubasaChronicleFirstTv", 177 }, { "xxxHolicMangaId", 10 }
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -205,6 +206,18 @@ namespace AniCharades.API.Tests.Relations
             var franchise = franchiseService.CreateFromAnime(hanasakuId);
             // then
             Assert.Null(franchise);
+        }
+
+        [Fact]
+        public void CreatingFromAnimeShouldNotContainWrongMangas()
+        {
+            // given
+            var tsubasaId = malDictionary["TsubasaChronicleFirstTv"];
+            var xxxHolicId = malDictionary["xxxHolicMangaId"];
+            // when
+            var franchise = franchiseService.CreateFromAnime(tsubasaId, AdaptationIncluding.All);
+            // then
+            Assert.DoesNotContain(franchise.MangaPositions, m => m.MalId == xxxHolicId);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace AniCharades.Algorithms.Franchise
         {
             originalTitles = entries;
             var title = GetMainTitle(entries);
-            mainTitle = Clean(mainTitle);
+            mainTitle = CleanForMain(mainTitle);
             if (!mainTitle.Equals(title) && mainTitle.Contains(title) &&
                 mainTitle.Split(' ').Count() == title.Split(' ').Count() + 1)
             {
@@ -59,6 +59,16 @@ namespace AniCharades.Algorithms.Franchise
             title = RemoveCustomCharacters(title);
             title = RemoveExtraCharacters(title);
             title = RemoveLastRedundantWords(title);
+            title = RemoveFirstRedundantWords(title);
+            title = RemoveNonAsciiCharacters(title);
+            return title;
+        }
+
+        private string CleanForMain(string title)
+        {
+            title = GetMainTitle(title);
+            title = RemoveCustomCharacters(title);
+            title = RemoveExtraCharacters(title);
             title = RemoveFirstRedundantWords(title);
             title = RemoveNonAsciiCharacters(title);
             return title;
