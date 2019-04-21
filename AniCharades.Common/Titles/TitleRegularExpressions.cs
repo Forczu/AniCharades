@@ -1,12 +1,13 @@
-﻿using System.Text;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AniCharades.Common.Titles
 {
     internal static class TitlePatterns
     {
-        private static readonly string[] TitlesEndingsForExplicitSubtitle = { @"ies\.", "Sand", "Stratos.+", "Reconguista", "Orphans", "Control", "Zvezda" };
-
         public static readonly string OtherThanSemiColon = "[^:]";
         public static readonly string NonAscii = @"[^\u0000-\u007F]+";
         public static readonly string OtherThanSemicolonWithNumbers = @"([0-9]\.[0-9])?[^:]+";
@@ -22,14 +23,21 @@ namespace AniCharades.Common.Titles
 
         private static string CreateSubtitlePattern()
         {
+            var envVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
+                    .Build();
+            var subtitleEndings = config.GetSection("Title:EndingsForExplicitSubtitle").Get<string[]>();
+
             var patternFirstPart = $@"(?<mainTitle>{OtherThanSemiColon}+):\s(?!(.+(";
             var patternSecondPart = $@"))$)(?<subTitle>{OtherThanSemicolonWithNumbers})";
             var patternBuilder = new StringBuilder();
             patternBuilder.Append(patternFirstPart);
-            for (int i = 0; i < TitlesEndingsForExplicitSubtitle.Length; ++i)
+            for (int i = 0; i < subtitleEndings.Length; ++i)
             {
-                patternBuilder.Append(TitlesEndingsForExplicitSubtitle[i]);
-                if (i != TitlesEndingsForExplicitSubtitle.Length - 1)
+                patternBuilder.Append(subtitleEndings[i]);
+                if (i != subtitleEndings.Length - 1)
                     patternBuilder.Append('|');
             }
             patternBuilder.Append(patternSecondPart);
