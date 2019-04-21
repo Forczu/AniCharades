@@ -1,4 +1,5 @@
 ﻿using AniCharades.Adapters.Interfaces;
+using AniCharades.Contracts.Enums;
 using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Interfaces;
@@ -15,7 +16,7 @@ namespace AniCharades.Services.Charades.EntryProcessing
 
         Task<SeriesEntry> GetFranchiseFromRepository(IListEntry entry, ISeriesRepository seriesRepository);
 
-        SeriesEntry CreateFranchise(IListEntry entry, IFranchiseService franchiseService, bool includeAdaptations);
+        SeriesEntry CreateFranchise(IListEntry entry, IFranchiseService franchiseService, AdaptationIncluding withAdaptations);
 
         void AddEntryToCharadesEntry(CharadesEntry charadesEntry, IListEntry entry, SeriesEntry franchise);
 

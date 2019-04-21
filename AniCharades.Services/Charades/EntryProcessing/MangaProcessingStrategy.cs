@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AniCharades.Adapters.Interfaces;
 using AniCharades.Common.Extensions;
+using AniCharades.Contracts.Enums;
 using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Interfaces;
@@ -32,9 +31,9 @@ namespace AniCharades.Services.Charades.EntryProcessing
             return franchise;
         }
 
-        public SeriesEntry CreateFranchise(IListEntry entry, IFranchiseService franchiseService, bool includeAdaptations)
+        public SeriesEntry CreateFranchise(IListEntry entry, IFranchiseService franchiseService, AdaptationIncluding withAdaptations)
         {
-            var franchise = franchiseService.CreateFromManga(entry.Id, includeAdaptations);
+            var franchise = franchiseService.CreateFromManga(entry.Id, withAdaptations);
             return franchise;
         }
 

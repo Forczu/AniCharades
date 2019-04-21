@@ -47,35 +47,41 @@ namespace AniCharades.Services.Implementation
             return CreateFranchise(null, mangas.Cast<IEntryInstance>().ToArray());
         }
 
-        public SeriesEntry CreateFromAnime(long id, bool withAllAdaptations = false)
+        public SeriesEntry CreateFromAnime(long id, AdaptationIncluding withdaptations = AdaptationIncluding.None)
         {
             var provider = providerFactory.Get(EntrySource.Anime);
             var animeEntries = GetFranchiseEntries(id, provider);
-            if (withAllAdaptations)
+            switch (withdaptations)
             {
-                var mangaEntries = GetAllAdaptations(animeEntries, EntrySource.Manga);
-                return CreateFranchise(animeEntries, mangaEntries);
-            }
-            else
-            {
-                var mangaEntries = GetEntriesAdaptations(animeEntries, EntrySource.Manga);
-                return CreateFranchise(animeEntries, mangaEntries);
+                case AdaptationIncluding.OnlyFromEntries:
+                    var mangaEntries = GetEntriesAdaptations(animeEntries, EntrySource.Manga);
+                    return CreateFranchise(animeEntries, mangaEntries);
+                case AdaptationIncluding.All:
+                case AdaptationIncluding.OnlyKnownInOthers:
+                    mangaEntries = GetAllAdaptations(animeEntries, EntrySource.Manga);
+                    return CreateFranchise(animeEntries, mangaEntries);
+                case AdaptationIncluding.None:
+                default:
+                    return CreateFranchise(animeEntries, null);
             }
         }
 
-        public SeriesEntry CreateFromManga(long id, bool withAllAdaptations = false)
+        public SeriesEntry CreateFromManga(long id, AdaptationIncluding withdaptations = AdaptationIncluding.None)
         {
             var provider = providerFactory.Get(EntrySource.Manga);
             var mangaEntries = GetFranchiseEntries(id, provider);
-            if (withAllAdaptations)
+            switch (withdaptations)
             {
-                var animeEntries = GetAllAdaptations(mangaEntries, EntrySource.Anime);
-                return CreateFranchise(animeEntries, mangaEntries);
-            }
-            else
-            {
-                var animeEntries = GetEntriesAdaptations(mangaEntries, EntrySource.Anime);
-                return CreateFranchise(animeEntries, mangaEntries);
+                case AdaptationIncluding.OnlyFromEntries:
+                    var animeEntries = GetEntriesAdaptations(mangaEntries, EntrySource.Anime);
+                    return CreateFranchise(animeEntries, mangaEntries);
+                case AdaptationIncluding.All:
+                case AdaptationIncluding.OnlyKnownInOthers:
+                    animeEntries = GetAllAdaptations(mangaEntries, EntrySource.Anime);
+                    return CreateFranchise(animeEntries, mangaEntries);
+                case AdaptationIncluding.None:
+                default:
+                    return CreateFranchise(null, mangaEntries);
             }
         }
 
@@ -98,7 +104,7 @@ namespace AniCharades.Services.Implementation
             return entries;
         }
 
-        private List<IEntryInstance> GetEntriesAdaptations(ICollection<IEntryInstance> entries, EntrySource source)
+        private ICollection<IEntryInstance> GetEntriesAdaptations(ICollection<IEntryInstance> entries, EntrySource source)
         {
             var adaptations = entries
                 .Where(a => a.Related.Adaptations != null && a.Related.Adaptations.Count != 0)

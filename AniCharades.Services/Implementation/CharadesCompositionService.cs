@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,10 +10,7 @@ using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Charades;
 using AniCharades.Services.Charades.EntryProcessing;
-using AniCharades.Services.Franchise;
 using AniCharades.Services.Interfaces;
-using AniCharades.Services.Providers;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AniCharades.Services.Implementation
 {
@@ -32,7 +28,7 @@ namespace AniCharades.Services.Implementation
         private EntrySource currentSource;
         private int nextEntryIndex = 0;
         private IEntryProcessingStrategy entryProcessingStrategy;
-        private bool includeKnownAdaptations = false;
+        private AdaptationIncluding adaptationStrategy = AdaptationIncluding.None;
 
         private ICollection<CharadesEntry> charades;
 
@@ -66,15 +62,17 @@ namespace AniCharades.Services.Implementation
             Reset();
             usernames = criteria.Usernames;
             sources.EnqueueRange(criteria.Sources);
-            if (criteria.IncludeKnownAdaptations && sources.Count != 0)
+            var allSources = Enum.GetValues(typeof(EntrySource)).Cast<EntrySource>();
+            var isAllDone = criteria.Sources.Count == allSources.Count();
+            if (isAllDone)
             {
-                var allSources = Enum.GetValues(typeof(EntrySource)).Cast<EntrySource>();
-                var isAllDone = criteria.Sources.Count == allSources.Count();
-                if (!isAllDone)
-                {
-                    var otherSources = allSources.Except(criteria.Sources);
-                    this.otherSources.EnqueueRange(otherSources);
-                }
+                adaptationStrategy = AdaptationIncluding.All;
+            }
+            else if (criteria.IncludeKnownAdaptations && sources.Count != 0)
+            {
+                adaptationStrategy = AdaptationIncluding.OnlyFromEntries;
+                var otherSources = allSources.Except(criteria.Sources);
+                this.otherSources.EnqueueRange(otherSources);
             }
         }
 
@@ -101,7 +99,7 @@ namespace AniCharades.Services.Implementation
                 }
                 else if (otherSources.Count != 0)
                 {
-                    includeKnownAdaptations = true;
+                    adaptationStrategy = AdaptationIncluding.OnlyKnownInOthers;
                     currentSource = otherSources.Dequeue();
                     await GetCurrentMergedListFromSource();
                 }
@@ -144,7 +142,7 @@ namespace AniCharades.Services.Implementation
                 var franchiseFromRepo = await entryProcessingStrategy.GetFranchiseFromRepository(entry, seriesRepository);
                 return EnsureCreateAndAddToCharades(franchiseFromRepo);
             }
-            var franchise = entryProcessingStrategy.CreateFranchise(entry, franchiseService, includeKnownAdaptations);
+            var franchise = entryProcessingStrategy.CreateFranchise(entry, franchiseService, adaptationStrategy);
             var indirectExistingRelation = GetIndirectExistingRelation(charades, franchise);
             if (indirectExistingRelation != null)
             {
@@ -178,7 +176,7 @@ namespace AniCharades.Services.Implementation
             otherSources.Clear();
             nextEntryIndex = 0;
             currentMergedList.Clear();
-            includeKnownAdaptations = false;
+            adaptationStrategy = AdaptationIncluding.None;
         }
 
         private ICollection<string> GetAllUsersForFranchise(SeriesEntry franchise, ICollection<long> ids)
@@ -198,15 +196,17 @@ namespace AniCharades.Services.Implementation
 
         private CharadesEntry EnsureCreateAndAddToCharades(SeriesEntry franchise)
         {
-            if (!includeKnownAdaptations)
+            switch (adaptationStrategy)
             {
-                return CreateAndAddCharadesEntry(franchise);
+                case AdaptationIncluding.OnlyKnownInOthers:
+                    if (entryProcessingStrategy.HasAdaptations(franchise))
+                    {
+                        return CreateAndAddCharadesEntry(franchise);
+                    }
+                    return null;
+                default:
+                    return CreateAndAddCharadesEntry(franchise);
             }
-            if (entryProcessingStrategy.HasAdaptations(franchise))
-            {
-                return CreateAndAddCharadesEntry(franchise);
-            }
-            return null;
         }
 
         public CharadesEntry GetIndirectExistingRelation(ICollection<CharadesEntry> charades, SeriesEntry franchise)

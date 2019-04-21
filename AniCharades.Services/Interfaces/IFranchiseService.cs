@@ -1,10 +1,8 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.Adapters.Jikan;
+using AniCharades.Contracts.Enums;
 using AniCharades.Data.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AniCharades.Services.Interfaces
 {
@@ -16,8 +14,8 @@ namespace AniCharades.Services.Interfaces
 
         SeriesEntry Create(ICollection<JikanMangaAdapter> mangas);
 
-        SeriesEntry CreateFromAnime(long id, bool withAdaptations = false);
+        SeriesEntry CreateFromAnime(long id, AdaptationIncluding withdaptations = AdaptationIncluding.None);
 
-        SeriesEntry CreateFromManga(long id, bool withAdaptations = false);
+        SeriesEntry CreateFromManga(long id, AdaptationIncluding withdaptations = AdaptationIncluding.None);
     }
 }
