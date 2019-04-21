@@ -1,5 +1,6 @@
 ﻿using AniCharades.API.Tests.LargeMocks;
 using AniCharades.Contracts.Enums;
+using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Franchise;
 using AniCharades.Services.Franchise.Providers;
 using AniCharades.Services.Implementation;
@@ -40,7 +41,8 @@ namespace AniCharades.API.Tests.Relations
             { "PrismaIllyaFirstTv", 14829 }, { "PrismaIllyaMovieSpecial", 36833 }, { "EmiyaGohan", 37033 },
             { "MajiKoiTv", 10213 }, { "KimiAruTv", 3229 },
             { "LupinFirstTv", 1412 }, { "LupinVsConanMovie", 6115 },
-            { "FairyTailManga", 598 }, { "FairyTailTv", 6702 }
+            { "FairyTailManga", 598 }, { "FairyTailTv", 6702 },
+            { "HanasakuIrohaTv", 9289 }, { "UtopiaMusic", 21103 }
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -57,9 +59,12 @@ namespace AniCharades.API.Tests.Relations
                 jikanMockBuilder.HasMangas(Config.GetSection($"Jikan:Manga:Franchises:{franchise}").Get<long[]>());
             }
             var jikanMock = jikanMockBuilder.Build();
+            var ignoredRepo = new Mock<IIgnoredEntriesRepository>();
+            ignoredRepo.SetReturnsDefault(false);
+            ignoredRepo.Setup(r => r.IsIgnored(malDictionary["UtopiaMusic"], EntrySource.Anime)).ReturnsAsync(true);
             var serviceProvider = new Mock<IEntryProviderFactory>();
-            serviceProvider.Setup(s => s.Get(EntrySource.Anime)).Returns(new JikanAnimeProvider(jikanMock.Object));
-            serviceProvider.Setup(s => s.Get(EntrySource.Manga)).Returns(new JikanMangaProvider(jikanMock.Object));
+            serviceProvider.Setup(s => s.Get(EntrySource.Anime)).Returns(new JikanAnimeProvider(jikanMock.Object, ignoredRepo.Object));
+            serviceProvider.Setup(s => s.Get(EntrySource.Manga)).Returns(new JikanMangaProvider(jikanMock.Object, ignoredRepo.Object));
             franchiseService = new FranchiseService(serviceProvider.Object, new FranchiseAssembler(new RelationService()));
         }
 
@@ -172,6 +177,19 @@ namespace AniCharades.API.Tests.Relations
             // then
             Assert.Equal(expectedCount, franchise.MangaPositions.Count);
             Assert.True(franchise.MangaPositions.GroupBy(x => x).All(g => g.Count() == 1));
+        }
+
+        [Fact]
+        public void IgnoredEntriewsShouldNotAppearInFranchse()
+        {
+            // given
+            var hanasakuId = malDictionary["HanasakuIrohaTv"];
+            var utopiaId = malDictionary["UtopiaMusic"];
+            // when
+            var franchise = franchiseService.CreateFromAnime(hanasakuId);
+            // then
+            Assert.Contains(franchise.AnimePositions, a => a.MalId == hanasakuId);
+            Assert.DoesNotContain(franchise.AnimePositions, a => a.MalId == utopiaId);
         }
     }
 }

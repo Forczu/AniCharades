@@ -1,6 +1,7 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.Adapters.Jikan;
 using AniCharades.Common.Extensions;
+using AniCharades.Repositories.Interfaces;
 using JikanDotNet;
 
 namespace AniCharades.Services.Providers
@@ -11,10 +12,12 @@ namespace AniCharades.Services.Providers
         private static readonly int RetryWaitingTime = 60 * 1000;
 
         private readonly IJikan jikan;
+        private readonly IIgnoredEntriesRepository ignored;
 
-        public JikanMangaProvider(IJikan jikan)
+        public JikanMangaProvider(IJikan jikan, IIgnoredEntriesRepository ignored)
         {
             this.jikan = jikan;
+            this.ignored = ignored;
         }
 
         public IEntryInstance Get(long id)
@@ -23,6 +26,11 @@ namespace AniCharades.Services.Providers
             if (manga != null)
                 return new JikanMangaAdapter(manga);
             return null;
+        }
+
+        public bool IsIgnored(long id)
+        {
+            return ignored.IsIgnored(id, Contracts.Enums.EntrySource.Manga).Result;
         }
     }
 }

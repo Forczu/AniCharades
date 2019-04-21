@@ -60,9 +60,11 @@ namespace AniCharades.Services.Franchise
             var relations = GetRelations(currentEntry, entryProvider);
             if (IsCollectionEmpty(relations))
                 return;
-            var validRelations = relations.Where(r => relationService.IsRelationValid(r)).ToList();
-            series.AddRange(validRelations);
-            StackNextRelatedEntries(validRelations);
+            relations = relations
+                .Where(r => relationService.IsRelationValid(r))
+                .ToList();
+            series.AddRange(relations);
+            StackNextRelatedEntries(relations);
         }
 
         private ICollection<RelationBetweenEntries> GetRelations(IEntryInstance entry, IEntryProvider entryProvider)
@@ -71,7 +73,7 @@ namespace AniCharades.Services.Franchise
             if (IsCollectionEmpty(allRelatedToEntry))
                 return null;
             var relations = new List<RelationBetweenEntries>();
-            var filteredEntries = allRelatedToEntry.Where(r => CanEntryBeAddedToSeries(r.MalId));
+            var filteredEntries = allRelatedToEntry.Where(r => CanEntryBeAddedToSeries(r.MalId) && !entryProvider.IsIgnored(r.MalId));
             foreach (var subItem in filteredEntries)
             {
                 var relatedEntry = entryProvider.Get(subItem.MalId);

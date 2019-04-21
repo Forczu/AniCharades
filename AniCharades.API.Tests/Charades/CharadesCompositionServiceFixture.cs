@@ -8,6 +8,7 @@ using AniCharades.Services.Franchise.Providers;
 using AniCharades.Services.Implementation;
 using AniCharades.Services.Interfaces;
 using AniCharades.Services.Providers;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,16 @@ namespace AniCharades.API.Tests.Charades
     public class CharadesCompositionServiceFixture : IDisposable
     {
         public ICharadesCompositionService Object { get; private set; }
+        public IConfigurationRoot Config { get; }
 
         public CharadesCompositionServiceFixture()
         {
+            var envVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            Config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
+                    .Build();
+
             Mock<JikanDotNet.IJikan> jikanMock = GetJikan();
             MyAnimeListService myAnimeListService = GetMyAnimeListService(jikanMock);
             Mock<ISeriesRepository> seriesRepository = GetSeriesRepository();
@@ -32,7 +40,7 @@ namespace AniCharades.API.Tests.Charades
             Object = null;
         }
 
-        private static Mock<JikanDotNet.IJikan> GetJikan()
+        private Mock<JikanDotNet.IJikan> GetJikan()
         {
             return new JikanMockBuilder()
                 .HasUserAnimeList("Ervelan")
@@ -45,14 +53,14 @@ namespace AniCharades.API.Tests.Charades
                 .Build();
         }
 
-        private static MyAnimeListService GetMyAnimeListService(Mock<JikanDotNet.IJikan> jikanMock)
+        private MyAnimeListService GetMyAnimeListService(Mock<JikanDotNet.IJikan> jikanMock)
         {
             var listExtractorMock = new ListExtractor(jikanMock.Object);
             var myAnimeListService = new MyAnimeListService(listExtractorMock);
             return myAnimeListService;
         }
 
-        private static Mock<ISeriesRepository> GetSeriesRepository()
+        private Mock<ISeriesRepository> GetSeriesRepository()
         {
             var seriesRepository = new Mock<ISeriesRepository>();
             PrepareDateALiveFranchise(seriesRepository);
@@ -60,7 +68,7 @@ namespace AniCharades.API.Tests.Charades
             return seriesRepository;
         }
 
-        private static void PrepareDateALiveFranchise(Mock<ISeriesRepository> seriesRepository)
+        private void PrepareDateALiveFranchise(Mock<ISeriesRepository> seriesRepository)
         {
             var dateALiveFranchiseWithoutS3 = new SeriesEntry()
             {
@@ -82,11 +90,18 @@ namespace AniCharades.API.Tests.Charades
             seriesRepository.Setup(r => r.SeriesExistsByAnimeId(36633)).ReturnsAsync(false);
         }
 
-        private static FranchiseService GetFranchiseService(Mock<JikanDotNet.IJikan> jikanMock)
+        private FranchiseService GetFranchiseService(Mock<JikanDotNet.IJikan> jikanMock)
         {
+            var ignoredRepo = new Mock<IIgnoredEntriesRepository>();
+            ignoredRepo.SetReturnsDefault(false);
+            var ignoredAnimeIds = Config.GetSection($"Ignored:Anime").Get<long[]>();
+            foreach (var id in ignoredAnimeIds)
+            {
+                ignoredRepo.Setup(r => r.IsIgnored(id, EntrySource.Anime)).ReturnsAsync(true);
+            }
             var providerFactory = new Mock<IEntryProviderFactory>();
-            providerFactory.Setup(s => s.Get(EntrySource.Anime)).Returns(new JikanAnimeProvider(jikanMock.Object));
-            providerFactory.Setup(s => s.Get(EntrySource.Manga)).Returns(new JikanMangaProvider(jikanMock.Object));
+            providerFactory.Setup(s => s.Get(EntrySource.Anime)).Returns(new JikanAnimeProvider(jikanMock.Object, ignoredRepo.Object));
+            providerFactory.Setup(s => s.Get(EntrySource.Manga)).Returns(new JikanMangaProvider(jikanMock.Object, ignoredRepo.Object));
             var franchiseService = new FranchiseService(providerFactory.Object, new FranchiseAssembler(new RelationService()));
             return franchiseService;
         }

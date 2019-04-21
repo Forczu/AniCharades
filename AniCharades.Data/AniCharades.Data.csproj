@@ -16,4 +16,8 @@
     <Folder Include="Seeding\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AniCharades.Contracts\AniCharades.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

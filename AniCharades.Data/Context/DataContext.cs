@@ -15,6 +15,7 @@ namespace AniCharades.Data.Context
         public DbSet<SeriesEntry> Series { get; set; }
         public DbSet<AnimeEntry> Animes { get; set; }
         public DbSet<MangaEntry> Mangas { get; set; }
+        public DbSet<IgnoredEntry> Ignored { get; set; }
         public DbSet<RelationCriteria> RelationCriterias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,6 +54,13 @@ namespace AniCharades.Data.Context
                 entity.Property(e => e.Title).IsRequired();
                 entity.HasIndex(e => e.MalId);
                 entity.HasIndex(e => e.Title);
+            });
+
+            modelBuilder.Entity<IgnoredEntry>(entity =>
+            {
+                entity.HasKey(e => new { e.Source, e.Id });
+                entity.HasIndex(e => e.Source);
+                entity.HasIndex(e => e.Id);
             });
 
             modelBuilder
