@@ -19,6 +19,7 @@ namespace AniCharades.API.Tests.Charades
             var jikanMock = new JikanMockBuilder()
                 .HasUserAnimeList("Ervelan")
                 .HasUserAnimeList("SonMati")
+                .HasUserMangaList("Onrix")
                 .HasAllAnimes()
                 .Build();
             var listExtractorMock = new ListExtractor(jikanMock.Object);

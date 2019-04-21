@@ -54,5 +54,16 @@ namespace AniCharades.API.Tests.Charades
             var entry = mergedList.First(e => e.Title == title);
             Assert.True(entry.Users.All(u => usernames.Contains(u)));
         }
+
+        [Fact]
+        public void ListWithRestrictedAccessShouldReturnEmptyList()
+        {
+            // given
+            string[] usernames = { "Onrix" };
+            // when
+            var mergedList = fixture.Object.GetMergedMangaLists(usernames).Result;
+            // then
+            Assert.True(mergedList.Count == 0);
+        }
     }
 }
