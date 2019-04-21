@@ -16,6 +16,7 @@ using AniCharades.Services.Franchise;
 using AniCharades.Services.Providers;
 using AniCharades.API.Mapper;
 using AutoMapper;
+using AniCharades.Services.Franchise.Providers;
 
 namespace AniCharades.API
 {
@@ -46,8 +47,7 @@ namespace AniCharades.API
             services.AddScoped<IJikan>(j => new Jikan(true));
             services.AddScoped<IListExtractor, ListExtractor>();
             services.AddScoped<FranchiseAssembler, FranchiseAssembler>();
-            services.AddScoped<JikanAnimeProvider, JikanAnimeProvider>();
-            services.AddScoped<JikanMangaProvider, JikanMangaProvider>();
+            services.AddScoped<IEntryProviderFactory, EntryProviderFactory>();
             services.AddScoped<IFranchiseService, FranchiseService>();
             services.AddScoped<IRelationService, RelationService>();
             services.AddAWSService<Amazon.S3.IAmazonS3>();

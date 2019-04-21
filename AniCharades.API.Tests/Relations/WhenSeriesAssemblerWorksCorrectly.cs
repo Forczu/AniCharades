@@ -1,18 +1,14 @@
 ﻿using AniCharades.API.Tests.LargeMocks;
-using AniCharades.Data.Models;
-using AniCharades.Repositories.Interfaces;
+using AniCharades.Contracts.Enums;
 using AniCharades.Services.Franchise;
+using AniCharades.Services.Franchise.Providers;
 using AniCharades.Services.Implementation;
 using AniCharades.Services.Interfaces;
 using AniCharades.Services.Providers;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace AniCharades.API.Tests.Relations
@@ -55,9 +51,9 @@ namespace AniCharades.API.Tests.Relations
                 jikanMockBuilder.HasAnimes(Config.GetSection($"Jikan:Anime:Franchises:{franchise}").Get<long[]>());
             }
             var jikanMock = jikanMockBuilder.Build();
-            var serviceProvider = new Mock<IServiceProvider>();
-            serviceProvider.Setup(s => s.GetService(typeof(JikanAnimeProvider))).Returns(new JikanAnimeProvider(jikanMock.Object));
-            serviceProvider.Setup(s => s.GetService(typeof(JikanMangaProvider))).Returns(new JikanMangaProvider(jikanMock.Object));
+            var serviceProvider = new Mock<IEntryProviderFactory>();
+            serviceProvider.Setup(s => s.Get(EntrySource.Anime)).Returns(new JikanAnimeProvider(jikanMock.Object));
+            serviceProvider.Setup(s => s.Get(EntrySource.Manga)).Returns(new JikanMangaProvider(jikanMock.Object));
             franchiseService = new FranchiseService(serviceProvider.Object, new FranchiseAssembler(new RelationService()));
         }
 

@@ -1,8 +1,10 @@
 ﻿using AniCharades.Algorithms.MyAnimeList;
 using AniCharades.API.Tests.LargeMocks;
+using AniCharades.Contracts.Enums;
 using AniCharades.Data.Models;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Franchise;
+using AniCharades.Services.Franchise.Providers;
 using AniCharades.Services.Implementation;
 using AniCharades.Services.Interfaces;
 using AniCharades.Services.Providers;
@@ -82,10 +84,10 @@ namespace AniCharades.API.Tests.Charades
 
         private static FranchiseService GetFranchiseService(Mock<JikanDotNet.IJikan> jikanMock)
         {
-            var serviceProvider = new Mock<IServiceProvider>();
-            serviceProvider.Setup(s => s.GetService(typeof(JikanAnimeProvider))).Returns(new JikanAnimeProvider(jikanMock.Object));
-            serviceProvider.Setup(s => s.GetService(typeof(JikanMangaProvider))).Returns(new JikanMangaProvider(jikanMock.Object));
-            var franchiseService = new FranchiseService(serviceProvider.Object, new FranchiseAssembler(new RelationService()));
+            var providerFactory = new Mock<IEntryProviderFactory>();
+            providerFactory.Setup(s => s.Get(EntrySource.Anime)).Returns(new JikanAnimeProvider(jikanMock.Object));
+            providerFactory.Setup(s => s.Get(EntrySource.Manga)).Returns(new JikanMangaProvider(jikanMock.Object));
+            var franchiseService = new FranchiseService(providerFactory.Object, new FranchiseAssembler(new RelationService()));
             return franchiseService;
         }
     }
