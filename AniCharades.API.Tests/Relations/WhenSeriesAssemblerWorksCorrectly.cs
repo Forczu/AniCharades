@@ -39,7 +39,8 @@ namespace AniCharades.API.Tests.Relations
             { "FateGrandOrderFirstOva", 34321 },  { "FateGrandOrderCMs", 36064 }, { "FateGrandOrderMangaDeWakaru", 38958 },
             { "PrismaIllyaFirstTv", 14829 }, { "PrismaIllyaMovieSpecial", 36833 }, { "EmiyaGohan", 37033 },
             { "MajiKoiTv", 10213 }, { "KimiAruTv", 3229 },
-            { "LupinFirstTv", 1412 }, { "LupinVsConanMovie", 6115 }
+            { "LupinFirstTv", 1412 }, { "LupinVsConanMovie", 6115 },
+            { "FairyTailManga", 598 }, { "FairyTailTv", 6702 }
         };
 
         public WhenSeriesAssemblerWorksCorrectly()
@@ -49,6 +50,11 @@ namespace AniCharades.API.Tests.Relations
             foreach (var franchise in franchises)
             {
                 jikanMockBuilder.HasAnimes(Config.GetSection($"Jikan:Anime:Franchises:{franchise}").Get<long[]>());
+            }
+            franchises = Config.GetSection("Jikan:Manga:Franchises").GetChildren().Select(c => c.Key).ToArray();
+            foreach (var franchise in franchises)
+            {
+                jikanMockBuilder.HasMangas(Config.GetSection($"Jikan:Manga:Franchises:{franchise}").Get<long[]>());
             }
             var jikanMock = jikanMockBuilder.Build();
             var serviceProvider = new Mock<IEntryProviderFactory>();
@@ -66,6 +72,7 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("ClannadTv",  5)]
         [InlineData("SataniaDropoutSpecials",  2)]
         [InlineData("MahoukaTv", 4)]
+        [InlineData("FairyTailTv", 10)]
         [InlineData("FateFirstTv", 11)]
         [InlineData("PrismaIllyaFirstTv", 13)]
         [InlineData("GintamaThirdTv", 19)]
@@ -152,6 +159,19 @@ namespace AniCharades.API.Tests.Relations
             // then
             Assert.DoesNotContain(firstFranchise.AnimePositions, a => a.MalId == secondId);
             Assert.DoesNotContain(secondFranchise.AnimePositions, a => a.MalId == firstId);
+        }
+
+        [Theory]
+        [InlineData("FairyTailManga", 11)]
+        public void MangaFranchiseShouldHaveExpectedCount(string firstEntryName, int expectedCount)
+        {
+            // given
+            long firstId = malDictionary[firstEntryName];
+            // when
+            var franchise = franchiseService.CreateFromManga(firstId);
+            // then
+            Assert.Equal(expectedCount, franchise.MangaPositions.Count);
+            Assert.True(franchise.MangaPositions.GroupBy(x => x).All(g => g.Count() == 1));
         }
     }
 }
