@@ -37,14 +37,14 @@ namespace AniCharades.Services.Implementation
         {
             if (CollectionUtils.IsCollectionNullOrEmpty(animes))
                 return null;
-            return CreateFranchise(animes.Cast<IEntryInstance>().ToArray(), null);
+            return CreateFranchise(animes.Cast<IEntryInstance>().ToArray(), new List<IEntryInstance>());
         }
 
         public SeriesEntry Create(ICollection<JikanMangaAdapter> mangas)
         {
             if (CollectionUtils.IsCollectionNullOrEmpty(mangas))
                 return null;
-            return CreateFranchise(null, mangas.Cast<IEntryInstance>().ToArray());
+            return CreateFranchise(new List<IEntryInstance>(), mangas.Cast<IEntryInstance>().ToArray());
         }
 
         public SeriesEntry CreateFromAnime(long id, AdaptationIncluding withdaptations = AdaptationIncluding.None)
@@ -62,7 +62,7 @@ namespace AniCharades.Services.Implementation
                     return CreateFranchise(animeEntries, mangaEntries);
                 case AdaptationIncluding.None:
                 default:
-                    return CreateFranchise(animeEntries, null);
+                    return CreateFranchise(animeEntries, new List<IEntryInstance>());
             }
         }
 
@@ -81,7 +81,7 @@ namespace AniCharades.Services.Implementation
                     return CreateFranchise(animeEntries, mangaEntries);
                 case AdaptationIncluding.None:
                 default:
-                    return CreateFranchise(null, mangaEntries);
+                    return CreateFranchise(new List<IEntryInstance>(), mangaEntries);
             }
         }
 
@@ -94,7 +94,7 @@ namespace AniCharades.Services.Implementation
 
         private ICollection<IEntryInstance> GetAllAdaptations(ICollection<IEntryInstance> animeEntries, EntrySource source)
         {
-            ICollection<IEntryInstance> entries = null;
+            ICollection<IEntryInstance> entries = new List<IEntryInstance>();
             var adaptationId = GetFirstAdaptationId(animeEntries);
             if (adaptationId != 0)
             {
@@ -121,12 +121,13 @@ namespace AniCharades.Services.Implementation
             if (CollectionUtils.IsCollectionNullOrEmpty(animes))
                 entries = mangas;
             var mainEntry = MainEntryFinder.GetMainEntry(entries);
-            var mainTitle = GetMainTitle(entries, mainEntry);
+            var allEntries = new List<IEntryInstance>();
+            allEntries.AddRange(animes);
+            allEntries.AddRange(mangas);
+            var mainTitle = GetMainTitle(allEntries, mainEntry);
             var series = new SeriesEntry();
-            if (animes != null)
-                series.AnimePositions.AddRange(animes.Select(e => new AnimeEntry() { MalId = e.Id, Title = e.Title, Series = series }));
-            if (mangas != null)
-                series.MangaPositions.AddRange(mangas.Select(e => new MangaEntry() { MalId = e.Id, Title = e.Title, Series = series }));
+            series.AnimePositions.AddRange(animes.Select(e => new AnimeEntry() { MalId = e.Id, Title = e.Title, Series = series }));
+            series.MangaPositions.AddRange(mangas.Select(e => new MangaEntry() { MalId = e.Id, Title = e.Title, Series = series }));
             series.ImageUrl = mainEntry.ImageUrl;
             series.Title = mainTitle;
             series.Translation = new Translation()
@@ -164,7 +165,7 @@ namespace AniCharades.Services.Implementation
         private static string GetMainTitle(ICollection<IEntryInstance> entries, IEntryInstance mainEntry)
         {
             var importantEntries = entries
-                .Where(e => e.Type.NotIn("Music", "ONA"))
+                .Where(e => e.Type.NotIn("Music", "ONA", "One-shot"))
                 .ToArray();
             if (CollectionUtils.IsCollectionNullOrEmpty(importantEntries))
                 return new MainTitleFinder().GetMainTitle(entries, mainEntry);
