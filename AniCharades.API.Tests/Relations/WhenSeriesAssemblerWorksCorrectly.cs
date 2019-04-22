@@ -1,4 +1,5 @@
 ﻿using AniCharades.API.Tests.LargeMocks;
+using AniCharades.Common.Extensions;
 using AniCharades.Contracts.Enums;
 using AniCharades.Repositories.Interfaces;
 using AniCharades.Services.Franchise;
@@ -17,34 +18,7 @@ namespace AniCharades.API.Tests.Relations
     public class WhenSeriesAssemblerWorksCorrectly : BaseTest
     {
         private readonly IFranchiseService franchiseService;
-
-        private static readonly Dictionary<string, long> malDictionary = new Dictionary<string, long>()
-        {
-            { "KamiNomiFirstTv", 8525 }, { "MagicalStarKanon", 17725 },
-            { "NyarukoFirstTv", 11785 },
-            { "KaijiFirstTv", 3002 }, { "TonegawaTv", 37338 },
-            { "SakiFirstTv", 5671 }, { "SakiAchigaTv", 10884 },
-            { "EfMemoriesTv", 2924 }, { "EfMelodiesTv", 4789 },
-            { "ClannadTv", 2167 },
-            { "SataniaDropoutSpecials", 34855 },
-            { "GintamaSecondTv", 9969 }, { "GintamaThirdTv", 15417 }, { "SketDanceTv", 9863 }, { "GintamaMameshiba", 19261 },
-            { "MahoukaTv", 20785 }, { "MahoukaMameshiba", 35631 },
-            { "LoveLiveSecondTv", 19111 },
-            { "ZombieDesuKaFirstTv", 8841 },{ "ZombieDesuKaSecondTv", 10790 },
-            { "ChuunibyouRenLite", 21797 },
-            { "DragonBallGT", 225 }, { "DrSlumpTv", 2222 },
-            { "KimiGaNozomuEienTv", 147 },
-            { "MobileSuitGundamFirstTv", 80 },
-            { "FateFirstTv", 356 }, { "FateUbwMovie", 6922 },
-            { "FateZeroFirstTv", 11741 }, { "FateApocrypha", 34662 }, { "FateExtraTv", 33047 },
-            { "FateGrandOrderFirstOva", 34321 },  { "FateGrandOrderCMs", 36064 }, { "FateGrandOrderMangaDeWakaru", 38958 },
-            { "PrismaIllyaFirstTv", 14829 }, { "PrismaIllyaMovieSpecial", 36833 }, { "EmiyaGohan", 37033 },
-            { "MajiKoiTv", 10213 }, { "KimiAruTv", 3229 },
-            { "LupinFirstTv", 1412 }, { "LupinVsConanMovie", 6115 },
-            { "FairyTailManga", 598 }, { "FairyTailTv", 6702 },
-            { "HanasakuIrohaTv", 9289 }, { "UtopiaMusic", 21103 }, { "SekiranunGraffiti", 11487 },
-            { "TsubasaChronicleFirstTv", 177 }, { "xxxHolicMangaId", 10 }
-        };
+        private readonly Dictionary<string, long> malDictionary = new Dictionary<string, long>();
 
         public WhenSeriesAssemblerWorksCorrectly()
         {
@@ -71,6 +45,9 @@ namespace AniCharades.API.Tests.Relations
             serviceProvider.Setup(s => s.Get(EntrySource.Anime)).Returns(new JikanAnimeProvider(jikanMock.Object, ignoredRepo.Object));
             serviceProvider.Setup(s => s.Get(EntrySource.Manga)).Returns(new JikanMangaProvider(jikanMock.Object, ignoredRepo.Object));
             franchiseService = new FranchiseService(serviceProvider.Object, new FranchiseAssembler(new RelationService()));
+
+            var values = Config.GetSection("Jikan:Entries").GetChildren().Select(c => new { c.Key, Value = long.Parse(c.Value) });
+            values.ForEach(v => malDictionary.Add(v.Key, v.Value));
         }
 
         [Theory]
