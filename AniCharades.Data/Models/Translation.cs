@@ -9,7 +9,9 @@ namespace AniCharades.Data.Models
 
         public string Polish { get; set; }
 
-        public string English { get; set; }
+        public string EnglishLiteral { get; set; }
+
+        public string EnglishOfficial { get; set; }
 
         public string Japanese { get; set; }
 

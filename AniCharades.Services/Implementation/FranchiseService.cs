@@ -147,7 +147,11 @@ namespace AniCharades.Services.Implementation
             {
                 bool isTranslationEqualTitle = mainEntry.Translation.Equals(mainTitle);
                 if (!isTranslationEqualTitle)
-                    series.Translation.English = mainEntry.Translation;
+                {
+                    series.Translation.EnglishOfficial = mainEntry.Translation;
+                    if (mainEntry.Synonyms != null && mainEntry.Synonyms.Count != 0)
+                        series.Translation.EnglishLiteral = string.Join(", ", mainEntry.Synonyms);
+                }
             }
             return series;
         }

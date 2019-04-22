@@ -134,6 +134,11 @@ namespace AniCharades.Services.Implementation
             var existingCharadesWithEntry = entryProcessingStrategy.EntryExistsInCharades(entry, charades);
             if (existingCharadesWithEntry != null)
             {
+                var newUsers = entry.Users.Where(u => !existingCharadesWithEntry.KnownBy.Any(eu => eu.Equals(u))).ToArray();
+                if (newUsers.Count() != 0)
+                {
+                    newUsers.ForEach(u => existingCharadesWithEntry.KnownBy.Add(u));
+                }
                 return existingCharadesWithEntry;
             }
             var seriesExistsInDb = await entryProcessingStrategy.EntryExistsInRepository(entry, seriesRepository);

@@ -49,7 +49,7 @@ namespace AniCharades.API.Tests.Serialization
                         new AnimeEntry { MalId = 234,Title = "Angel Beats!" },
                     },
                     Id = 12,
-                    Translation = new Translation { English = "Bleach x AB!" },
+                    Translation = new Translation { EnglishOfficial = "Bleach x AB!" },
                     Title = "Bleach Beats!"
                 }
             };
@@ -60,7 +60,7 @@ namespace AniCharades.API.Tests.Serialization
             // then
             var bleachBeats = seriesCollection[0];
             Assert.Equal("Bleach Beats!", bleachBeats.Title);
-            Assert.Equal("Bleach x AB!", bleachBeats.Translation.English);
+            Assert.Equal("Bleach x AB!", bleachBeats.Translation.EnglishOfficial);
             Assert.Equal(123, bleachBeats.AnimePositions.First(x => x.Title == "Bleach").MalId);
             Assert.Equal("Angel Beats!", bleachBeats.AnimePositions.First(x => x.MalId == 234).Title);
         }
