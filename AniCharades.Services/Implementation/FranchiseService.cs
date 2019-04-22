@@ -101,12 +101,14 @@ namespace AniCharades.Services.Implementation
         private ICollection<IEntryInstance> GetAllAdaptations(ICollection<IEntryInstance> animeEntries, EntrySource source)
         {
             ICollection<IEntryInstance> entries = new List<IEntryInstance>();
-            var adaptationId = GetFirstAdaptationId(animeEntries);
-            if (adaptationId != 0)
+            var adaptationsFromEntries = GetEntriesAdaptations(animeEntries, source);
+            var provider = providerFactory.Get(source);
+            foreach (var adaptation in adaptationsFromEntries)
             {
-                var provider = providerFactory.Get(source);
-                entries = GetFranchiseEntries(adaptationId, provider);
+                var nextAdaptations = GetFranchiseEntries(adaptation.Id, provider);
+                entries.AddRange(nextAdaptations);
             }
+            entries = entries.Distinct().ToList();
             return entries;
         }
 
@@ -158,14 +160,6 @@ namespace AniCharades.Services.Implementation
                 .ToList();
             validEntries.Add(relations.First().SourceEntry);
             return validEntries;
-        }
-
-        private long GetFirstAdaptationId(ICollection<IEntryInstance> entries)
-        {
-            var firstEntryWithAdaptation = entries.FirstOrDefault(e => e.Related.Adaptations != null && e.Related.Adaptations.Count != 0);
-            if (firstEntryWithAdaptation != null)
-                return firstEntryWithAdaptation.Related.Adaptations.First(x => !string.IsNullOrEmpty(x.Name)).MalId;
-            return 0;
         }
 
         private static string GetMainTitle(ICollection<IEntryInstance> entries, IEntryInstance mainEntry)
