@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,11 +8,23 @@ namespace AniCharades.Common.Utils
 {
     public static class TitleUtils
     {
-        public static readonly string[] RedundantLastWords = { "OVA", "OAV", "Movie", "Special", "Specials", "PV", "Season",
-            "Gaiden", "Prologue", "Animation", "Recollections", "CM", "CMs", "Zoku", "Shou", "ONA", "The", "Origination", "Part", "Zero", "Episode" };
-        public static readonly string[] RedundantFirstWords = { "Shin" };
-        public static readonly string[] RedundantConnectives = { "the", "a", "an" };
-        public static readonly string[] AnimeTypes = { "OVA", "Movie", "Special", "TV", "ONA" };
+        public static readonly string[] RedundantLastWords;
+        public static readonly string[] RedundantFirstWords;
+        public static readonly string[] RedundantConnectives;
+        public static readonly string[] AnimeTypes;
+
+        static TitleUtils()
+        {
+            var envVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
+                    .Build();
+            RedundantLastWords = config.GetSection("Title:RedundantLastWords").Get<string[]>();
+            RedundantFirstWords = config.GetSection("Title:RedundantFirstWords").Get<string[]>();
+            RedundantConnectives = config.GetSection("Title:RedundantConnectives").Get<string[]>();
+            AnimeTypes = config.GetSection("Title:AnimeTypes").Get<string[]>();
+        }
 
         public static ICollection<string> GetRedundantNumerals(int numbers)
         {

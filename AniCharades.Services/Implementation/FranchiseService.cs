@@ -145,12 +145,16 @@ namespace AniCharades.Services.Implementation
             bool isTranslationEmpty = string.IsNullOrEmpty(mainEntry.Translation);
             if (!isTranslationEmpty)
             {
-                bool isTranslationEqualTitle = mainEntry.Translation.Equals(mainTitle);
+                bool isTranslationEqualTitle = mainEntry.Translation.ToLower().Equals(mainTitle.ToLower());
                 if (!isTranslationEqualTitle)
                 {
                     series.Translation.EnglishOfficial = mainEntry.Translation;
                     if (mainEntry.Synonyms != null && mainEntry.Synonyms.Count != 0)
-                        series.Translation.EnglishLiteral = string.Join(", ", mainEntry.Synonyms);
+                    {
+                        var synonyms = string.Join(", ", mainEntry.Synonyms);
+                        if (!synonyms.ToLower().Equals(mainTitle.ToLower()))
+                            series.Translation.EnglishLiteral = string.Join(", ", mainEntry.Synonyms);
+                    }
                 }
             }
             return series;

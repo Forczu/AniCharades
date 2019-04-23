@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,19 @@ namespace AniCharades.Common.Utils
 {
     public static class RelationUtils
     {
-        private static readonly string[] NonImportantWord = { "ni", "de", "a", "an", "the" };
-        private static readonly char[] Separators = { ' ', '+', '☆' };
+        private static readonly string[] NonImportantWords;
+        private static readonly char[] Separators;
+
+        static RelationUtils()
+        {
+            var envVariable = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .AddJsonFile($"appsettings.{envVariable}.json", optional: true)
+                    .Build();
+            NonImportantWords = config.GetSection("Title:NonImportantWords").Get<string[]>();
+            Separators = config.GetSection("Title:Separators").Get<char[]>();
+        }
 
         public static bool ContainsAnyKeyword(this string title, string[] keywords)
         {
@@ -31,7 +43,7 @@ namespace AniCharades.Common.Utils
             var firstWords = firstTitle.Split(Separators);
             var secondWords = secondTitle.Split(Separators);
             bool hasSharedWord = firstWords.Any(
-                fw => !NonImportantWord.Contains(fw.ToLower()) &&
+                fw => !NonImportantWords.Contains(fw.ToLower()) &&
                 secondWords.Any(sw => WordsAreEqual(sw, fw)));
             return hasSharedWord;
         }

@@ -135,6 +135,7 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("FateGrandOrderFirstOva", "FateExtraTv")]
         [InlineData("FateFirstTv", "PrismaIllyaFirstTv")]
         [InlineData("MajiKoiTv", "KimiAruTv")]
+        [InlineData("PuniPuniPoemi", "ExcelSagaTv")]
         public void AnimeFranchisesShouldBeSeparate(string firstEntryName, string secondEntryName)
         {
             // given
