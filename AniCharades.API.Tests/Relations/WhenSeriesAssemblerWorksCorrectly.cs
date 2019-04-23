@@ -59,7 +59,7 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("ClannadTv",  5)]
         [InlineData("SataniaDropoutSpecials",  2)]
         [InlineData("MahoukaTv", 4)]
-        [InlineData("FairyTailTv", 10)]
+        [InlineData("FairyTailTv", 9)]
         [InlineData("FateFirstTv", 11)]
         [InlineData("PrismaIllyaFirstTv", 13)]
         [InlineData("GintamaThirdTv", 19)]
@@ -135,7 +135,7 @@ namespace AniCharades.API.Tests.Relations
         [InlineData("FateGrandOrderFirstOva", "FateExtraTv")]
         [InlineData("FateFirstTv", "PrismaIllyaFirstTv")]
         [InlineData("MajiKoiTv", "KimiAruTv")]
-        public void FranchisesShouldBeSeparate(string firstEntryName, string secondEntryName)
+        public void AnimeFranchisesShouldBeSeparate(string firstEntryName, string secondEntryName)
         {
             // given
             long firstId = malDictionary[firstEntryName];
@@ -146,6 +146,21 @@ namespace AniCharades.API.Tests.Relations
             // then
             Assert.DoesNotContain(firstFranchise.AnimePositions, a => a.MalId == secondId);
             Assert.DoesNotContain(secondFranchise.AnimePositions, a => a.MalId == firstId);
+        }
+
+        [Theory]
+        [InlineData("BlameManga", "SidoniaNoKishiManga")]
+        public void MangaFranchisesShouldBeSeparate(string firstEntryName, string secondEntryName)
+        {
+            // given
+            long firstId = malDictionary[firstEntryName];
+            long secondId = malDictionary[secondEntryName];
+            // when
+            var firstFranchise = franchiseService.CreateFromManga(firstId);
+            var secondFranchise = franchiseService.CreateFromManga(secondId);
+            // then
+            Assert.DoesNotContain(firstFranchise.MangaPositions, a => a.MalId == secondId);
+            Assert.DoesNotContain(secondFranchise.MangaPositions, a => a.MalId == firstId);
         }
 
         [Theory]

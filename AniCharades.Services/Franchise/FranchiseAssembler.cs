@@ -1,6 +1,7 @@
 ﻿using AniCharades.Adapters.Interfaces;
 using AniCharades.Adapters.Jikan;
 using AniCharades.Common.Extensions;
+using AniCharades.Common.Utils;
 using AniCharades.Data.Enumerations;
 using AniCharades.Services.Interfaces;
 using AniCharades.Services.Providers;
@@ -25,9 +26,11 @@ namespace AniCharades.Services.Franchise
         public ICollection<RelationBetweenEntries> Assembly(long entryId, IEntryProvider entryProvider)
         {
             ResetCollections();
-            if (entryProvider.IsIgnored(entryId))
+            if (IsIgnored(entryId, entryProvider))
                 return series;
             var entry = entryProvider.Get(entryId);
+            if (HasMultipleParentStories(entry))
+                return series;
             AddEntryToCheckTheRelations(entry);
             while (!IsStackEmpty())
             {
@@ -75,11 +78,11 @@ namespace AniCharades.Services.Franchise
             if (IsCollectionEmpty(allRelatedToEntry))
                 return null;
             var relations = new List<RelationBetweenEntries>();
-            var filteredEntries = allRelatedToEntry.Where(r => CanEntryBeAddedToSeries(r.MalId) && !entryProvider.IsIgnored(r.MalId));
+            var filteredEntries = allRelatedToEntry.Where(r => CanEntryBeAddedToSeries(r.MalId) && !IsIgnored(r.MalId, entryProvider));
             foreach (var subItem in filteredEntries)
             {
                 var relatedEntry = entryProvider.Get(subItem.MalId);
-                if (relatedEntry != null)
+                if (relatedEntry != null && !HasMultipleParentStories(relatedEntry))
                 {
                     var relation = CreateRelation(entry, relatedEntry, subItem.RelationType);
                     relations.Add(relation);
@@ -119,6 +122,23 @@ namespace AniCharades.Services.Franchise
             var targetToSourceRelation = entryAsRelatedSubItem.RelationType;
             var relation = new RelationBetweenEntries(entry, relatedEntry, relationType, targetToSourceRelation);
             return relation;
+        }
+
+        private bool IsIgnored(long entryId, IEntryProvider entryProvider)
+        {
+            return entryProvider.IsIgnored(entryId);
+        }
+
+        private bool HasMultipleParentStories(IEntryInstance entry)
+        {
+            if (entry.Related?.ParentStories?.Count > 1)
+            {
+                var firstTitle = entry.Related.ParentStories.First().Name;
+                var secondTitle = entry.Related.ParentStories.Last().Name;
+                var areRelated = firstTitle.ContainsAnySharedWord(secondTitle);
+                return !areRelated;
+            }
+            return false;
         }
     }
 }
