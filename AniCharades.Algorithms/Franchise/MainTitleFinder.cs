@@ -59,6 +59,7 @@ namespace AniCharades.Algorithms.Franchise
             title = RemoveCustomCharacters(title);
             title = RemoveExtraCharacters(title);
             title = RemoveLastRedundantWords(title);
+            title = RemoveWordInBrackets(title);
             title = RemoveFirstRedundantWords(title);
             title = RemoveNonAsciiCharacters(title);
             return title;
@@ -69,6 +70,7 @@ namespace AniCharades.Algorithms.Franchise
             title = GetMainTitle(title);
             title = RemoveCustomCharacters(title);
             title = RemoveExtraCharacters(title);
+            title = RemoveWordInBrackets(title);
             title = RemoveFirstRedundantWords(title);
             title = RemoveNonAsciiCharacters(title);
             return title;
@@ -124,6 +126,19 @@ namespace AniCharades.Algorithms.Franchise
             return string.Join(' ', words);
         }
 
+        private string RemoveWordInBrackets(string title)
+        {
+            var words = title.Split(' ');
+            if (words.Count() <= 1)
+                return title;
+            var lastWord = words.Last();
+            if (IsWordYear(lastWord) || TitleUtils.AnimeTypes.Any(at => at.EqualsWithBrackets(lastWord)))
+            {
+                words = words.SubArray(0, words.Length - 1);
+            }
+            return string.Join(' ', words);
+        }
+
         private string RemoveLastRedundantWords(string title)
         {
             var words = title.Split(' ');
@@ -153,11 +168,6 @@ namespace AniCharades.Algorithms.Franchise
                 }
                 words = words.SubArray(0, words.Length - wordsToRemoveNumber);
                 title = string.Join(' ', words);
-                
-            }
-            else if (IsWordYear(lastWord))
-            {
-                words = words.SubArray(0, words.Length - 1);
             }
             return string.Join(' ', words);
         }
@@ -184,8 +194,7 @@ namespace AniCharades.Algorithms.Franchise
 
         private bool IsWordRedundant(string word)
         {
-            return TitleUtils.RedundantLastWords.Any(rlw => rlw.EqualsCaseInsensitive(word)) 
-                || TitleUtils.AnimeTypes.Any(at => at.EqualsWithBrackets(word));
+            return TitleUtils.RedundantLastWords.Any(rlw => rlw.EqualsCaseInsensitive(word));
         }
 
         private bool IsConnective(string word)

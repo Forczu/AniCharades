@@ -40,8 +40,8 @@ namespace AniCharades.Common.Utils
 
         public static bool ContainsAnySharedWord(this string firstTitle, string secondTitle)
         {
-            var firstWords = firstTitle.Split(Separators);
-            var secondWords = secondTitle.Split(Separators);
+            var firstWords = firstTitle.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+            var secondWords = secondTitle.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
             bool hasSharedWord = firstWords.Any(
                 fw => !NonImportantWords.Contains(fw.ToLower()) &&
                 secondWords.Any(sw => WordsAreEqual(sw, fw)));
@@ -57,8 +57,8 @@ namespace AniCharades.Common.Utils
 
         private static bool ShorterTitleContainsEverySharedWord(string shorterTitle, string longerTitle)
         {
-            var shorterTitleWords = shorterTitle.Split(' ');
-            var longerTitleWords = longerTitle.Split(' ');
+            var shorterTitleWords = shorterTitle.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+            var longerTitleWords = longerTitle.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
             bool hasAllSharedWord = shorterTitleWords.All(stw => longerTitleWords.Any(ltw => WordsAreEqual(ltw, stw)));
             return hasAllSharedWord;
         }
