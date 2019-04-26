@@ -132,7 +132,9 @@ namespace AniCharades.Algorithms.Franchise
             if (words.Count() <= 1)
                 return title;
             var lastWord = words.Last();
-            if (IsWordYear(lastWord) || TitleUtils.AnimeTypes.Any(at => at.EqualsWithBrackets(lastWord)))
+            if (IsWordYear(lastWord) ||
+                TitleUtils.AnimeTypes.Any(at => at.EqualsCaseInsensitive(lastWord)) ||
+                TitleUtils.AnimeTypes.Any(at => at.EqualsWithBrackets(lastWord)))
             {
                 words = words.SubArray(0, words.Length - 1);
             }

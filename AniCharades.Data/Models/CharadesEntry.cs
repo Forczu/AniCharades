@@ -23,8 +23,10 @@ namespace AniCharades.Data.Models
             sb.Append("Title: " + Series.Title + '\n');
             sb.Append("Animes: " + Series.AnimePositions.Count + "\n");
             sb.Append(string.Join("\n", Series.AnimePositions.OrderBy(a => a.MalId).Select(a => a.MalId.ToString("D5") + " - " + a.Title)) + '\n');
+            sb.Append("Mangas: " + Series.MangaPositions.Count + "\n");
+            sb.Append(string.Join("\n", Series.MangaPositions.OrderBy(a => a.MalId).Select(a => a.MalId.ToString("D6") + " - " + a.Title)) + '\n');
             sb.Append("Known by: " + string.Join(", ", KnownBy) + "\n");
-            sb.Append("Translation: " + Series.Translation.English);
+            sb.Append("Translation: " + Series.Translation.EnglishOfficial);
             return sb.ToString();
         }
     }

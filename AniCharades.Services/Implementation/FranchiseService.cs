@@ -149,13 +149,13 @@ namespace AniCharades.Services.Implementation
                 if (!isTranslationEqualTitle)
                 {
                     series.Translation.EnglishOfficial = mainEntry.Translation;
-                    if (mainEntry.Synonyms != null && mainEntry.Synonyms.Count != 0)
-                    {
-                        var synonyms = string.Join(", ", mainEntry.Synonyms);
-                        if (!synonyms.ToLower().Equals(mainTitle.ToLower()))
-                            series.Translation.EnglishLiteral = string.Join(", ", mainEntry.Synonyms);
-                    }
                 }
+            }
+            if (mainEntry.Synonyms != null && mainEntry.Synonyms.Count != 0)
+            {
+                var synonyms = string.Join(", ", mainEntry.Synonyms);
+                if (!synonyms.ToLower().Equals(mainTitle.ToLower()))
+                    series.Translation.EnglishLiteral = string.Join(", ", mainEntry.Synonyms);
             }
             return series;
         }
